@@ -1,0 +1,16 @@
+%%  Definitions for character classes will be contained in this section – examples below
+$DIGIT    		[0-9]
+$NON-ZERO    [^0]  IN  $DIGIT
+$SMALLCASE   	[a-z]
+$LETTER      	[A-Za-z]
+$UPPERCASE  [^a-z] IN $LETTER
+$NOMAN		[^man]
+$NOMANLOWERCASE [^man] IN $SMALLCASE
+$ESCAPE_AND_a-to-m [\\\^-m]
+$ESCAPE [\\\^\-\]\[]
+$ALL-BUT-ESCAPE [^\\\^\-\]\[] 
+%%  Token definitions will be contained in this section using regexes – examples below
+$IDENTIFIER     	$SMALLCASE ($LETTER | $DIGIT)*
+$CONSTANT            $UPPERCASE ($LETTER | $DIGIT)*
+
+
