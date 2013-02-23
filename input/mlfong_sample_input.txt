@@ -8,7 +8,9 @@ $NOMAN		[^man]
 $NOMANLOWERCASE [^man] IN $SMALLCASE
 $ESCAPE_AND_a-to-m [\\\^-m]
 $ESCAPE [\\\^\-\]\[]
-$ALL-BUT-ESCAPE [^\\\^\-\]\[] 
+$ALL-BUT-ESCAPE [^\\\^\-\]\[]
+$ccc [ccc]
+$1-64-9 [164-9] 
 %%  Token definitions will be contained in this section using regexes – examples below
 $IDENTIFIER     	$SMALLCASE ($LETTER | $DIGIT)*
 $CONSTANT            $UPPERCASE ($LETTER | $DIGIT)*
