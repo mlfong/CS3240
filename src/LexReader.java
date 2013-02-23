@@ -33,7 +33,6 @@ public class LexReader
             while ((s = br.readLine()) != null)
             {
                 if (s.length() < 2) continue;
-                s = s.replaceAll("\t", " ");
                 if (s.charAt(0) == '%')
                 {
                     if (!charClassFlag)
@@ -48,15 +47,26 @@ public class LexReader
                 }
                 else if (charClassFlag)
                 {
+                    // replace tabs except inside the brackets
+                    int leftBracket = s.indexOf("["), rightBracket = s.lastIndexOf("]");
+                    if(leftBracket < 0 || rightBracket < 0 || leftBracket > rightBracket)
+                    {
+                        br.close();
+                        throw new BadDefinitionException();
+                    }
+                    String bPart = s.substring(0, leftBracket).replaceAll("\t", " ");
+                    String ePart = s.substring(rightBracket+1).replaceAll("\t", " ");
+                    s = bPart + s.substring(leftBracket, rightBracket+1) + ePart;
+                    
                     HashSet<Character> hsc = new HashSet<Character>();
                     int white = s.indexOf(" ");
                     String charClass = s.substring(0, white);
-                    int strBracket = s.indexOf("["), endBracket = s.lastIndexOf("]");
-                    if(strBracket < 0 || endBracket < 0 || endBracket < strBracket)
-                        throw new BadDefinitionException();
-                    String contents = s.substring(strBracket + 1, endBracket);
+                    String contents = s.substring(leftBracket + 1, rightBracket);
                     if(contents.length() < 1)
+                    {
+                        br.close();
                         throw new BadDefinitionException();
+                    }
                     boolean notFlag = contents.charAt(0) == '^';
                     if(notFlag)
                         contents = contents.substring(1);
@@ -65,11 +75,17 @@ public class LexReader
                         if(contents.charAt(i) == '\\')
                         {
                             if(i+1 >= contents.length())
+                            {
+                                br.close();
                                 throw new BadDefinitionException();
+                            }
                             if(ESCAPE_CHARS.contains(contents.charAt(i+1)))
                                 hsc.add(contents.charAt(i+1));
                             else
+                            {
+                                br.close();
                                 throw new BadDefinitionException();
+                            }
                             i++;
                         }
                         else
@@ -79,23 +95,35 @@ public class LexReader
                                 if(contents.charAt(i) == '-')
                                 {
                                     if(i+1 >= contents.length())
+                                    {
+                                        br.close();
                                         throw new BadDefinitionException();
+                                    }
                                     char rangeStr = contents.charAt(i - 1);
                                     char rangeEnd = contents.charAt(i + 1);
                                     if(ESCAPE_CHARS.contains(rangeEnd))
                                     {
                                         if(i+2 >= contents.length())
+                                        {
+                                            br.close();
                                             throw new BadDefinitionException();
+                                        }
                                         rangeEnd = contents.charAt(i+2);
                                     }
                                     if(rangeEnd < rangeStr) // It is an error if a range is empty (e.g., [1-0])
+                                    {
+                                        br.close();
                                         throw new BadDefinitionException();
+                                    }
                                     for (int j = rangeStr; j < rangeEnd + 1; j++)
                                         hsc.add(new Character((char) j));
                                     i = i+2;
                                 }
                                 else
+                                {
+                                    br.close();
                                     throw new BadDefinitionException();
+                                }
                             }
                             else
                                 hsc.add(contents.charAt(i));
@@ -105,9 +133,9 @@ public class LexReader
                     {
                         // disjoint set
                         int INindex = s.lastIndexOf("IN");
-                        int endBracketIndex = s.lastIndexOf("]");
+                        int rightBracketIndex = s.lastIndexOf("]");
                         HashSet<Character> takeAway ;
-                        if(INindex > endBracketIndex)
+                        if(INindex > rightBracketIndex)
                         {
                             int dollarIndex = s.indexOf("$", 1);
                             String classKey = s.substring(dollarIndex).trim();
