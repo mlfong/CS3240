@@ -11,13 +11,18 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class LexReader
+public class ScannerGenerator
 {
-    static final HashSet<Character> ESCAPE_CHARS = new HashSet<Character>(){
+    
+    private static final HashSet<Character> ESCAPE_CHARS = new HashSet<Character>(){
         private static final long serialVersionUID = 4633395235151976767L;
     {
         this.add('^'); this.add('\\'); this.add('-'); this.add('['); this.add(']');
     } };
+    
+    private static final HashSet<Character> ALPHABET = new HashSet<Character>(){
+        private static final long serialVersionUID = -2139943170358709421L;
+    {for(int i = 32 ; i < 127; i++) this.add((char)i);}}; 
     
     public static HashMap<String, HashSet<Character>> parseInput(String filename)
             throws BadDefinitionException
@@ -142,9 +147,7 @@ public class LexReader
                             takeAway = characterClasses.get(classKey);
                         }
                         else
-                            takeAway = new HashSet<Character>(){
-                                private static final long serialVersionUID = -2139943170358709421L;
-                            {for(int i = 0 ; i < 256; i++) this.add((char)i);}};
+                            takeAway = ALPHABET;
                         HashSet<Character> nhsc = new HashSet<Character>();
                         for(Character c : takeAway)
                             if(!hsc.contains(c))
