@@ -52,5 +52,15 @@ public class RegExNode {
 		this.terminal = terminal;
 	}
 	
+	public boolean equals(Object o){
+		if(o instanceof RegExNode){
+			RegExNode n = (RegExNode)o;
+			if(this.stateID == n.getStateID()){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 }
