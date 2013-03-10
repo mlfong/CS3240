@@ -8,8 +8,12 @@ public class InitRegex{
 	private static final int SLASH = -1;
 	private static final int REGULARCHAR = 0;
 	private static final String STAR = "*";
-	private static final String testCases[] = {"a+", "aaa+", "ab+", "abbb+", "(a)+", "(ab)+", "\\+", "\\t+"};
-	private static final String testResults[] = {"aa*", "aaaa*", "abb*", "abbbb*", "(a)(a)*", "(ab)(ab)*", "\\+", "\\t\\t*"};
+	private static final String testCases[] = {"a+", "aaa+", "ab+", "abbb+", "(a)+", "(ab)+", 
+											"\\+", "\\t+", "\\)", "(ab(cd))+", "(ab(cd)*)+",
+											"a+b+c+", "(ab(cd)+)+", "abc", "a*b*c*", "(a+)+"};
+	private static final String testResults[] = {"aa*", "aaaa*", "abb*", "abbbb*", "(a)(a)*", "(ab)(ab)*", 
+											"\\+", "\\t\\t*", "\\)", "(ab(cd))(ab(cd))*", "(ab(cd)*)(ab(cd)*)*",
+											"aa*bb*cc*", "(ab(cd)(cd)*)(ab(cd)(cd)*)*", "abc", "a*b*c*", "(aa*)(aa*)*"};
 	public static void main(String[] args){
 
 		if(testCases.length != testResults.length){
@@ -22,7 +26,7 @@ public class InitRegex{
 				String converted = convertPlus(test);
 				System.out.println(converted);
 				if(!result.equals(converted)){
-					System.out.println("\tERROR: Got "+converted+" but expected "+result);
+					System.out.println("\tERROR: Expected "+result+" from "+test);
 				}
 			}
 		}
@@ -39,20 +43,19 @@ public class InitRegex{
 			if(regex.charAt(regexIndex) == PLUS && regexIndex > 0 && regex.charAt(regexIndex - 1) != BACKSLASH){
 				int previous = checkPrevious(regex, regexIndex);
 				if(previous == PARENS){
-					System.out.println("PARENS!");
-					newString.append(getParensSubstring(regex, regexIndex));
+					//System.out.println("PARENS!");
+					newString.append(getParensSubstring(newString.toString(), regexIndex));
 				}
 				else if (previous == SLASH){
-					System.out.println("SLASH");
+					//System.out.println("SLASH");
+					newString.append(BACKSLASH);
 					newString.append(regex.charAt(regexIndex - 1));
-					newString.append("\\");
-					newString.append(regex.charAt(regexIndex - 1));
-					newString.append("*");
+					newString.append(STAR);
 				}
 				else{
-					System.out.println("RegularChar");
+					//System.out.println("RegularChar");
 					newString.append(regex.charAt(regexIndex - 1));
-					newString.append("*");
+					newString.append(STAR);
 				}
 			}
 			else{
@@ -70,9 +73,9 @@ public class InitRegex{
 		if(index == 0){
 			return 0;
 		}
-		char lastChar = regex.charAt(index - 1);
 
-		if(lastChar == RIGHT_PARENS){
+		if(regex.charAt(index - 1) == RIGHT_PARENS){
+			//Checks for the case of \)
 			if(index > 1){
 				if(regex.charAt(index - 2) == BACKSLASH){
 					return SLASH;
@@ -80,7 +83,7 @@ public class InitRegex{
 			}
 			return PARENS;
 		}
-		else if(lastChar == BACKSLASH){
+		else if(index > 1 && regex.charAt(index - 2) == BACKSLASH){
 			return SLASH;
 		}
 		else{
@@ -95,7 +98,7 @@ public class InitRegex{
 		//Current index is pointed at + 
 		//So make sure to push index - 1 to get right parens
 		//And tempIndex starts the first character to the left of right parens
-		parens.push(regex.charAt(index - 1));
+		parens.push(RIGHT_PARENS);
 		int tempIndex = index - 2;
 		while(tempIndex >= 0){
 			char lastChar = regex.charAt(tempIndex);
@@ -104,7 +107,7 @@ public class InitRegex{
 				parens.pop();
 			}
 			else if(lastChar == RIGHT_PARENS){
-				parens.push(lastChar);
+				parens.push(RIGHT_PARENS);
 			}
 
 			if(parens.empty())
@@ -112,9 +115,7 @@ public class InitRegex{
 
 			tempIndex--;
 		}
-		StringBuilder newString = new StringBuilder(regex.substring(tempIndex, index));
-		newString.append("*");
-		return newString.toString();
+		return regex.substring(tempIndex) + STAR;
 	}
 
  
