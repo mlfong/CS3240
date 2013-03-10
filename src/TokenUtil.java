@@ -99,4 +99,25 @@ public class TokenUtil
         if(numLeftParen != 0) return false;
         return true;
     }
+    
+    public static boolean validateIdentifier(String s, 
+            HashMap<String, HashSet<Character>> characterClasses)
+    {
+        System.out.println("s: " + s);
+        int name_re_divider = s.indexOf(" ");
+        if(name_re_divider < 0)
+            return false;
+        String name = s.substring(0, name_re_divider);
+        System.out.println("name: " + name);
+        if(name_re_divider >= s.length())
+            return false;
+        String rest = s.substring(name_re_divider+1);
+        System.out.println("rest: " + rest);
+        return false;
+    }
 }
+
+
+
+
+

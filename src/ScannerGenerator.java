@@ -14,6 +14,8 @@ import java.util.HashSet;
 public class ScannerGenerator
 {
     
+    private static final boolean SG_DEBUG = false;
+    
     private static final HashSet<Character> ESCAPE_CHARS = new HashSet<Character>(){
         private static final long serialVersionUID = 4633395235151976767L;
     {
@@ -35,19 +37,28 @@ public class ScannerGenerator
         {
             BufferedReader br = new BufferedReader(new FileReader(f));
             String s;
+            charClassFlag=true;
             while ((s = br.readLine()) != null)
             {
-                if (s.length() < 2) continue;
-                if (s.charAt(0) == '%')
+                if(s.length() < 2)
                 {
-                    if (!charClassFlag)
-                        charClassFlag = true;
-                    else if (!tokenDefFlag)
+                    if(!tokenDefFlag)
+                    {
                         tokenDefFlag = true;
-                    continue;
+                        continue;
+                    }
+                    else
+                        break;
                 }
                 if (tokenDefFlag)
                 {
+                    if(SG_DEBUG)
+                    {
+                        System.out.println("tokenDefFlag: " + s);
+                    }
+                    boolean validated = TokenUtil.validateIdentifier(s, characterClasses);
+                    
+                    
                     // TODO: token def
                 }
                 else if (charClassFlag)
@@ -158,7 +169,7 @@ public class ScannerGenerator
                 }
                 else
                     System.err.println("Should not be here");
-            }
+            }//end while
             br.close();
         } catch (FileNotFoundException e)
         {

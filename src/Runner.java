@@ -11,7 +11,10 @@ public class Runner
     public static void characterClassTest() throws BadDefinitionException
     {
         HashMap<String, HashSet<Character>> tokenClasses = ScannerGenerator
-                .parseInput("input/mlfong_sample_input.txt");
+                .parseInput(
+//                        "input/mlfong_sample_input.txt"
+                        "sample/SampleSpec"
+                        );
         for (String s : tokenClasses.keySet())
         {
             System.out.println(s);
@@ -79,7 +82,8 @@ public class Runner
 
     public static void main(String[] args) throws BadDefinitionException
     {
-        regexValidatorTest();
+//        regexValidatorTest();
+        characterClassTest();
     }
 
 }
