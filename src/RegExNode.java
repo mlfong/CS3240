@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class RegExNode {
@@ -6,6 +8,7 @@ public class RegExNode {
 	private String state;
 	private int stateID;
 	private boolean terminal;
+	private Map<String, RegExNode> transitions;
 	
 	public RegExNode(int ID,String state){
 		this.state = state;
@@ -14,9 +17,20 @@ public class RegExNode {
 		this.children = new ArrayList<RegExNode>();
 	}
 	
+	public RegExNode(int ID){
+		this.state = null;
+		this.stateID = ID;
+		this.terminal = false;
+		this.children = new ArrayList<RegExNode>();
+	}
+	
 	//add children
-	public void addChild(int id, String nextState){
+	/*public void addChild(int id, String nextState){
 		this.children.add(new RegExNode(id,nextState));
+	}*/
+	
+	public void addChild(RegExNode child){
+		this.children.add(child);
 	}
 	
 	

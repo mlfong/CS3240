@@ -12,7 +12,8 @@ public class RegExGroup {
 	
 	//LBC
 	public RegExNFA something(ArrayList<String> input){
-		RegExNFA ourNFA = new RegExNFA();
+		String[] r = {"g","f"};
+		RegExNFA ourNFA = new RegExNFA(r);
 		int id = 1;
 		int parentId = 0;
 		boolean or,star;
@@ -35,16 +36,7 @@ public class RegExGroup {
 			}
 			else{
 				RegExNode node = new RegExNode(id++,temp);
-				ourNFA.addNode(node);
-				if(or){
-					RegExNode buddy = ourNFA.getNode((parentId));
-					ourNFA.addEdge(new RegExEdge(buddy,node));
-				}
-				else{
-					RegExNode buddy = ourNFA.getNode((id-1));
-					ourNFA.addEdge(new RegExEdge(buddy,node));
-				}
-					
+			
 			}
 		}
 		return null;
