@@ -13,7 +13,7 @@ public class Runner
     {
         Object[] specifications = ScannerGenerator.parseInput(
         // "input/mlfong_sample_input.txt"
-                "sample/SampleSpec");
+                "SampleSpec");
         HashMap<String, HashSet<Character>> characterClasses = (HashMap<String, HashSet<Character>>) specifications[0];
         ArrayList<MyToken> myTokens = (ArrayList<MyToken>) specifications[1];
         System.out.println("---------------");
@@ -35,6 +35,29 @@ public class Runner
             System.out.print("\t");
             Util.prettyPrint(regex);
         }
+        
+        
+        InputReader ir = new InputReader("SampleInput", myTokens);
+        ir.doStuff();
+        
+        System.out.println("Baby please work");
+        ir.printUserTokens();
+        
+        
+       
+        /*
+        String[] test = {"a","*"};//{"P","R","I","N","T"};
+        
+        for(MyToken t : myTokens){
+        	if(t.check2(test)){
+        		System.out.println("Found");
+        		System.out.println(t);
+        	}
+        }
+       	*/
+       
+        
+       
     }
 
     public static void regexValidatorTest()

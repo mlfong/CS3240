@@ -23,36 +23,63 @@ public class InputReader {
 			while((currentLine = br.readLine())!= null){
 				int index = 0;
 				int start = index;
-				boolean matchFound = false;
+				boolean matchFound = false, failFound = false, restart = false;
 				ArrayList<String> testStrings = new ArrayList<String>();
 				MyToken lastMatch = null;
 				String lastInputTokeName = "";
-				while(currentLine.charAt(index)!='\n'){
+				while(index < currentLine.length()){
 					char current = currentLine.charAt(index);
 					testStrings.add(Character.toString(current));
 					lastInputTokeName+=current;
+					
+					ArrayList<String> temp = new ArrayList<String>();
+					temp.add(Character.toString(current));
+					
+					System.out.println("Current Buffer: "+lastInputTokeName);
+					printArray(makeArray(testStrings));
+					failFound = false;
+					if(hasMatch(makeArray(temp))){
+						//System.out.println("Match temp found");
+						failFound = true;
+					}
+					
 					if(hasMatch(makeArray(testStrings))){
+						System.out.println("Match found");
 						matchFound = true;
 						lastMatch = firstMatch(makeArray(testStrings));
+						index++;
+						if(index == currentLine.length()){
+							System.out.println("Adding prvious success to list. Adding: " + lastInputTokeName);
+							this.userTokens.add(new InputToken(lastInputTokeName,lastMatch));
+							lastInputTokeName = "";
+							testStrings.clear();
+							matchFound = false;
+						}
 					}else{
+						System.out.println("Fail");
 						if(matchFound){
 							lastInputTokeName = lastInputTokeName.substring(0,lastInputTokeName.length()-1);
+							System.out.println("Adding prvious success to list. Adding: " + lastInputTokeName);
 							this.userTokens.add(new InputToken(lastInputTokeName,lastMatch));
-							index = lastInputTokeName.length();
+							lastInputTokeName = "";
+							testStrings.clear();
+							matchFound = false;
 							start = index;
-							lastInputTokeName = "";
-							testStrings.clear();
-						}
-						else if(currentLine.charAt(index+1)=='\n' && !matchFound){
-							index = ++start;
-							lastInputTokeName = "";
-							testStrings.clear();
-							if(start >= currentLine.length()){
-								break;
-							}
 						}
 						else{
-							index++;
+							if(failFound == false) {
+								System.out.println(" defaults");
+								index++;
+							}
+							else {
+							//	System.out.println("Space clear");
+								lastInputTokeName = "";
+								testStrings.clear();
+							}
+							if(index == currentLine.length()) {
+								System.out.println("Invalid input, exiting generator...");
+								System.exit(0);
+							}
 						}
 					}
 				}
@@ -66,7 +93,7 @@ public class InputReader {
 	
 	public MyToken firstMatch(String[] checkString){
 		for(MyToken token: tokens){
-			if(token.check(checkString)){
+			if(token.check2(checkString)){
 				return token;
 			}
 		}
@@ -75,7 +102,7 @@ public class InputReader {
 	
 	public boolean hasMatch(String[] checkString){
 		for(MyToken token: tokens){
-			if(token.check(checkString)){
+			if(token.check2(checkString)){
 				return true;
 			}
 		}
@@ -84,10 +111,28 @@ public class InputReader {
 	
 	public String[] makeArray(ArrayList<String> stringList){
 		String[] toReturn = new String[stringList.size()];
-		int i = 0;
-		for(String s : stringList){
-			toReturn[i] = s;
+		//System.out.println(toReturn.length + " length");
+		for(int i = 0 ; i < toReturn.length; i++){
+			toReturn[i] = stringList.get(i);
 		}
 		return toReturn;
+	}
+
+
+	public ArrayList<InputToken> getUserTokens() {
+		return userTokens;
+	}
+	
+	public void printUserTokens(){
+		for(InputToken t: this.userTokens){
+			System.out.println(t);
+		}
+	}
+	
+	public void printArray(String[] array){
+		for(int i = 0; i < array.length; i++){
+			System.out.print(array[i]);
+		}
+		System.out.println();
 	}
 }
