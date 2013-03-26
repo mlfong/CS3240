@@ -9,6 +9,8 @@ public class DGraph {
 	public DGraph(int numOfVert){
 		this.vertices = numOfVert;
 		this.edges = 0;
+		this.vertList = new ArrayList<RegExNode>();
+		this.edgeList = new ArrayList<RegExEdge>();
 		for(int i = 0; i < numOfVert; i++){
 			this.vertList.add(new RegExNode(i));
 		}

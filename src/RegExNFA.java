@@ -158,12 +158,14 @@ public class RegExNFA
 
     public static void main(String[] args)
     {
+    	System.out.println("Hey baby");
         String[] regex =
-        { "(", "A", "*", "B", "|", "A", "C", ")", "D" };
+        { "(", "☃","|","b",")" };
         String[] testString =
-        { "A", "A", };
+        { "☃"};
 
         RegExNFA test = new RegExNFA(regex);
+        System.out.println(test.check(testString));
 
     }
 

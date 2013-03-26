@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.HashSet;
+
 
 public class MyToken {
 	private String name;
@@ -9,8 +12,8 @@ public class MyToken {
 		this.nfaCreated = false;
 	}
 	
-	public void makeNFA(String[] regex){
-		this.nfa = new RegExNFA(regex);
+	public void makeNFA(String[] regex, HashMap<String, HashSet<Character>> map){
+		this.nfa = new RegExNFA(regex,map);
 		this.nfaCreated = true;
 	}
 	

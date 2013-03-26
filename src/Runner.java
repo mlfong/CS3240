@@ -82,8 +82,9 @@ public class Runner
 
     public static void main(String[] args) throws BadDefinitionException
     {
-//        regexValidatorTest();
-        characterClassTest();
+    	HashMap<String, HashSet<Character>> tokenClasses = ScannerGenerator
+                .parseInput("File name here"
+                        );
     }
 
 }
