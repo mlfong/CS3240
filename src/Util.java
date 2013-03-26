@@ -12,6 +12,26 @@ import java.util.Iterator;
 
 public class Util
 {
+    public static void prettyPrint(String[] arr)
+    {
+        System.out.print("[");
+        for(int i = 0 ; i < arr.length; i++)
+        {
+            System.out.print(arr[i]);
+            if(i != arr.length-1)
+                System.out.print(", ");
+        }
+        System.out.println("]");
+    }
+    
+    public static String[] makeStringArray(ArrayList<String> al)
+    {
+        String[] s = new String[al.size()];
+        for(int i = 0 ; i < al.size(); i++)
+            s[i] = al.get(i);
+        return s;
+    }
+    
     public static void prettyPrint(ArrayList al)
     {
         System.out.print("[");

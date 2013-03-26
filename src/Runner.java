@@ -3,6 +3,7 @@
  * @version 1.0
  *****/
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -10,16 +11,29 @@ public class Runner
 {
     public static void characterClassTest() throws BadDefinitionException
     {
-        HashMap<String, HashSet<Character>> tokenClasses = ScannerGenerator
-                .parseInput(
-//                        "input/mlfong_sample_input.txt"
-                        "sample/SampleSpec"
-                        );
-        for (String s : tokenClasses.keySet())
+        Object[] specifications = ScannerGenerator.parseInput(
+        // "input/mlfong_sample_input.txt"
+                "sample/SampleSpec");
+        HashMap<String, HashSet<Character>> characterClasses = (HashMap<String, HashSet<Character>>) specifications[0];
+        ArrayList<MyToken> myTokens = (ArrayList<MyToken>) specifications[1];
+        System.out.println("---------------");
+        System.out.println("Character Classes:");
+        System.out.println("---------------");
+        for (String s : characterClasses.keySet())
         {
             System.out.println(s);
             System.out.print("\t");
-            Util.reallyPrettyPrint(tokenClasses.get(s));
+            Util.reallyPrettyPrint(characterClasses.get(s));
+        }
+        System.out.println("---------------");
+        System.out.println("Token definitions:");
+        System.out.println("---------------");
+        for(MyToken mt : myTokens)
+        {
+            String[] regex = mt.getNFA().getRegex();
+            System.out.println(mt.getName());
+            System.out.print("\t");
+            Util.prettyPrint(regex);
         }
     }
 
@@ -30,7 +44,8 @@ public class Runner
         tokenClasses.put("$DIGIT", null);
         tokenClasses.put("$SMALLCASE", null);
         tokenClasses.put("$UPPERCASE", null);
-        String[] res = {
+        String[] res =
+        {
                 "$SMALLCASE ($LETTER | $DIGIT)*",
                 "$UPPERCASE ($LETTER | $DIGIT)*",
                 "",
@@ -50,7 +65,7 @@ public class Runner
                 ")",
                 "*",
                 "($UPPERCASE | $UPPERCASE) $UPPERCASE* $UPPERCASE+",
-                "$UPPERCASE+", 
+                "$UPPERCASE+",
                 "$UPPERCASE*",
                 "$UPPERCASE",
                 "qwertyyuuidlfsdfgklsjdfg",
@@ -59,32 +74,33 @@ public class Runner
                 "'",
                 "             ",
                 "$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE$UPPERCASE",
-                null,
-                "$DIGIT $DIG"
-        };
-        boolean[] correct_vals = {
-                true, true, false, false, true, false, true, true,false, false, false, false, true, false, false, false, false, false, true, true, true, true, false, false, false,
-                false, false, true, false, false
-        };
-        if(res.length != correct_vals.length)
+                null, "$DIGIT $DIG" };
+        boolean[] correct_vals =
+        { true, true, false, false, true, false, true, true, false, false,
+                false, false, true, false, false, false, false, false, true,
+                true, true, true, false, false, false, false, false, true,
+                false, false };
+        if (res.length != correct_vals.length)
         {
-            System.err.println("You forgot a truth value!"); System.exit(-1);
+            System.err.println("You forgot a truth value!");
+            System.exit(-1);
         }
-        for(int i = 0; i < res.length; i++)
+        for (int i = 0; i < res.length; i++)
         {
-            System.out.println("Test " + (i+1) + ": " + 
-                    (TokenUtil.validateRegex(res[i], tokenClasses) == correct_vals[i] ? 
-                            "pass" : "fail")
-                    );
+            System.out
+                    .println("Test "
+                            + (i + 1)
+                            + ": "
+                            + (TokenUtil.validateRegex(res[i], tokenClasses) == correct_vals[i] ? "pass"
+                                    : "fail"));
         }
 
     }
 
     public static void main(String[] args) throws BadDefinitionException
     {
-    	HashMap<String, HashSet<Character>> tokenClasses = ScannerGenerator
-                .parseInput("File name here"
-                        );
+        // regexValidatorTest();
+        characterClassTest();
     }
 
 }

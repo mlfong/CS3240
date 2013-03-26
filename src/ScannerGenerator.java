@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -19,17 +20,27 @@ public class ScannerGenerator
     private static final HashSet<Character> ESCAPE_CHARS = new HashSet<Character>(){
         private static final long serialVersionUID = 4633395235151976767L;
     {
-        this.add('^'); this.add('\\'); this.add('-'); this.add('['); this.add(']');
+        // technically not escaped unless inside [] or [^]
+        this.add('^');
+        // escape
+        this.add('\\'); this.add('-'); this.add('['); this.add(']');
+        // extra
+        this.add(' '); this.add('*'); this.add('+'); this.add('|'); this.add('(');
+        this.add(')'); this.add('.'); this.add('\''); this.add('\"');
     } };
+    
     
     private static final HashSet<Character> ALPHABET = new HashSet<Character>(){
         private static final long serialVersionUID = -2139943170358709421L;
     {for(int i = 32 ; i < 127; i++) this.add((char)i);}}; 
     
-    public static HashMap<String, HashSet<Character>> parseInput(String filename)
+//    public static HashMap<String, HashSet<Character>> parseInput(String filename)
+    public static Object[] parseInput(String filename)
             throws BadDefinitionException
     {
         File f = new File(filename);
+        Object[] objArray = new Object[2];
+        ArrayList<MyToken> myTokens = new ArrayList<MyToken>();
         HashMap<String, HashSet<Character>> characterClasses = 
                 new HashMap<String, HashSet<Character>>();
         boolean charClassFlag = false, tokenDefFlag = false;
@@ -57,9 +68,53 @@ public class ScannerGenerator
                         System.out.println("tokenDefFlag: " + s);
                     }
                     boolean validated = TokenUtil.validateIdentifier(s, characterClasses);
-                    
-                    
-                    // TODO: token def
+                    if(!validated)
+                    {
+                        System.err.println("Bad regex: " + s);
+                    }
+                    String name = s.substring(0, s.indexOf(" "));
+                    String rest = s.substring(s.indexOf(" ")+1);
+                    s = InitRegex.initializeRegex(rest);
+                    if(SG_DEBUG)
+                        System.out.println("after: " + s);
+                    ArrayList<String> regexArray = new ArrayList<String>();
+                    for(int i = 0; i < s.length(); i++)
+                    {
+                        if(s.charAt(i) == '\\')
+                        {
+                            String tempAdd = "" + s.charAt(i) + s.charAt(i+1);
+                            regexArray.add(tempAdd);
+                            i++;
+                        }
+                        else if(s.charAt(i) == ' ')
+                            continue;
+                        else if(s.charAt(i) == '$')
+                        {
+                            StringBuffer sb = new StringBuffer();
+                            int lengthToSkip = 0;
+                            for(int j = i; j < s.length(); j++)
+                            {
+                                if(s.charAt(j) == '$' || (s.charAt(j) >= 'A' && s.charAt(j) <= 'Z'))
+                                {
+                                    sb.append(s.charAt(j));
+                                    lengthToSkip++;
+                                }
+                                else
+                                    break;
+                            }
+                            i += lengthToSkip - 1;
+                            regexArray.add(sb.toString());
+                        }
+                        else
+                        {
+                            String tempAdd = "" + s.charAt(i);
+                            regexArray.add(tempAdd);
+                        }
+                    }//end for
+                    MyToken tempToken = new MyToken(name);
+                    String[] regexPrimArray = Util.makeStringArray(regexArray);
+                    tempToken.makeNFA(regexPrimArray, characterClasses);
+                    myTokens.add(tempToken);
                 }
                 else if (charClassFlag)
                 {
@@ -180,7 +235,9 @@ public class ScannerGenerator
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return characterClasses;
+        objArray[0] = characterClasses;
+        objArray[1] = myTokens;
+        return objArray;
     }
 
 }

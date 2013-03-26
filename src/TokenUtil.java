@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /******
  * @author mlfong
@@ -10,6 +12,7 @@ public class TokenUtil
 {
     public static int SIMP_STR = 0;
     public static int SIMP_MAP = 0;
+    private static boolean TKU_DEBUG = false;
 
     private static final HashSet<Character> REGEX_CHARS = new HashSet<Character>()
     {   private static final long serialVersionUID = 3983065818321009688L;
@@ -103,17 +106,43 @@ public class TokenUtil
     public static boolean validateIdentifier(String s, 
             HashMap<String, HashSet<Character>> characterClasses)
     {
-        System.out.println("s: " + s);
+        Set<String> chracterClassNames = characterClasses.keySet();
+        if(TKU_DEBUG)
+            System.out.println("s: " + s);
         int name_re_divider = s.indexOf(" ");
         if(name_re_divider < 0)
             return false;
         String name = s.substring(0, name_re_divider);
-        System.out.println("name: " + name);
+        if(TKU_DEBUG)
+            System.out.println("name: " + name);
         if(name_re_divider >= s.length())
             return false;
         String rest = s.substring(name_re_divider+1);
-        System.out.println("rest: " + rest);
-        return false;
+        if(TKU_DEBUG)
+            System.out.println("rest: " + rest);
+        ArrayList<Integer> dollarSignIndices = new ArrayList<Integer>();
+        for(int i = 0; i < rest.length(); i++)
+            if(rest.charAt(i) == '$')
+                dollarSignIndices.add(i);
+        for(int i = 0; i < dollarSignIndices.size(); i++)
+        {
+            StringBuffer sb = new StringBuffer();
+            Integer dollarSignIndex = dollarSignIndices.get(i);
+            for(int j = dollarSignIndex; j < rest.length(); j++)
+            {
+                if(rest.charAt(j) == '$' || (rest.charAt(j) >= 'A' && rest.charAt(j) <= 'Z'))
+                        sb.append(rest.charAt(j));
+                else
+                {
+                    if(!chracterClassNames.contains(sb.toString()))
+                        return false;
+                    sb.delete(0, sb.length());
+                    break;
+                }
+            }
+        }
+        
+        return true;
     }
 }
 

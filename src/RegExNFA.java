@@ -154,6 +154,10 @@ public class RegExNFA
         return false;
     }
     
+    public String[] getRegex()
+    {
+        return regex;
+    }
     
 
     public static void main(String[] args)
