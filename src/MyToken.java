@@ -24,6 +24,10 @@ public class MyToken {
 		}
 	}
 	
+	public String toString(){
+		return name;
+	}
+	
 	
 	
 }

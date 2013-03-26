@@ -1,103 +1,160 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 
 public class RegExNFA
 {
 
-    private DGraph g;
+    private DGraph graph;
     private int vertNum;
     private String[] regex;
+    private HashMap<String, HashSet<Character>> charClasses;
 
     public RegExNFA(String[] regex)
     {
         this.regex = regex;
         this.vertNum = regex.length;
-        this.g = new DGraph(vertNum + 1);
+        this.graph = new DGraph(vertNum + 1);
         Stack<Integer> stack = new Stack<Integer>();
-        for (int i = 0; i < this.vertNum; i++)
+        for (int index = 0; index < this.vertNum; index++)
         {
-            int lp = i;
-            if (regex[i].contains("(") || regex[i].contains("|"))
+            int lastPoint = index;
+            if (regex[index].contains("(") || regex[index].contains("|"))
             {
-                stack.push(i);
+                stack.push(index);
             }
-            else if (regex[i].contains(")"))
+            else if (regex[index].contains(")"))
             {
                 int or = stack.pop();
                 if (regex[or].contains("|"))
                 {
-                    lp = stack.pop();
-                    this.g.addEdge(lp, or + 1);
-                    this.g.addEdge(or, i);
+                    lastPoint = stack.pop();
+                    this.graph.addEdge(lastPoint, or + 1);
+                    this.graph.addEdge(or, index);
                 }
                 else if (regex[or].contains("("))
                 {
-                    lp = or;
+                    lastPoint = or;
                 }
                 else
                     assert false;
             }
 
             // Lookahead;
-            if (i < vertNum - 1 && regex[i + 1].contains("*"))
+            if (index < vertNum - 1 && regex[index + 1].contains("*"))
             {
-                this.g.addEdge(lp, i + 1);
-                this.g.addEdge(i + 1, lp);
+                this.graph.addEdge(lastPoint, index + 1);
+                this.graph.addEdge(index + 1, lastPoint);
             }
-            if (regex[i].contains("(") || regex[i].contains("*")
-                    || regex[i].contains(")"))
+            if (regex[index].contains("(") || regex[index].contains("*")
+                    || regex[index].contains(")"))
             {
-                this.g.addEdge(i, i + 1);
+                this.graph.addEdge(index, index + 1);
             }
         }
+    }
+    
+    public RegExNFA(String[] regex, HashMap<String, HashSet<Character>> map){
+    	this(regex);
+    	this.charClasses = map;
     }
 
     public boolean check(String[] input)
     {
-        FAWalk dfs = new FAWalk(this.g, 0);
-        ArrayList<Integer> pc = new ArrayList<Integer>();
-        for (int i = 0; i < this.g.getNumVertices(); i++)
+        FAWalk dfs = new FAWalk(this.graph, 0);
+        ArrayList<Integer> checked = new ArrayList<Integer>();
+        for (int i = 0; i < this.graph.getNumVertices(); i++)
             if (dfs.marked(i))
             {
-                pc.add(i);
+                checked.add(i);
             }
 
         // Compute possible NFA states for txt[i+1]
         for (int i = 0; i < input.length; i++)
         {
             ArrayList<Integer> match = new ArrayList<Integer>();
-            for (int v : pc)
+            for (int vertex : checked)
             {
-                if (v == this.vertNum)
+                if (vertex == this.vertNum)
                 {
                     continue;
                 }
-                if ((regex[v].equals(input[i]) || regex[v].contains(".")))
+                if ((regex[vertex].equals(input[i]) || regex[vertex].contains(".")))
                 {
-                    match.add(v + 1);
+                    match.add(vertex + 1);
                 }
             }
-            dfs = new FAWalk(this.g, match);
-            pc = new ArrayList<Integer>();
-            for (int v = 0; v < this.g.getNumVertices(); v++)
+            dfs = new FAWalk(this.graph, match);
+            checked = new ArrayList<Integer>();
+            for (int v = 0; v < this.graph.getNumVertices(); v++)
                 if (dfs.marked(v))
                 {
-                    pc.add(v);
+                    checked.add(v);
                 }
 
             // optimization if no states reachable
-            if (pc.size() == 0)
+            if (checked.size() == 0)
             {
                 return false;
             }
         }
 
         // check for accept state
-        for (int v : pc)
-            if (v == this.vertNum)
+        for (int vertex : checked)
+            if (vertex == this.vertNum)
                 return true;
         return false;
     }
+    
+    public boolean check2(String[] input)
+    {
+        FAWalk dfs = new FAWalk(this.graph, 0);
+        ArrayList<Integer> checked = new ArrayList<Integer>();
+        for (int i = 0; i < this.graph.getNumVertices(); i++)
+            if (dfs.marked(i))
+            {
+                checked.add(i);
+            }
+
+        // Compute possible NFA states for txt[i+1]
+        for (int i = 0; i < input.length; i++)
+        {
+            ArrayList<Integer> match = new ArrayList<Integer>();
+            for (int vertex : checked)
+            {
+                if (vertex == this.vertNum)
+                {
+                    continue;
+                }
+                if ((this.charClasses.get(regex[vertex]).contains((input[i])) || regex[vertex].contains(".")))
+                {
+                    match.add(vertex + 1);
+                }
+            }
+            dfs = new FAWalk(this.graph, match);
+            checked = new ArrayList<Integer>();
+            for (int v = 0; v < this.graph.getNumVertices(); v++)
+                if (dfs.marked(v))
+                {
+                    checked.add(v);
+                }
+
+            // optimization if no states reachable
+            if (checked.size() == 0)
+            {
+                return false;
+            }
+        }
+
+        // check for accept state
+        for (int vertex : checked)
+            if (vertex == this.vertNum)
+                return true;
+        return false;
+    }
+    
+    
 
     public static void main(String[] args)
     {
