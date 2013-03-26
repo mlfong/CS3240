@@ -36,22 +36,27 @@ public class Runner
             Util.prettyPrint(regex);
         }
         
-        /*
+        
         InputReader ir = new InputReader("SampleInput", myTokens);
         ir.doStuff();
         
         System.out.println("Baby please work");
         ir.printUserTokens();
-        */
+        
+        
        
-        String[] test = {"="};
+        /*
+        String[] test = {"a","*"};//{"P","R","I","N","T"};
+        
         for(MyToken t : myTokens){
-        	System.out.println(t.prettyPrint());
         	if(t.check2(test)){
         		System.out.println("Found");
         		System.out.println(t);
         	}
         }
+       	*/
+       
+        
        
     }
 

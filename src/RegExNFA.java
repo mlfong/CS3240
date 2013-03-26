@@ -10,9 +10,26 @@ public class RegExNFA
     private int vertNum;
     private String[] regex;
     private HashMap<String, HashSet<Character>> charClasses;
-
+    private HashSet<Character> ESCAPED;
+    
+    
     public RegExNFA(String[] regex)
     {
+    	this.ESCAPED = new HashSet<Character>();
+    	this.ESCAPED.add('\\'); 
+    	this.ESCAPED.add('-'); 
+    	this.ESCAPED.add('['); 
+    	this.ESCAPED.add(']');
+        // extra
+    	this.ESCAPED.add(' '); 
+    	this.ESCAPED.add('*'); 
+    	this.ESCAPED.add('+'); 
+    	this.ESCAPED.add('|'); 
+    	this.ESCAPED.add('(');
+    	this.ESCAPED.add(')'); 
+    	this.ESCAPED.add('.');
+    	this.ESCAPED.add('\''); 
+    	this.ESCAPED.add('\"');
         this.regex = regex;
         this.vertNum = regex.length;
         this.graph = new DGraph(vertNum + 1);
@@ -80,10 +97,16 @@ public class RegExNFA
                 {
                     continue;
                 }
-                if ((regex[vertex].equals(input[i]) || regex[vertex].contains(".")))
-                {
-                    match.add(vertex + 1);
+                if(ESCAPED.contains(input[i].charAt(0))){
+                	if((regex[vertex].equals("\\"+input[i])) || regex[vertex].contains(".")){
+                    	match.add(vertex + 1);
+                    }
+                }else{
+                	if ((regex[vertex].equals(input[i]) || regex[vertex].contains("."))){
+                		match.add(vertex + 1);
+                	}
                 }
+ 
             }
             dfs = new FAWalk(this.graph, match);
             checked = new ArrayList<Integer>();
@@ -133,16 +156,21 @@ public class RegExNFA
                 if(this.charClasses.get(regex[vertex]) == null)
                 	System.err.println("bad");
                 */
-                if(this.charClasses.get(regex[vertex]) != null && input[i]!= null){
+            	if(this.charClasses.get(regex[vertex]) != null && input[i]!= null && input[i].length() <2){
 	                if ((this.charClasses.get(regex[vertex]).contains((input[i].charAt(0))) || regex[vertex].contains(".")))
 	                {
 	                    match.add(vertex + 1);
 	                }
                 }
-                else{
-                	
-                	//System.out.println(regex[vertex] + "is Null");
+                else  if(ESCAPED.contains(input[i].charAt(0))){
+                	if(regex[vertex].equals("\\"+input[i]) || regex[vertex].contains(".")){
+                		match.add(vertex + 1);
+                	}
                 }
+                else if((regex[vertex].equals(input[i]) || regex[vertex].contains("."))){
+                    	match.add(vertex + 1);
+                }
+
             }
             dfs = new FAWalk(this.graph, match);
             checked = new ArrayList<Integer>();
@@ -176,9 +204,9 @@ public class RegExNFA
     {
     	System.out.println("Hey baby");
         String[] regex =
-        { "(","=",")" };
+        { "(","a",")","*" };
         String[] testString =
-        { "="};
+        { "a"};
 
         RegExNFA test = new RegExNFA(regex);
         System.out.println(test.check(testString));
