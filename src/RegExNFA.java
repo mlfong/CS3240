@@ -127,9 +127,21 @@ public class RegExNFA
                 {
                     continue;
                 }
-                if ((this.charClasses.get(regex[vertex]).contains((input[i])) || regex[vertex].contains(".")))
-                {
-                    match.add(vertex + 1);
+                /*
+                if(this.charClasses==null)
+                	System.err.println("this char class is null");
+                if(this.charClasses.get(regex[vertex]) == null)
+                	System.err.println("bad");
+                */
+                if(this.charClasses.get(regex[vertex]) != null && input[i]!= null){
+	                if ((this.charClasses.get(regex[vertex]).contains((input[i].charAt(0))) || regex[vertex].contains(".")))
+	                {
+	                    match.add(vertex + 1);
+	                }
+                }
+                else{
+                	
+                	//System.out.println(regex[vertex] + "is Null");
                 }
             }
             dfs = new FAWalk(this.graph, match);
@@ -164,9 +176,9 @@ public class RegExNFA
     {
     	System.out.println("Hey baby");
         String[] regex =
-        { "(", "☃","|","b",")" };
+        { "(","=",")" };
         String[] testString =
-        { "☃"};
+        { "="};
 
         RegExNFA test = new RegExNFA(regex);
         System.out.println(test.check(testString));

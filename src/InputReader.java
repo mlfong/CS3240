@@ -31,19 +31,26 @@ public class InputReader {
 					char current = currentLine.charAt(index);
 					testStrings.add(Character.toString(current));
 					lastInputTokeName+=current;
+					
+					System.out.println("Current Buffer: "+lastInputTokeName);
 					if(hasMatch(makeArray(testStrings))){
+						System.out.println("Match found");
 						matchFound = true;
 						lastMatch = firstMatch(makeArray(testStrings));
+						index++;
 					}else{
 						if(matchFound){
+							System.out.println("Succes found before. Moving on.");
 							lastInputTokeName = lastInputTokeName.substring(0,lastInputTokeName.length()-1);
 							this.userTokens.add(new InputToken(lastInputTokeName,lastMatch));
 							index = lastInputTokeName.length();
 							start = index;
 							lastInputTokeName = "";
 							testStrings.clear();
+							matchFound = false;
 						}
-						else if(currentLine.charAt(index+1)=='\n' && !matchFound){
+						else if(index == currentLine.length()-1){
+							System.out.println("Break after no match");
 							index = ++start;
 							lastInputTokeName = "";
 							testStrings.clear();
@@ -52,6 +59,7 @@ public class InputReader {
 							}
 						}
 						else{
+							System.out.println(" defaults");
 							index++;
 						}
 					}
@@ -66,7 +74,7 @@ public class InputReader {
 	
 	public MyToken firstMatch(String[] checkString){
 		for(MyToken token: tokens){
-			if(token.check(checkString)){
+			if(token.check2(checkString)){
 				return token;
 			}
 		}
@@ -75,7 +83,7 @@ public class InputReader {
 	
 	public boolean hasMatch(String[] checkString){
 		for(MyToken token: tokens){
-			if(token.check(checkString)){
+			if(token.check2(checkString)){
 				return true;
 			}
 		}
@@ -89,5 +97,16 @@ public class InputReader {
 			toReturn[i] = s;
 		}
 		return toReturn;
+	}
+
+
+	public ArrayList<InputToken> getUserTokens() {
+		return userTokens;
+	}
+	
+	public void printUserTokens(){
+		for(InputToken t: this.userTokens){
+			System.out.println(t);
+		}
 	}
 }
