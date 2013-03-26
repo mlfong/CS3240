@@ -63,20 +63,16 @@ public class ScannerGenerator
                 }
                 if (tokenDefFlag)
                 {
-                    if(SG_DEBUG)
-                    {
-                        System.out.println("tokenDefFlag: " + s);
-                    }
                     boolean validated = TokenUtil.validateIdentifier(s, characterClasses);
                     if(!validated)
                     {
                         System.err.println("Bad regex: " + s);
+                        br.close();
+                        throw new BadDefinitionException();
                     }
                     String name = s.substring(0, s.indexOf(" "));
                     String rest = s.substring(s.indexOf(" ")+1);
                     s = InitRegex.initializeRegex(rest);
-                    if(SG_DEBUG)
-                        System.out.println("after: " + s);
                     ArrayList<String> regexArray = new ArrayList<String>();
                     for(int i = 0; i < s.length(); i++)
                     {
@@ -110,7 +106,8 @@ public class ScannerGenerator
                             String tempAdd = "" + s.charAt(i);
                             regexArray.add(tempAdd);
                         }
-                    }//end for
+                    }
+                    // add the token
                     MyToken tempToken = new MyToken(name);
                     String[] regexPrimArray = Util.makeStringArray(regexArray);
                     tempToken.makeNFA(regexPrimArray, characterClasses);
@@ -147,8 +144,6 @@ public class ScannerGenerator
                         br.close();
                         throw new BadDefinitionException();
                     }
-                    
-//                   
                     if(notFlag)
                     {
                         // disjoint set
@@ -167,11 +162,7 @@ public class ScannerGenerator
                         {
                             int lastLeftBracketIndex = s.lastIndexOf("[");
                             String rangeTakeAway = s.substring(lastLeftBracketIndex+1, rightBracketIndex);
-                            if(SG_DEBUG)
-                                System.out.println(rangeTakeAway);
                             takeAway = getRange(rangeTakeAway);
-                            if(SG_DEBUG)
-                                Util.prettyPrint(takeAway);
                             if(takeAway == null)
                             {
                                 br.close();
@@ -182,8 +173,6 @@ public class ScannerGenerator
                         for(Character c : takeAway)
                             if(!hsc.contains(c))
                                 nhsc.add(c);
-                        if(SG_DEBUG)
-                            Util.prettyPrint(nhsc);
                         hsc = nhsc;
                     }
                     characterClasses.put(charClass, hsc);
@@ -214,17 +203,11 @@ public class ScannerGenerator
             if(contents.charAt(i) == '\\')
             {
                 if(i+1 >= contents.length())
-                {
-//                    br.close();
-//                    throw new BadDefinitionException();
                     return null;
-                }
                 if(ESCAPE_CHARS.contains(contents.charAt(i+1)))
                     hsc.add(contents.charAt(i+1));
                 else
-                {
                     return null;
-                }
                 i++;
             }
             else
@@ -234,23 +217,17 @@ public class ScannerGenerator
                     if(contents.charAt(i) == '-')
                     {
                         if(i+1 >= contents.length())
-                        {
                             return null;
-                            }
                         char rangeStr = contents.charAt(i - 1);
                         char rangeEnd = contents.charAt(i + 1);
                         if(ESCAPE_CHARS.contains(rangeEnd))
                         {
                             if(i+2 >= contents.length())
-                            {
                                 return null;
-                            }
                             rangeEnd = contents.charAt(i+2);
                         }
                         if(rangeEnd < rangeStr) // It is an error if a range is empty (e.g., [1-0])
-                        {
                             return null;
-                        }
                         for (int j = rangeStr; j < rangeEnd + 1; j++)
                             hsc.add(new Character((char) j));
                         i = i+2;
