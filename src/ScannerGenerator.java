@@ -119,7 +119,7 @@ public class ScannerGenerator
                 else if (charClassFlag)
                 {
                     // replace tabs except inside the brackets
-                    int leftBracket = s.indexOf("["), rightBracket = s.lastIndexOf("]");
+                    int leftBracket = s.indexOf("["), rightBracket = s.indexOf("]"); // rightBracket = s.indexOf not s.lastIndexOf
                     if(leftBracket < 0 || rightBracket < 0 || leftBracket > rightBracket)
                     {
                         br.close();
@@ -141,65 +141,14 @@ public class ScannerGenerator
                     boolean notFlag = contents.charAt(0) == '^';
                     if(notFlag)
                         contents = contents.substring(1);
-                    for(int i = 0; i < contents.length(); i++)
+                    hsc = getRange(contents);
+                    if(hsc == null)
                     {
-                        if(contents.charAt(i) == '\\')
-                        {
-                            if(i+1 >= contents.length())
-                            {
-                                br.close();
-                                throw new BadDefinitionException();
-                            }
-                            if(ESCAPE_CHARS.contains(contents.charAt(i+1)))
-                                hsc.add(contents.charAt(i+1));
-                            else
-                            {
-                                br.close();
-                                throw new BadDefinitionException();
-                            }
-                            i++;
-                        }
-                        else
-                        {
-                            if(ESCAPE_CHARS.contains(contents.charAt(i)))
-                            {
-                                if(contents.charAt(i) == '-')
-                                {
-                                    if(i+1 >= contents.length())
-                                    {
-                                        br.close();
-                                        throw new BadDefinitionException();
-                                    }
-                                    char rangeStr = contents.charAt(i - 1);
-                                    char rangeEnd = contents.charAt(i + 1);
-                                    if(ESCAPE_CHARS.contains(rangeEnd))
-                                    {
-                                        if(i+2 >= contents.length())
-                                        {
-                                            br.close();
-                                            throw new BadDefinitionException();
-                                        }
-                                        rangeEnd = contents.charAt(i+2);
-                                    }
-                                    if(rangeEnd < rangeStr) // It is an error if a range is empty (e.g., [1-0])
-                                    {
-                                        br.close();
-                                        throw new BadDefinitionException();
-                                    }
-                                    for (int j = rangeStr; j < rangeEnd + 1; j++)
-                                        hsc.add(new Character((char) j));
-                                    i = i+2;
-                                }
-                                else
-                                {
-                                    br.close();
-                                    throw new BadDefinitionException();
-                                }
-                            }
-                            else
-                                hsc.add(contents.charAt(i));
-                        }
+                        br.close();
+                        throw new BadDefinitionException();
                     }
+                    
+//                   
                     if(notFlag)
                     {
                         // disjoint set
@@ -208,16 +157,33 @@ public class ScannerGenerator
                         HashSet<Character> takeAway ;
                         if(INindex > rightBracketIndex)
                         {
+                            if(SG_DEBUG)
+                                System.out.println(s);
                             int dollarIndex = s.indexOf("$", 1);
                             String classKey = s.substring(dollarIndex).trim();
                             takeAway = characterClasses.get(classKey);
                         }
                         else
-                            takeAway = ALPHABET;
+                        {
+                            int lastLeftBracketIndex = s.lastIndexOf("[");
+                            String rangeTakeAway = s.substring(lastLeftBracketIndex+1, rightBracketIndex);
+                            if(SG_DEBUG)
+                                System.out.println(rangeTakeAway);
+                            takeAway = getRange(rangeTakeAway);
+                            if(SG_DEBUG)
+                                Util.prettyPrint(takeAway);
+                            if(takeAway == null)
+                            {
+                                br.close();
+                                throw new BadDefinitionException();
+                            }
+                        }
                         HashSet<Character> nhsc = new HashSet<Character>();
                         for(Character c : takeAway)
                             if(!hsc.contains(c))
                                 nhsc.add(c);
+                        if(SG_DEBUG)
+                            Util.prettyPrint(nhsc);
                         hsc = nhsc;
                     }
                     characterClasses.put(charClass, hsc);
@@ -238,6 +204,68 @@ public class ScannerGenerator
         objArray[0] = characterClasses;
         objArray[1] = myTokens;
         return objArray;
+    }
+    
+    public static HashSet<Character> getRange(String contents)
+    {
+        HashSet<Character> hsc = new HashSet<Character>();
+        for(int i = 0; i < contents.length(); i++)
+        {
+            if(contents.charAt(i) == '\\')
+            {
+                if(i+1 >= contents.length())
+                {
+//                    br.close();
+//                    throw new BadDefinitionException();
+                    return null;
+                }
+                if(ESCAPE_CHARS.contains(contents.charAt(i+1)))
+                    hsc.add(contents.charAt(i+1));
+                else
+                {
+                    return null;
+                }
+                i++;
+            }
+            else
+            {
+                if(ESCAPE_CHARS.contains(contents.charAt(i)))
+                {
+                    if(contents.charAt(i) == '-')
+                    {
+                        if(i+1 >= contents.length())
+                        {
+                            return null;
+                            }
+                        char rangeStr = contents.charAt(i - 1);
+                        char rangeEnd = contents.charAt(i + 1);
+                        if(ESCAPE_CHARS.contains(rangeEnd))
+                        {
+                            if(i+2 >= contents.length())
+                            {
+                                return null;
+                            }
+                            rangeEnd = contents.charAt(i+2);
+                        }
+                        if(rangeEnd < rangeStr) // It is an error if a range is empty (e.g., [1-0])
+                        {
+                            return null;
+                        }
+                        for (int j = rangeStr; j < rangeEnd + 1; j++)
+                            hsc.add(new Character((char) j));
+                        i = i+2;
+                    }
+                    else
+                    {
+//                        br.close();
+//                        throw new BadDefinitionException();
+                    }
+                }
+                else
+                    hsc.add(contents.charAt(i));
+            }
+        }
+        return hsc;
     }
 
 }
