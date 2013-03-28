@@ -39,22 +39,24 @@ public class RegExNFA
         for (int index = 0; index < this.vertNum; index++)
         {
             int lastPoint = index;
-            if (this.regex[index].contains("(") || this.regex[index].contains("|"))
+            String curr = regex[index];
+            if (curr.contains("(") || curr.contains("|"))
             {
                 stack.push(index);
             }
-            else if (this.regex[index].contains(")"))
+            else if (curr.contains(")"))
             {
-                int or = stack.pop();
-                if (this.regex[or].contains("|"))
+                int orIndex = stack.pop();
+                String or = regex[orIndex];
+                if (or.contains("|"))
                 {
                     lastPoint = stack.pop();
-                    this.graph.addEdge(lastPoint, or + 1,this.regex[or+1]);
-                    this.graph.addEdge(or, index, this.regex[index]);
+                    this.graph.addEdge(lastPoint, orIndex + 1, this.regex[orIndex+1]);
+                    this.graph.addEdge(orIndex, index, curr);
                 }
-                else if (this.regex[or].contains("("))
+                else if (or.contains("("))
                 {
-                    lastPoint = or;
+                    lastPoint = orIndex;
                 }
                 else
                     assert false;
@@ -65,8 +67,8 @@ public class RegExNFA
                 this.graph.addEdge(lastPoint, index + 1, this.regex[index+1]);
                 this.graph.addEdge(index + 1, lastPoint, this.regex[lastPoint]);
             }
-            if (this.regex[index].contains("(") || this.regex[index].contains("*")
-                    || this.regex[index].contains(")"))
+            if (curr.contains("(") || curr.contains("*")
+                    || curr.contains(")"))
             {
             	if(index+1<this.regex.length){
             		this.graph.addEdge(index, index + 1, this.regex[index+1]);
@@ -88,16 +90,17 @@ public class RegExNFA
         FAWalk dfs = new FAWalk(this.graph, 0);
         ArrayList<Integer> checked = new ArrayList<Integer>();
         for (int i = 0; i < this.graph.getNumVertices(); i++)
-            if (dfs.marked(i))
-            {
-                checked.add(i);
-            }
+        {
+            if(dfs.marked(i))
+                checked.add(i)
+        }
 
         for (int i = 0; i < input.length; i++)
         {
             ArrayList<Integer> match = new ArrayList<Integer>();
-            for (int vertex : checked)
+            for(int j = 0; j < checked.size(); j++)
             {
+                Integer vertex = checked.get(j);
                 if (vertex == this.vertNum)
                 {
                     continue;
@@ -116,16 +119,19 @@ public class RegExNFA
             dfs = new FAWalk(this.graph, match);
             checked = new ArrayList<Integer>();
             for (int v = 0; v < this.graph.getNumVertices(); v++)
+            {
                 if (dfs.marked(v))
-                {
                     checked.add(v);
-                }
+            }
+                
 
         }
-
-        for (int vertex : checked)
-            if (vertex == this.vertNum)
+        for(int j = 0; j < checked.size(); j++)
+        {
+            Integer vertex = checked.get(j);
+            if(vertex == this.vertNum)
                 return true;
+        }
         return false;
     }
     
@@ -134,16 +140,17 @@ public class RegExNFA
         FAWalk dfs = new FAWalk(this.graph, 0);
         ArrayList<Integer> checked = new ArrayList<Integer>();
         for (int i = 0; i < this.graph.getNumVertices(); i++)
-            if (dfs.marked(i))
-            {
-                checked.add(i);
-            }
+        {
+            if(dfs.marked(i))
+                checked.add(i)
+        }
 
         for (int i = 0; i < input.length; i++)
         {
             ArrayList<Integer> match = new ArrayList<Integer>();
-            for (int vertex : checked)
+            for(int j = 0; j < checked.size(); j++)
             {
+                Integer vertex = checked.get(j);
                 if (vertex == this.vertNum)
                 {
                     continue;
@@ -173,16 +180,19 @@ public class RegExNFA
             dfs = new FAWalk(this.graph, match);
             checked = new ArrayList<Integer>();
             for (int v = 0; v < this.graph.getNumVertices(); v++)
+            {
                 if (dfs.marked(v))
-                {
                     checked.add(v);
-                }
+            }
 
         }
 
-        for (int vertex : checked)
+        for(int j = 0; j < checked.size(); j++)
+        {
+            Integer vertex = checked.get(j);
             if (vertex == this.vertNum)
                 return true;
+        }
         return false;
     }
     
