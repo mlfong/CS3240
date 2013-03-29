@@ -1,23 +1,39 @@
 import java.util.Stack;
+import java.util.HashMap;
 public class InitRegex{
 	private static final char PLUS = '+';
 	private static final char LEFT_PARENS = '(';
 	private static final char RIGHT_PARENS = ')';
 	private static final char BACKSLASH = '\\';
+	private static final char DOLLARSIGN = '$';
+	private static final char SPACE = ' ';
 	private static final int PARENS = 1;
 	private static final int SLASH = -1;
 	private static final int REGULARCHAR = 0;
 	private static final String STAR = "*";
+	private static final String EPSILON = "☃";
+	//Testcases for adding parens, and changing + to *
 	private static final String testCases[] = {"a+", "aaa+", "ab+", "abbb+", "(a)+", "(ab)+", 
 											"\\+", "\\t+", "\\)", "(ab(cd))+", "(ab(cd)*)+",
-											"a+b+c+", "(ab(cd)+)+", "abc", "a*b*c*", "(a+)+", "(a)"};
+											"a+b+c+", "(ab(cd)+)+", "abc", "a*b*c*", "(a+)+", "(a)", "a(|b)+", "\\ +"};
 	private static final String testResults[] = {"(aa*)", "(aaaa*)", "(abb*)", "(abbbb*)", "((a)(a)*)", "((ab)(ab)*)", 
 											"(\\+)", "(\\t\\t*)", "(\\))", "((ab(cd))(ab(cd))*)", "((ab(cd)*)(ab(cd)*)*)",
-											"(aa*bb*cc*)", "((ab(cd)(cd)*)(ab(cd)(cd)*)*)", "(abc)", "(a*b*c*)", "((aa*)(aa*)*)", "(a)"};
+											"(aa*bb*cc*)", "((ab(cd)(cd)*)(ab(cd)(cd)*)*)", "(abc)", "(a*b*c*)", "((aa*)(aa*)*)", "(a)",
+											"(a(|b)(|b)*)", "(\\ \\ *)"};
+
+	//Testcases for removing spaces + mapping character classes
+	private static final String moreTestCases[] = {"$letter"
+	};
+
+	private static final String moreTestResults[] = {"$letter"
+
+	};
+
 	public static void main(String[] args){
 		//runTest("(ab(cd)+)+", "(ab(cd)(cd)*)(ab(cd)(cd)*)*");
 		runAllTests();
-		
+		// testSpacesAndMapping();
+		// System.out.println(removeSpaces("the quick	brown fox jumped over the river"));
 	}
 
 
@@ -47,6 +63,23 @@ public class InitRegex{
 				String test = testCases[i];
 				String result = testResults[i];
 				String converted = initializeRegex(test);
+				System.out.println(converted);
+				if(!result.equals(converted)){
+					System.out.println("\tERROR: Expected "+result+" from "+test);
+				}
+			}
+		}
+	}
+
+	public static void testSpacesAndMapping(){
+		if(moreTestCases.length != moreTestResults.length){
+			System.out.println("Error: testCases and testResults lengths do not match");
+		}
+		else{
+			for(int i = 0; i < moreTestCases.length; i++){
+				String test = moreTestCases[i];
+				String result = moreTestResults[i];
+				String converted = testMapping(test);
 				System.out.println(converted);
 				if(!result.equals(converted)){
 					System.out.println("\tERROR: Expected "+result+" from "+test);
@@ -155,5 +188,130 @@ public class InitRegex{
 		return regex.substring(beginIndex) + STAR;
 	}
 
+	private static String removeSpaces(String regex){
+		StringBuilder newRegex = new StringBuilder();
+
+		for(int x = 0; x < regex.length(); x++){
+			char character = regex.charAt(x);
+			//handle spaces
+			if(character != SPACE && character != '\t'){ 
+				// System.out.println(character);
+				newRegex.append(character);
+			}
+
+			//handle escaping spaces
+			else if (character == SPACE && x > 0 && regex.charAt(x - 1) == BACKSLASH){
+				newRegex.append(character);
+			}
+		}
+		return newRegex.toString();
+
+	}
+
+	//Creates the map from characterclass to a char
+	private static HashMap<String, Character> createMap(String regex){
+		HashMap<String, Character> charClassMapping = 
+		new HashMap<String, Character>();
+
+		//Used to map the character class into 
+		//a value
+		char mappedValue = 'a';
+		int index = 0;
+		while(index < regex.length()){
+			if(regex.charAt(index) == DOLLARSIGN){
+				StringBuilder charClass = new StringBuilder();
+				charClass.append(DOLLARSIGN);
+				index++;
+				while(index < regex.length() && isChar(regex.charAt(index))){
+					charClass.append(regex.charAt(index));
+					index++;
+				}
+				if(charClassMapping.get(charClass.toString()) == null){
+					charClassMapping.put(charClass.toString(), mappedValue);
+					mappedValue++;
+				}
+			}
+			else{
+				index++;
+			}
+		}
+
+		return charClassMapping;
+	}
+
+
+	//Creates the mapped string
+	private static String createMappedRegex(String regex, HashMap<String, Character> map){
+		StringBuilder newRegex = new StringBuilder();
+		int index = 0;
+		while(index < regex.length()){
+			if(regex.charAt(index) == DOLLARSIGN){
+				StringBuilder charClass = new StringBuilder();
+				charClass.append(DOLLARSIGN);
+				index++;
+				while(index < regex.length() && isChar(regex.charAt(index))){
+					charClass.append(regex.charAt(index));
+					index++;
+				}
+				newRegex.append(map.get(charClass.toString()));
+
+			}
+			else{
+				newRegex.append(regex.charAt(index));
+				index++;
+			}
+		}
+		return regex;
+	}
+
+	//Creates the final string using the mapping
+	private static String remapClasses(String regex, HashMap<String, Character> map){
+		StringBuilder newRegex = new StringBuilder();
+		HashMap<Character,String> reversedMap = reverseMap(map);
+		int index = 0;
+		while(index < regex.length()){
+			if(isChar(regex.charAt(index))){
+				newRegex.append(reversedMap.get(regex.charAt(index)));
+			}
+			else{
+				newRegex.append(regex.charAt(index));
+			}
+			index++;
+		}
+		return newRegex.toString();
+
+	}
+
+	private static HashMap<Character,String> reverseMap(HashMap<String, Character> map){
+		HashMap<Character, String> reversedMap = new HashMap<Character, String>();
+		for(String key : map.keySet() ){
+			reversedMap.put(map.get(key), key);
+		}
+		return reversedMap;
+	}
+
+	//Checks to see if the inputted char is a 
+	// a-z or A-Z character
+	private static boolean isChar(char character){
+		if((character >= 'a' && character <= 'z') ||
+			(character >= 'A' && character <= 'Z')){
+			return true;
+		}
+		return false;
+	}
+
+	private static String testMapping(String regex){
+		String noSpaces = removeSpaces(regex);
+		System.out.println("\tTEST: noSpaces is "+noSpaces);
+		HashMap<String, Character> map = createMap(noSpaces);
+		for(String s: map.keySet()){
+			System.out.println("\tTEST: Pairing is ("+s+", "+map.get(s)+")");
+		}
+		String mappedRegex = createMappedRegex(noSpaces, map);
+		System.out.println("\tTEST: mappedRegex is "+mappedRegex);
+		String finalRegex = remapClasses(mappedRegex, map);
+		System.out.println("\tTEST: finalRegex is "+finalRegex);
+		return finalRegex;
+	}
  
 }
