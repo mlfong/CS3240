@@ -69,5 +69,9 @@ public class MyToken
     	}
     	return name + " " + toReturn;
     }
-
+    
+    public void printNFA(){
+    	System.out.println(this.name);
+    	this.nfa.printNFA();
+    }
 }

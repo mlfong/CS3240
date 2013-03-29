@@ -1,16 +1,18 @@
 
 public class RegExEdge {
-	private RegExNode a,b;
+	private RegExNode src,dst;
+	private String trans;
 	
-	public RegExEdge(RegExNode a, RegExNode b){
-		this.a = a;
-		this.b = b;
+	public RegExEdge(RegExNode a, RegExNode b, String trans){
+		this.src = a;
+		this.dst = b;
+		this.trans = trans;
 	}
 	
 	public boolean equals(Object o){
 		if (o instanceof RegExEdge){
 			RegExEdge e = (RegExEdge)o;
-			if(this.a.equals(e.getA()) && this.b.equals(e.getB())){
+			if(this.src.equals(e.getA()) && this.dst.equals(e.getB())){
 				return true;
 			}
 		}
@@ -18,19 +20,38 @@ public class RegExEdge {
 	}
 
 	public RegExNode getA() {
-		return a;
+		return src;
 	}
 
 	public void setA(RegExNode a) {
-		this.a = a;
+		this.src = a;
 	}
 
 	public RegExNode getB() {
-		return b;
+		return dst;
 	}
 
 	public void setB(RegExNode b) {
-		this.b = b;
+		this.dst = b;
+	}
+
+	public String getTrans() {
+		return trans;
+	}
+
+	public void setTrans(String trans) {
+		this.trans = trans;
+	}
+	
+	
+	public String toString2(){
+		return "(" + this.src.getName() + " " + this.src.getStateID() + "-->" +
+				 this.dst.getName() + " "+ this.dst.getStateID() + ")";
+	}
+	
+	public String toString(){
+		return "(" + this.src.getStateID() + "-->" +
+				 this.dst.getStateID() + ") " + this.trans;
 	}
 	
 	

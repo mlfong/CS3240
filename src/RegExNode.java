@@ -5,7 +5,7 @@ import java.util.Map;
 public class RegExNode
 {
     private ArrayList<RegExNode> children;
-    private String state;
+    private String state,name;
     private int stateID;
     private boolean terminal;
     private Map<String, RegExNode> transitions;
@@ -89,5 +89,15 @@ public class RegExNode
         }
         return false;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+    
+    
 
 }

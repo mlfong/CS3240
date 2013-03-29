@@ -33,41 +33,49 @@ public class RegExNFA
         this.regex = regex;
         this.vertNum = regex.length;
         this.graph = new DGraph(vertNum + 1);
+        this.graph.nameStates(regex);
+        this.graph.setGoal(vertNum);
         Stack<Integer> stack = new Stack<Integer>();
         for (int index = 0; index < this.vertNum; index++)
         {
             int lastPoint = index;
-            if (regex[index].contains("(") || regex[index].contains("|"))
+            String curr = regex[index];
+            if (curr.contains("(") || curr.contains("|"))
             {
                 stack.push(index);
             }
-            else if (regex[index].contains(")"))
+            else if (curr.contains(")"))
             {
-                int or = stack.pop();
-                if (regex[or].contains("|"))
+                int orIndex = stack.pop();
+                String or = regex[orIndex];
+                if (or.contains("|"))
                 {
                     lastPoint = stack.pop();
-                    this.graph.addEdge(lastPoint, or + 1);
-                    this.graph.addEdge(or, index);
+                    this.graph.addEdge(lastPoint, orIndex + 1, this.regex[orIndex+1]);
+                    this.graph.addEdge(orIndex, index, curr);
                 }
-                else if (regex[or].contains("("))
+                else if (or.contains("("))
                 {
-                    lastPoint = or;
+                    lastPoint = orIndex;
                 }
                 else
                     assert false;
             }
 
-            // Lookahead;
-            if (index < vertNum - 1 && regex[index + 1].contains("*"))
+            if (index < vertNum - 1 && this.regex[index + 1].contains("*"))
             {
-                this.graph.addEdge(lastPoint, index + 1);
-                this.graph.addEdge(index + 1, lastPoint);
+                this.graph.addEdge(lastPoint, index + 1, this.regex[index+1]);
+                this.graph.addEdge(index + 1, lastPoint, this.regex[lastPoint]);
             }
-            if (regex[index].contains("(") || regex[index].contains("*")
-                    || regex[index].contains(")"))
+            if (curr.contains("(") || curr.contains("*")
+                    || curr.contains(")"))
             {
-                this.graph.addEdge(index, index + 1);
+            	if(index+1<this.regex.length){
+            		this.graph.addEdge(index, index + 1, this.regex[index+1]);
+            	}
+            	else{
+            		this.graph.addEdge(index, index + 1, "Epsilon");
+            	}
             }
         }
     }
@@ -82,17 +90,17 @@ public class RegExNFA
         FAWalk dfs = new FAWalk(this.graph, 0);
         ArrayList<Integer> checked = new ArrayList<Integer>();
         for (int i = 0; i < this.graph.getNumVertices(); i++)
-            if (dfs.marked(i))
-            {
-                checked.add(i);
-            }
+        {
+            if(dfs.marked(i))
+                checked.add(i)
+        }
 
-        // Compute possible NFA states for txt[i+1]
         for (int i = 0; i < input.length; i++)
         {
             ArrayList<Integer> match = new ArrayList<Integer>();
-            for (int vertex : checked)
+            for(int j = 0; j < checked.size(); j++)
             {
+                Integer vertex = checked.get(j);
                 if (vertex == this.vertNum)
                 {
                     continue;
@@ -111,22 +119,19 @@ public class RegExNFA
             dfs = new FAWalk(this.graph, match);
             checked = new ArrayList<Integer>();
             for (int v = 0; v < this.graph.getNumVertices(); v++)
-                if (dfs.marked(v))
-                {
-                    checked.add(v);
-                }
-
-            // optimization if no states reachable
-            if (checked.size() == 0)
             {
-                return false;
+                if (dfs.marked(v))
+                    checked.add(v);
             }
-        }
+                
 
-        // check for accept state
-        for (int vertex : checked)
-            if (vertex == this.vertNum)
+        }
+        for(int j = 0; j < checked.size(); j++)
+        {
+            Integer vertex = checked.get(j);
+            if(vertex == this.vertNum)
                 return true;
+        }
         return false;
     }
     
@@ -135,17 +140,17 @@ public class RegExNFA
         FAWalk dfs = new FAWalk(this.graph, 0);
         ArrayList<Integer> checked = new ArrayList<Integer>();
         for (int i = 0; i < this.graph.getNumVertices(); i++)
-            if (dfs.marked(i))
-            {
-                checked.add(i);
-            }
+        {
+            if(dfs.marked(i))
+                checked.add(i)
+        }
 
-        // Compute possible NFA states for txt[i+1]
         for (int i = 0; i < input.length; i++)
         {
             ArrayList<Integer> match = new ArrayList<Integer>();
-            for (int vertex : checked)
+            for(int j = 0; j < checked.size(); j++)
             {
+                Integer vertex = checked.get(j);
                 if (vertex == this.vertNum)
                 {
                     continue;
@@ -175,28 +180,42 @@ public class RegExNFA
             dfs = new FAWalk(this.graph, match);
             checked = new ArrayList<Integer>();
             for (int v = 0; v < this.graph.getNumVertices(); v++)
-                if (dfs.marked(v))
-                {
-                    checked.add(v);
-                }
-
-            // optimization if no states reachable
-            if (checked.size() == 0)
             {
-                return false;
+                if (dfs.marked(v))
+                    checked.add(v);
             }
+
         }
 
-        // check for accept state
-        for (int vertex : checked)
+        for(int j = 0; j < checked.size(); j++)
+        {
+            Integer vertex = checked.get(j);
             if (vertex == this.vertNum)
                 return true;
+        }
         return false;
     }
     
     public String[] getRegex()
     {
         return regex;
+    }
+    
+    public void printNFA(){
+    	System.out.println("All Verticies");
+    	for(RegExNode n: this.graph.getVertList()){
+    		System.out.print(n.getStateID());
+    		if(n.isTerminal()){
+    			System.out.print(" is GOAL");
+    		}
+    		System.out.println();
+    	}
+    	System.out.println("------------------------");
+    	System.out.println("All Edges");
+    	for(RegExEdge e: this.graph.getEdgeList()){
+    		System.out.println(e);
+    	}
+    	System.out.println();
     }
     
 
@@ -212,5 +231,7 @@ public class RegExNFA
         System.out.println(test.check(testString));
 
     }
-
+    
+    
+    
 }
