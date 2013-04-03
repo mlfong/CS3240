@@ -1,21 +1,43 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 public class RecursiveDescentParser{
 
 
     private static ArrayList<Character> list;
     private static int index;
     private static int copyIndex;
-
+    private static HashSet<Character> RESpecials;
+    private static Character[] RE_Special = {' ', '\\', '*', '+', '?', '|', '[', ']', '(', ')', '.', '\'', '\"'};
+    //2) escaped characters: \ (backslash space), \\, \*, \+, \?, \|, \[, \], \(, \), \., \' and \"
+    private static HashSet<Character> CLSSpecials;
+    private static Character[] CLS_Special = {'\\', '^', '-', '[', ']'};
+    //1) http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters) other than \, ^, -, [ and ]
+    
+    private static ArrayList<String> definedClasses;
     public static void main(String[] args){
 
     }
     //This is the function that you need to call!
-    public static boolean validateRegex(String regex){
+    public static boolean validateRegex(String regex, ArrayList<String> definedClass){
+        init(regex, definedClass);
+        return reGex();
+    }
+    private static void init(String regex, ArrayList<String> definedClass){
         list = new ArrayList<Character>();
         index = 0;
         copyIndex = 0;
         initList(regex);
-        return reGex();
+        RESpecials = new HashSet<Character>();
+       for(Character character: RE_Special){
+           RESpecials.add(character);
+       }
+       CLSSpecials = new HashSet<Character>();
+       for(Character character: CLS_Special){
+           CLSSpecials.add(character);
+       }
+       
+       definedClasses = new ArrayList<String>(definedClass);
+        
     }
 
     /*
@@ -193,14 +215,65 @@ public class RecursiveDescentParser{
     }
 
     private static boolean CLS_CHAR(){
-        return false;
+        boolean escaped = checkEscaped();
+        boolean specialChar = false;
+        if(!escaped){
+            specialChar = RESpecialChars();
+            if(specialChar){
+                return false;
+            }
+        }
+        consume();
+        
+        return true;
     }
 
     private static boolean RE_CHAR(){
+        boolean escaped = checkEscaped();
+        boolean specialChar = false;
+        if(!escaped){
+            specialChar = CLSSpecialChars();
+            if(specialChar){
+                return false;
+            }
+        }
+        consume();
+        
+        return true;
+    }
+    
+    private static boolean checkEscaped(){
+        if(top() == '\\'){
+                consume();
+            return true;
+        }
         return false;
     }
-
+    private static boolean RESpecialChars(){
+        return RESpecials.contains(top());
+    }
+    private static boolean CLSSpecialChars(){
+        return CLSSpecials.contains(top());
+    }
+    
+    
     private static boolean definedClass(){
+        for(String defined: definedClasses){
+            boolean found = true;
+            for(int index = 0; index < defined.length(); index++){
+                if(get(index).equals(defined.charAt(index)) == false){
+                    found = false;
+                    break;
+                }
+            }
+            if(found){
+                for(int x = 0; x < defined.length(); x++){
+                    consume();
+                }
+                return true;
+            }
+        }
+        
         return false;
     }
 
