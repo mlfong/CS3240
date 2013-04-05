@@ -35,6 +35,37 @@ public class NFATest
         System.out.println("\nTurn it into a DFA");
         DFA dfa = DFA.convertNFA(nfa6);
         dfa.prettyPrint();
+        String[] testStrings = { 
+                "", 
+                "ac",
+                "bc",
+                "acac",
+                "bcbc",
+                "acbc",
+                "acacacacacacacbc",
+                "d",
+                "cacacac",
+                "a"
+        };
+        boolean[] answers = {
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false
+        };
+        for(int i = 0; i < testStrings.length; i++)
+        {
+            boolean b = dfa.validate(testStrings[i]);
+            String s = b == answers[i] ? "Pass" : "Fail" ;
+            System.out.println("Test " + (i+1) + ": " + testStrings[i] + " -> " + s);
+        }
+        System.out.println("");
         
     }
 

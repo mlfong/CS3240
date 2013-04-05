@@ -29,14 +29,22 @@ public class DFA
 
     public boolean validate(String string)
     {
-        // TODO
-        return false;
+        return this.validate(string.toCharArray());
     }
 
-    public boolean validate(Character[] string)
+    public boolean validate(char[] string)
     {
-        // TODO
-        return false;
+        DFAState curr = this.startState;
+        for (int i = 0; i < string.length; i++)
+        {
+            Character c = string[i];
+            HashMap<Character, DFAState> column = this.dfaTable.get(curr);
+            if (column.keySet().contains(c))
+                curr = column.get(c);
+            else
+                return false;
+        }
+        return curr.isAccept();
     }
 
     private static DFAState epsilonClose(State s)
@@ -70,35 +78,41 @@ public class DFA
         dfa.startState = newStartState;
         openList.add(newStartState);
         int counter = 0;
-        newStartState.setID("s" + counter++);
+        boolean found = false;
         while (!openList.isEmpty())
         {
             DFAState curr = openList.poll();
             if (visited.contains(curr))
             {
-                // for orphaned states
-                for (DFAState dfas : table.keySet())
-                {
-                    if (dfas.equals(curr))
-                    {
-                        DFAState want = dfas;
-                        for (DFAState k : table.keySet())
-                        {
-                            HashMap<Character, DFAState> hm2 = table.get(k);
-                            for (Character c : hm2.keySet())
-                            {
-                                hm2.remove(c);
-                                hm2.put(c, want);
-                                break;
-                            }
-                        }
-                    }
-                }
+//                // for orphaned states
+//                for (DFAState dfas : table.keySet())
+//                {
+//                    if (dfas.equals(curr))
+//                    {
+//                        DFAState want = dfas;
+//                        for (DFAState k : table.keySet())
+//                        {
+//                            HashMap<Character, DFAState> hm2 = table.get(k);
+//                            for (Character c : hm2.keySet())
+//                            {
+//                                hm2.remove(c);
+//                                hm2.put(c, want);
+//                                found = true;
+//                                break;
+//                            }
+//                        }
+//                        if (found)
+//                            break;
+//                    }
+//                    if (found)
+//                        break;
+//                }
+
                 continue;
             }
             visited.add(curr);
             HashMap<Character, DFAState> hm = new HashMap<Character, DFAState>();
-            
+
             // get ALL transition characters possible at this row
             HashSet<Character> transitionChars = new HashSet<Character>();
             for (State s : curr.getInnerStates())
@@ -141,8 +155,8 @@ public class DFA
 
             for (Character c : hm.keySet())
                 openList.add(hm.get(c));
-            if (hm.size() > 0)
-                table.put(curr, hm);
+            // if (hm.size() > 0)
+            table.put(curr, hm);
         }// end while
 
         counter = 100;
