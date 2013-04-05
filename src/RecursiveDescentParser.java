@@ -30,7 +30,7 @@ public class RecursiveDescentParser{
         exampleDefinedClass.add("$MINUS");
         exampleDefinedClass.add("$MULTIPLY");
         exampleDefinedClass.add("$PRINT");
-        String line = "$DIGIT [0-9]";
+        String line = "$UPPER [^a-z] IN $CHAR";
         System.out.println("The value was: "+validateRegex(line, exampleDefinedClass));
         
 
@@ -65,11 +65,15 @@ public class RecursiveDescentParser{
     */
 
     private static boolean reGex(){
+        if(top() == null)
+            return false;
         debugPrint("In reGex");
         return rexp();
     }
     private static boolean rexp(){
         debugPrint("In rexp()");
+        if(top() == null)
+            return false;
         boolean rexp1 = rexp1();
         boolean rexpPrime = rexpPrime();
 
@@ -77,6 +81,8 @@ public class RecursiveDescentParser{
     }
     private static boolean rexpPrime(){
         debugPrint("In rexp`()");
+        if(top() == null)
+            return false;
         boolean rexp1 = rexp1();
         boolean rexpPrime = rexpPrime();
 
@@ -86,6 +92,8 @@ public class RecursiveDescentParser{
 
     private static boolean rexp1(){
         debugPrint("In rexp1()");
+        if(top() == null)
+            return false;
         boolean rexp2 = rexp2();
         boolean rexp1Prime = rexp1Prime();
 
@@ -94,6 +102,8 @@ public class RecursiveDescentParser{
 
     private static boolean rexp1Prime(){
         debugPrint("In rexp1Prime()");
+        if(top() == null)
+            return false;
         boolean rexp2 = rexp2();
         boolean rexp1Prime = rexp1Prime();
 
@@ -103,12 +113,16 @@ public class RecursiveDescentParser{
 
     private static boolean rexp2(){
         debugPrint("In rexp2()");
+        if(top() == null)
+            return false;
         //Part 1
         //(<rexp>) <rexp2-tail> 
         boolean part1 = false;
         if(top() == '('){
             consume();
             boolean rexp = rexp();
+            if(top() == null)
+                return false;
             if(rexp && top() == ')'){
                 consume();
                 boolean rexp2Tail = rexp2Tail();
@@ -134,6 +148,8 @@ public class RecursiveDescentParser{
 
     private static boolean rexp2Tail(){
         debugPrint("In rexp2Tail()");
+        if(top() == null)
+            return false;
         boolean result = false;
         if(top() == '*' || top() == '+'){
             consume();
@@ -145,12 +161,16 @@ public class RecursiveDescentParser{
 
     private static boolean rexp3(){
         debugPrint("In rexp3()");
+        if(top() == null)
+            return false;
         boolean charClass = charClass();
         return charClass || true;
     }
 
     private static boolean charClass(){
         debugPrint("In charClass()");
+        if(top() == null)
+            return false;
         //Part1 
         //.
         boolean part1 = false;
@@ -181,6 +201,8 @@ public class RecursiveDescentParser{
 
     private static boolean charClass1(){
         debugPrint("In charClass1()");
+        if(top() == null)
+            return false;
         //Part 1
         //<char-set-list>
         boolean charSetList = charSetList();
@@ -193,11 +215,21 @@ public class RecursiveDescentParser{
     }
     private static boolean charSetList(){
         debugPrint("In charSetList()");
+        debugPrint("Value of top() is "+top());
+        if(top() == null){
+//          System.out.println("Top is null");
+            return false;
+        }
         boolean charSet = charSet();
+//        debugPrint("After charSet()");
         boolean charSetList = charSetList();
+//      debugPrint("after charSetList");
         boolean part1 = charSet && charSetList();
 
         boolean part2 = false;
+        if(top() == null)
+            return false;
+        
         if(top() == ']'){
             consume();
             part2 = true;
@@ -208,6 +240,8 @@ public class RecursiveDescentParser{
 
     private static boolean charSet(){
         debugPrint("In charSet()");
+        if(top() == null)
+            return false;
         boolean CLS_CHAR = CLS_CHAR();
         boolean charSetTail = charSetTail();
 
@@ -216,6 +250,8 @@ public class RecursiveDescentParser{
 
     private static boolean charSetTail(){
         debugPrint("In charSetTail()");
+        if(top() == null)
+            return false;
         boolean CLS_CHAR = CLS_CHAR();
 
         return CLS_CHAR || true;
@@ -223,9 +259,13 @@ public class RecursiveDescentParser{
 
     private static boolean excludeSet(){
         debugPrint("In excludeSet()");
+        if(top() == null)
+            return false;
         if(top() == '^'){
             consume();
             boolean charSet = charSet();
+            if(top() == null)
+                return false;
             if(charSet && top() == ']'){
                 if(top() == 'I'){
                     consume();
@@ -240,9 +280,13 @@ public class RecursiveDescentParser{
 
     private static boolean excludeSetTail(){
         debugPrint("In excludeSetTail()");
+        if(top() == null)
+            return false;
         boolean part1 = false;
         if(top() == '['){
             boolean charSet = charSet();
+            if(top() == null)
+                return false;
             if(charSet && top() == ']'){
                 part1 = true;
             }
@@ -254,6 +298,8 @@ public class RecursiveDescentParser{
 
     private static boolean CLS_CHAR(){
         debugPrint("In CLS_CHAR()");
+        if(top() == null)
+            return false;
         boolean escaped = checkEscaped();
         boolean specialChar = false;
         if(escaped){
@@ -269,6 +315,8 @@ public class RecursiveDescentParser{
 
     private static boolean RE_CHAR(){
         debugPrint("In RE_CHAR()");
+        if(top() == null)
+            return false;
         boolean escaped = checkEscaped();
         boolean specialChar = false;
         if(escaped){
@@ -284,6 +332,8 @@ public class RecursiveDescentParser{
     
     private static boolean checkEscaped(){
         debugPrint("In checkEscaped()");
+        if(top() == null)
+            return false;
         if(top() == '\\'){
                 consume();
             return true;
@@ -291,16 +341,22 @@ public class RecursiveDescentParser{
         return false;
     }
     private static boolean RESpecialChars(){
+        if(top() == null)
+            return false;
         debugPrint("In RESpecialChars()");
         return RESpecials.contains(top());
     }
     private static boolean CLSSpecialChars(){
+        if(top() == null)
+            return false;
         debugPrint("In CLSSpecialChars()");
         return CLSSpecials.contains(top());
     }
     
     
     private static boolean definedClass(){
+        if(top() == null)
+            return false;
         debugPrint("In definedClass()");
         for(String defined: definedClasses){
             boolean found = true;
@@ -330,11 +386,12 @@ public class RecursiveDescentParser{
 //      debugPrint("In top()");
         if(index < list.size())
             return list.get(index);
+//        return new Character('☃');]
         return null;
     }
     private static Character consume(){
         if(index < list.size()){
-            debugPrint("Consumed: "+list.get(index));
+            debugPrint("*****Consumed: "+list.get(index));
 //          System.out.println("Consumed: "+list.get(index));
             index++;
             return list.get(index - 1);
