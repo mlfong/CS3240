@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 public class RecursiveDescentParser{
 
-
+    private static int debug = 1;
     private static ArrayList<Character> list;
     private static int index;
     private static int copyIndex;
@@ -15,14 +15,34 @@ public class RecursiveDescentParser{
     
     private static ArrayList<String> definedClasses;
     public static void main(String[] args){
+        //Initialize the definedclasses
+        ArrayList<String> exampleDefinedClass = new ArrayList<String>();
+        exampleDefinedClass.add("$DIGIT");
+        exampleDefinedClass.add("$NON-ZERO");
+        exampleDefinedClass.add("$CHAR");
+        exampleDefinedClass.add("$UPPER");
+        exampleDefinedClass.add("$LOWER");
+        exampleDefinedClass.add("$IDENTIFIER");
+        exampleDefinedClass.add("$INT");
+        exampleDefinedClass.add("$FLOAT");
+        exampleDefinedClass.add("$ASSIGN");
+        exampleDefinedClass.add("$PLUS");
+        exampleDefinedClass.add("$MINUS");
+        exampleDefinedClass.add("$MULTIPLY");
+        exampleDefinedClass.add("$PRINT");
+        String line = "$DIGIT [0-9]";
+        System.out.println("The value was: "+validateRegex(line, exampleDefinedClass));
+        
 
     }
     //This is the function that you need to call!
     public static boolean validateRegex(String regex, ArrayList<String> definedClass){
+        debugPrint("In validateRegex()");
         init(regex, definedClass);
         return reGex();
     }
     private static void init(String regex, ArrayList<String> definedClass){
+        debugPrint("In init()");
         list = new ArrayList<Character>();
         index = 0;
         copyIndex = 0;
@@ -45,15 +65,18 @@ public class RecursiveDescentParser{
     */
 
     private static boolean reGex(){
+        debugPrint("In reGex");
         return rexp();
     }
     private static boolean rexp(){
+        debugPrint("In rexp()");
         boolean rexp1 = rexp1();
         boolean rexpPrime = rexpPrime();
 
         return rexp1 || rexpPrime;
     }
     private static boolean rexpPrime(){
+        debugPrint("In rexp`()");
         boolean rexp1 = rexp1();
         boolean rexpPrime = rexpPrime();
 
@@ -62,6 +85,7 @@ public class RecursiveDescentParser{
     }
 
     private static boolean rexp1(){
+        debugPrint("In rexp1()");
         boolean rexp2 = rexp2();
         boolean rexp1Prime = rexp1Prime();
 
@@ -69,6 +93,7 @@ public class RecursiveDescentParser{
     }
 
     private static boolean rexp1Prime(){
+        debugPrint("In rexp1Prime()");
         boolean rexp2 = rexp2();
         boolean rexp1Prime = rexp1Prime();
 
@@ -77,12 +102,15 @@ public class RecursiveDescentParser{
     }
 
     private static boolean rexp2(){
+        debugPrint("In rexp2()");
         //Part 1
         //(<rexp>) <rexp2-tail> 
         boolean part1 = false;
         if(top() == '('){
+            consume();
             boolean rexp = rexp();
             if(rexp && top() == ')'){
+                consume();
                 boolean rexp2Tail = rexp2Tail();
                 if(rexp2Tail){
                     part1 = true;
@@ -105,20 +133,24 @@ public class RecursiveDescentParser{
     }
 
     private static boolean rexp2Tail(){
+        debugPrint("In rexp2Tail()");
         boolean result = false;
         if(top() == '*' || top() == '+'){
             consume();
             result = true;
         }
+        //Can return true
         return result || true;
     }
 
     private static boolean rexp3(){
+        debugPrint("In rexp3()");
         boolean charClass = charClass();
         return charClass || true;
     }
 
     private static boolean charClass(){
+        debugPrint("In charClass()");
         //Part1 
         //.
         boolean part1 = false;
@@ -148,6 +180,7 @@ public class RecursiveDescentParser{
     }
 
     private static boolean charClass1(){
+        debugPrint("In charClass1()");
         //Part 1
         //<char-set-list>
         boolean charSetList = charSetList();
@@ -159,6 +192,7 @@ public class RecursiveDescentParser{
         return charSetList || excludeSet;
     }
     private static boolean charSetList(){
+        debugPrint("In charSetList()");
         boolean charSet = charSet();
         boolean charSetList = charSetList();
         boolean part1 = charSet && charSetList();
@@ -173,6 +207,7 @@ public class RecursiveDescentParser{
     }
 
     private static boolean charSet(){
+        debugPrint("In charSet()");
         boolean CLS_CHAR = CLS_CHAR();
         boolean charSetTail = charSetTail();
 
@@ -180,12 +215,14 @@ public class RecursiveDescentParser{
     }
 
     private static boolean charSetTail(){
+        debugPrint("In charSetTail()");
         boolean CLS_CHAR = CLS_CHAR();
 
         return CLS_CHAR || true;
     }
 
     private static boolean excludeSet(){
+        debugPrint("In excludeSet()");
         if(top() == '^'){
             consume();
             boolean charSet = charSet();
@@ -193,7 +230,7 @@ public class RecursiveDescentParser{
                 if(top() == 'I'){
                     consume();
                     if(top() == 'N'){
-                        return excludeSet();
+                        return excludeSetTail();
                     }
                 }
             }
@@ -202,6 +239,7 @@ public class RecursiveDescentParser{
     }
 
     private static boolean excludeSetTail(){
+        debugPrint("In excludeSetTail()");
         boolean part1 = false;
         if(top() == '['){
             boolean charSet = charSet();
@@ -215,9 +253,10 @@ public class RecursiveDescentParser{
     }
 
     private static boolean CLS_CHAR(){
+        debugPrint("In CLS_CHAR()");
         boolean escaped = checkEscaped();
         boolean specialChar = false;
-        if(!escaped){
+        if(escaped){
             specialChar = RESpecialChars();
             if(specialChar){
                 return false;
@@ -229,9 +268,10 @@ public class RecursiveDescentParser{
     }
 
     private static boolean RE_CHAR(){
+        debugPrint("In RE_CHAR()");
         boolean escaped = checkEscaped();
         boolean specialChar = false;
-        if(!escaped){
+        if(escaped){
             specialChar = CLSSpecialChars();
             if(specialChar){
                 return false;
@@ -243,6 +283,7 @@ public class RecursiveDescentParser{
     }
     
     private static boolean checkEscaped(){
+        debugPrint("In checkEscaped()");
         if(top() == '\\'){
                 consume();
             return true;
@@ -250,14 +291,17 @@ public class RecursiveDescentParser{
         return false;
     }
     private static boolean RESpecialChars(){
+        debugPrint("In RESpecialChars()");
         return RESpecials.contains(top());
     }
     private static boolean CLSSpecialChars(){
+        debugPrint("In CLSSpecialChars()");
         return CLSSpecials.contains(top());
     }
     
     
     private static boolean definedClass(){
+        debugPrint("In definedClass()");
         for(String defined: definedClasses){
             boolean found = true;
             for(int index = 0; index < defined.length(); index++){
@@ -283,12 +327,15 @@ public class RecursiveDescentParser{
     */
 
     private static Character top(){
+//      debugPrint("In top()");
         if(index < list.size())
             return list.get(index);
         return null;
     }
     private static Character consume(){
         if(index < list.size()){
+            debugPrint("Consumed: "+list.get(index));
+//          System.out.println("Consumed: "+list.get(index));
             index++;
             return list.get(index - 1);
         }
@@ -296,6 +343,7 @@ public class RecursiveDescentParser{
     }
 
     private static Character get(int offset){
+//      debugPrint("In get()");
         if(index + offset <= list.size()){
             return list.get(index + offset);
         }
@@ -312,5 +360,10 @@ public class RecursiveDescentParser{
 
     private static void revertList(){
         index = copyIndex;
+    }
+    
+    private static void debugPrint(String statement){
+        if(debug == 1)
+            System.out.println(statement);
     }
 }
