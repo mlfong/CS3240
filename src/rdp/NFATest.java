@@ -30,7 +30,11 @@ public class NFATest
         NFA nfa4 = new NFA(s3pre, s3fin);
         NFA nfa5 = NFA.concatenate(nfa3, nfa4);
         NFA nfa6 = NFA.star(nfa5);
-        nfa5.prettyPrint();
+        nfa6.prettyPrint();
+        
+        System.out.println("\nTurn it into a DFA");
+        DFA dfa = DFA.convertNFA(nfa6);
+        dfa.prettyPrint();
         
     }
 
