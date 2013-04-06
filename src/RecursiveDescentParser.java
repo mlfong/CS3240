@@ -7,7 +7,8 @@ public class RecursiveDescentParser{
     private static int index;
     private static int copyIndex;
     private static HashSet<Character> RESpecials;
-    private static Character[] RE_Special = {' ', '\\', '*', '+', '?', '|', '[', ']', '(', ')', '.', '\'', '\"'};
+    //MAKE SURE TO ADD \$dddd
+    private static Character[] RE_Special = {' ', '\\', '*', '+', '?', '|', '[', ']', '(', ')', '.', '\'', '\"', '$'};
     //2) escaped characters: \ (backslash space), \\, \*, \+, \?, \|, \[, \], \(, \), \., \' and \"
     private static HashSet<Character> CLSSpecials;
     private static Character[] CLS_Special = {'\\', '^', '-', '[', ']'};
@@ -30,7 +31,7 @@ public class RecursiveDescentParser{
         exampleDefinedClass.add("$MINUS");
         exampleDefinedClass.add("$MULTIPLY");
         exampleDefinedClass.add("$PRINT");
-        String line = "$UPPER [^a-z] IN $CHAR";
+        String line = "($DIGIT)+";
         System.out.println("The value was: "+validateRegex(line, exampleDefinedClass));
         
 
@@ -64,12 +65,15 @@ public class RecursiveDescentParser{
       Recursive descent parser begins here
     */
 
+    //<reg-ex> ->  <rexp> 
     private static boolean reGex(){
         if(top() == null)
             return false;
         debugPrint("In reGex");
         return rexp();
     }
+    
+    //<rexp> -> <rexp1> <rexp’>
     private static boolean rexp(){
         debugPrint("In rexp()");
         if(top() == null)
@@ -79,17 +83,21 @@ public class RecursiveDescentParser{
 
         return rexp1 || rexpPrime;
     }
+    //<rexp’> -> UNION <rexp1> <rexp’>  | epsilon
     private static boolean rexpPrime(){
         debugPrint("In rexp`()");
         if(top() == null)
             return false;
         boolean rexp1 = rexp1();
+        if(!rexp1)
+            return false;
         boolean rexpPrime = rexpPrime();
 
         //Can always return true;
-        return rexp1 || rexpPrime || true;
+        return rexp1 || rexpPrime || false;
     }
 
+    //<rexp1> -> <rexp2> <rexp1’>
     private static boolean rexp1(){
         debugPrint("In rexp1()");
         if(top() == null)
@@ -100,21 +108,26 @@ public class RecursiveDescentParser{
         return rexp2 && rexp1Prime;
     }
 
+    //<rexp1’> -> <rexp2> <rexp1’>  | epsilon
     private static boolean rexp1Prime(){
         debugPrint("In rexp1Prime()");
         if(top() == null)
             return false;
         boolean rexp2 = rexp2();
+        if(rexp2 == false)
+            return true;//epsilon
         boolean rexp1Prime = rexp1Prime();
 
         //Can always return true;
-        return (rexp2 && rexp1Prime) || true;
+        return (rexp2 && rexp1Prime) || false;
     }
 
+    //<rexp2> -> (<rexp>) <rexp2-tail>  | RE_CHAR <rexp2-tail> | <rexp3>
     private static boolean rexp2(){
         debugPrint("In rexp2()");
         if(top() == null)
             return false;
+        
         //Part 1
         //(<rexp>) <rexp2-tail> 
         boolean part1 = false;
@@ -131,13 +144,19 @@ public class RecursiveDescentParser{
                 }
             }
         }
+        if(part1 == true)
+            return true;
 
         //Part 2
         //RE_CHAR <rexp2-tail>
         boolean part2 = false;
         boolean RE_CHAR = RE_CHAR();
-        boolean rexp2Tail = rexp2Tail();
+        boolean rexp2Tail = false;
+        if(RE_CHAR)
+            rexp2Tail = rexp2Tail();
         part2 = RE_CHAR && rexp2Tail;
+        if(part2 == true)
+            return true;
 
         //Part3
         //<rexp3>
@@ -146,6 +165,7 @@ public class RecursiveDescentParser{
         return part1 || part2 || part3;
     }
 
+    //<rexp2-tail> -> * | + |  epsilon
     private static boolean rexp2Tail(){
         debugPrint("In rexp2Tail()");
         if(top() == null)
@@ -156,17 +176,19 @@ public class RecursiveDescentParser{
             result = true;
         }
         //Can return true
-        return result || true;
+        return result || false;
     }
-
+    
+    //<rexp3> -> <char-class>  |  epsilon
     private static boolean rexp3(){
         debugPrint("In rexp3()");
         if(top() == null)
             return false;
         boolean charClass = charClass();
-        return charClass || true;
+        return charClass || false;
     }
 
+    //<char-class> ->  .  |  [ <char-class1>  | <defined-class>
     private static boolean charClass(){
         debugPrint("In charClass()");
         if(top() == null)
@@ -177,6 +199,7 @@ public class RecursiveDescentParser{
         if(top() == '.'){
             consume();
             part1 = true;
+            return true;
         }
 
 
@@ -189,6 +212,7 @@ public class RecursiveDescentParser{
             if(charClass1){
                 consume();
                 part2 = true;
+                return true;
             }
         }
 
@@ -198,7 +222,8 @@ public class RecursiveDescentParser{
 
         return part1 || part2 || part3;
     }
-
+    
+    //<char-class1> ->  <char-set-list> | <exclude-set>
     private static boolean charClass1(){
         debugPrint("In charClass1()");
         if(top() == null)
@@ -206,13 +231,18 @@ public class RecursiveDescentParser{
         //Part 1
         //<char-set-list>
         boolean charSetList = charSetList();
-
+        
+        if(charSetList)
+            return true;
+        
         //Part2
         //<exclude-set>
         boolean excludeSet = excludeSet();
 
         return charSetList || excludeSet;
     }
+    
+    //<char-set-list> ->  <char-set> <char-set-list> |  ]
     private static boolean charSetList(){
         debugPrint("In charSetList()");
         debugPrint("Value of top() is "+top());
@@ -226,6 +256,9 @@ public class RecursiveDescentParser{
 //      debugPrint("after charSetList");
         boolean part1 = charSet && charSetList();
 
+        if(part1)
+            return true;
+        
         boolean part2 = false;
         if(top() == null)
             return false;
@@ -237,26 +270,35 @@ public class RecursiveDescentParser{
 
         return part1 || part2;
     }
-
+    
+    //<char-set> -> CLS_CHAR <char-set-tail> 
     private static boolean charSet(){
         debugPrint("In charSet()");
         if(top() == null)
             return false;
         boolean CLS_CHAR = CLS_CHAR();
+        if(!CLS_CHAR)
+            return false;
         boolean charSetTail = charSetTail();
 
         return CLS_CHAR && charSetTail;
     }
-
+    
+    //<char-set-tail> -> –CLS_CHAR | epsilon
     private static boolean charSetTail(){
         debugPrint("In charSetTail()");
         if(top() == null)
             return false;
-        boolean CLS_CHAR = CLS_CHAR();
-
-        return CLS_CHAR || true;
+        boolean CLS_CHAR = false;
+        if(top() == '-'){
+            consume();
+            CLS_CHAR = CLS_CHAR();
+    
+        }
+        return CLS_CHAR || false;
     }
 
+    //<exclude-set> -> ^<char-set>] IN <exclude-set-tail> 
     private static boolean excludeSet(){
         debugPrint("In excludeSet()");
         if(top() == null)
@@ -267,9 +309,11 @@ public class RecursiveDescentParser{
             if(top() == null)
                 return false;
             if(charSet && top() == ']'){
+                consume();
                 if(top() == 'I'){
                     consume();
                     if(top() == 'N'){
+                        consume();
                         return excludeSetTail();
                     }
                 }
@@ -277,18 +321,22 @@ public class RecursiveDescentParser{
         }
         return false;
     }
-
+    
+    // <exclude-set-tail> -> [<char-set>]  | <defined-class>
     private static boolean excludeSetTail(){
         debugPrint("In excludeSetTail()");
         if(top() == null)
             return false;
         boolean part1 = false;
         if(top() == '['){
+            consume();
             boolean charSet = charSet();
             if(top() == null)
                 return false;
             if(charSet && top() == ']'){
+                consume();
                 part1 = true;
+                return true;
             }
         }
         boolean part2 = definedClass();
@@ -301,15 +349,21 @@ public class RecursiveDescentParser{
         if(top() == null)
             return false;
         boolean escaped = checkEscaped();
+        debugPrint("escaped value is "+escaped);
         boolean specialChar = false;
         if(escaped){
-            specialChar = RESpecialChars();
+            specialChar = CLSSpecialChars();
             if(specialChar){
-                return false;
+                return true;
             }
         }
-        consume();
+        if(top() == null)
+            return false;
+        debugPrint("Value of CLSSpecialChars is "+CLSSpecialChars());
+        if(CLSSpecialChars())
+            return false;
         
+        consume();
         return true;
     }
 
@@ -318,15 +372,19 @@ public class RecursiveDescentParser{
         if(top() == null)
             return false;
         boolean escaped = checkEscaped();
+        debugPrint("escaped value is "+escaped);
         boolean specialChar = false;
         if(escaped){
-            specialChar = CLSSpecialChars();
+            specialChar = RESpecialChars();
             if(specialChar){
-                return false;
+                return true;
             }
         }
-        consume();
+        debugPrint("Value of RESpecialChars is "+RESpecialChars());
+        if(RESpecialChars())
+            return false;
         
+        consume();
         return true;
     }
     
