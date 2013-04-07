@@ -9,6 +9,23 @@ public class NFATest
 {
     public static void main(String[] args)
     {
+        test02();
+    }
+
+    public static void test02()
+    {
+        // a
+        NFA nfaA = NFA.makeCharNFA('a');
+        DFA dfaA = DFA.convertNFA(nfaA);
+        String[] testStrings =
+        { "a", "b", "aa", "" };
+        boolean[] answers =
+        { true, false, false, false };
+        NFATest.testAll(dfaA, testStrings, answers);
+    }
+
+    public static void test01()
+    {
         // ((a|b)c)*
         System.out.println("NFA 1: ");
         State s1pre = new State("s1p", false);
@@ -17,16 +34,16 @@ public class NFATest
         s1pre.addTransition(new Transition('a', s1mid));
         s1mid.addTransition(new Transition(Transition.EPSILON, s1fin));
         NFA nfa1 = new NFA(s1pre, s1fin);
-        
+
         State s2pre = new State("s2p", false);
         State s2mid = new State("s2m", false);
         State s2fin = new State("s2f", true);
         s2pre.addTransition(new Transition('b', s2mid));
         s2mid.addTransition(new Transition(Transition.EPSILON, s2fin));
         NFA nfa2 = new NFA(s2pre, s2fin);
-        
+
         NFA nfa3 = NFA.union(nfa1, nfa2);
-        
+
         State s3pre = new State("s3p", false);
         State s3mid = new State("s3m", false);
         State s3fin = new State("s3f", true);
@@ -36,42 +53,33 @@ public class NFATest
         NFA nfa5 = NFA.concatenate(nfa3, nfa4);
         NFA nfa6 = NFA.star(nfa5);
         nfa6.prettyPrint();
-        
+
         System.out.println("\nTurn it into a DFA");
         DFA dfa = DFA.convertNFA(nfa6);
         dfa.prettyPrint();
-        String[] testStrings = { 
-                "", 
-                "ac",
-                "bc",
-                "acac",
-                "bcbc",
-                "acbc",
-                "acacacacacacacbc",
-                "d",
-                "cacacac",
-                "a"
-        };
-        boolean[] answers = {
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                false,
-                false,
-                false
-        };
-        for(int i = 0; i < testStrings.length; i++)
+        String[] testStrings =
+        { "", "ac", "bc", "acac", "bcbc", "acbc", "acacacacacacacbc", "d",
+                "cacacac", "a" };
+        boolean[] answers =
+        { true, true, true, true, true, true, true, false, false, false };
+        for (int i = 0; i < testStrings.length; i++)
         {
             boolean b = dfa.validate(testStrings[i]);
-            String s = b == answers[i] ? "Pass" : "Fail" ;
-            System.out.println("Test " + (i+1) + ": " + testStrings[i] + " -> " + s);
+            String s = b == answers[i] ? "Pass" : "Fail";
+            System.out.println("Test " + (i + 1) + ": " + testStrings[i]
+                    + " -> " + s);
         }
-        System.out.println("");
-        
+
     }
 
+    public static void testAll(DFA dfa, String[] testStrings, boolean[] answers)
+    {
+        for (int i = 0; i < testStrings.length; i++)
+        {
+            boolean b = dfa.validate(testStrings[i]);
+            String s = b == answers[i] ? "Pass" : "Fail";
+            System.out.println("Test " + (i + 1) + ": " + testStrings[i]
+                    + " -> " + s);
+        }
+    }
 }
