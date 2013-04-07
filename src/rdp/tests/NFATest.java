@@ -1,4 +1,9 @@
-package rdp;
+package rdp.tests;
+
+import rdp.DFA;
+import rdp.NFA;
+import rdp.State;
+import rdp.Transition;
 
 public class NFATest
 {

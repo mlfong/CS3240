@@ -78,7 +78,7 @@ public class DFA
         dfa.startState = newStartState;
         openList.add(newStartState);
         int counter = 0;
-        boolean found = false;
+//        boolean found = false;
         while (!openList.isEmpty())
         {
             DFAState curr = openList.poll();
