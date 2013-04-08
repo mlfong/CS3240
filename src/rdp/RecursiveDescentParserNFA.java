@@ -7,9 +7,9 @@ import rdp.tests.NFATest;
 public class RecursiveDescentParserNFA{
     
     //Flag to turn on debug printing
-    private static int debug = 1;
+    private static int debug = 0;
     //Flag to print out the results of everything
-    private static int returnValueDebug = 1;
+    private static int returnValueDebug = 0;
     //Counter used for naming NFA states
     private static Integer counter;
     //List used as a queue to store the inputted regex to be validated/creating the NFA for
@@ -55,13 +55,12 @@ public class RecursiveDescentParserNFA{
                 System.out.println("PASSED: "+line);
                 result.prettyPrint();
                 DFA dfaResult = DFA.convertNFA(result);
-                String test[] = {"0123456789", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
-                boolean answers[] = {true, true, true, true, true, true, true, true, true, true, true, false, false, false};
+                String test[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
+                boolean answers[] = {false, true, true, true, true, true, true, true, true, true, true, false, false, false};
                 //NFATest.testAll(dfaResult, test, answers);
                 
             }
         }
-        
     }
     //This is the function that you need to call!
     public static NFA validateRegex(String regex, ArrayList<String> definedClass){
@@ -375,11 +374,9 @@ public class RecursiveDescentParserNFA{
             resultsPrint("NULL");
             return null;
         }
-        Character charSetTail = charSetTail();
-        
-        if(charSetTail != null){
+        if(charSetTail() != null){
             //return NFA.concatenate(CLS_CHAR, charSetTail);
-            if(charSetTail != Transition.EPSILON){
+            if((int) charSetTail() != (int)Transition.EPSILON){
                 resultsPrint("Created RangedNFA");
                 return NFA.makeRangedNFA(CLS_CHAR, charSetTail());
             }
@@ -687,8 +684,7 @@ public class RecursiveDescentParserNFA{
     
     //Creates an NFA with an epsilon
     private static NFA createEpsilonNFA(){
-        
-        return createLiteralNFA(Transition.EPSILON);
+        return NFA.makeCharNFA(Transition.EPSILON);
     }
     
     //Creates an NFA for a given literal
