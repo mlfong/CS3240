@@ -27,6 +27,53 @@ public class DFA
         return this.dfaTable;
     }
 
+    public Object[] specialValidate(String string)
+    {
+        return specialValidate(string.toCharArray());
+    }
+    
+    public Object[] specialValidate(char[] string)
+    {
+        Object[] o = new Object[2];
+        Boolean accept = true;
+        
+        DFAState curr = this.startState;
+        for (int i = 0; i < string.length; i++)
+        {
+            Character c = string[i];
+            HashMap<Character, DFAState> column = this.dfaTable.get(curr);
+            if (column.keySet().contains(c))
+                curr = column.get(c);
+            else
+            {
+                accept = false;
+                break;
+            }
+        }
+        if(!accept)
+        {
+            o[0] = accept;
+            o[1] = null;
+        }
+        else
+        {
+            accept = curr.isAccept();
+            String thetoken = "";
+            for(State ss : curr.getInnerStates())
+            {
+                if(ss.isTrueAccept())
+                {
+                    thetoken = ss.getAcceptToken();
+                    break;
+                }
+            }
+            assert(thetoken.length() > 0);
+            o[0] = accept;
+            o[1] = thetoken;
+        }
+        return o;
+    }
+    
     public boolean validate(String string)
     {
         return this.validate(string.toCharArray());

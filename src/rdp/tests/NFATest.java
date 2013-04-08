@@ -9,9 +9,29 @@ public class NFATest
 {
     public static void main(String[] args)
     {
-//        test100();
-         test04();
+        // test100();
+        // test04();
         // test03();
+        test101();
+    }
+
+    public static void test101()
+    {
+        // 0-9 OR A-Z
+        NFA nfa1 = NFA.makeRangedNFA('0', '9');
+        nfa1.setAcceptToken("$DIGIT");
+        NFA nfa2 = NFA.makeRangedNFA('A', 'Z');
+        nfa2.setAcceptToken("$UPPER");
+
+        NFA nfa3 = NFA.union(nfa1, nfa2);
+        DFA dfa = DFA.convertNFA(nfa3);
+        String[] testStrings =
+        { "A", "B", "AA", "", "0", "1", "9","b" };
+        boolean[] answers =
+        { 
+                true, true, false, false, true, true, true,false 
+                };
+        NFATest.advancedTest(dfa, testStrings, answers);
     }
 
     public static void test100()
@@ -59,7 +79,7 @@ public class NFATest
         NFA DIGIT = NFA.makeRangedNFA('0', '9');
         NFA digitStar = NFA.star(DIGIT);
         NFA LETTER = NFA.makeRangedNFA('A', 'Z');
-//         NFA LETTER = NFA.makeRangedNFA((char)32, (char)(126));
+        // NFA LETTER = NFA.makeRangedNFA((char)32, (char)(126));
         NFA letterStar = NFA.star(LETTER);
         NFA eq = NFA.makeCharNFA('=');
         NFA i = NFA.makeCharNFA('i');
@@ -135,6 +155,28 @@ public class NFATest
             String s = b == answers[i] ? "Pass" : "Fail";
             System.out.println("Test " + (i + 1) + ": " + testStrings[i]
                     + " -> " + s);
+        }
+    }
+    public static void advancedTest(DFA dfa, String[] testStrings, boolean[] answers)
+    {
+        for (int i = 0; i < testStrings.length; i++)
+        {
+//            boolean b = dfa.validate(testStrings[i]);
+            Object[] o = dfa.specialValidate(testStrings[i]);
+            Boolean bb = (Boolean)o[0];
+            boolean b = bb.booleanValue();
+            String s = b == answers[i] ? "Pass" : "Fail";
+            System.out.println("Test " + (i + 1) + ": " + testStrings[i]
+                    + " -> " + s);
+            if(b) // so it is supposed to accept
+            {
+                String thetoken = (String)o[1];
+                System.out.println("\tAccept, token is: " + thetoken);
+            }
+            else
+            {
+                System.out.println("\tDoes not accept");
+            }
         }
     }
 }

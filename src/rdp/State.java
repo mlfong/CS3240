@@ -7,14 +7,32 @@ public class State
     private String name;
     private boolean acceptState;
     private ArrayList<Transition> transitions;
+    private String acceptToken;
+    private boolean trueAccept;
 
     public State(String name, boolean acceptState)
     {
         this.name = name;
         this.acceptState = acceptState;
         transitions = new ArrayList<Transition>();
+        this.acceptToken = "";
+        this.trueAccept = false;
     }
 
+    public void setAcceptToken(String token)
+    {
+        this.acceptToken = token;
+        trueAccept = true;
+    }
+    public String getAcceptToken()
+    {
+        return this.acceptToken;
+    }
+    public boolean isTrueAccept()
+    {
+        return this.trueAccept;
+    }
+    
     public void setName(String name)
     {
         this.name = name;
