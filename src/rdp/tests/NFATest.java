@@ -9,7 +9,20 @@ public class NFATest
 {
     public static void main(String[] args)
     {
-        test04();
+//        test100();
+         test04();
+        // test03();
+    }
+
+    public static void test100()
+    {
+        NFA nfaA = NFA.makeRangedNFA('0', '9');
+        DFA dfaA = DFA.convertNFA(nfaA);
+        String[] testStrings =
+        { "a", "b", "aa", "", "0", "1", "9" };
+        boolean[] answers =
+        { false, false, false, false, true, true, true };
+        NFATest.testAll(dfaA, testStrings, answers);
     }
 
     public static void test02()
@@ -23,7 +36,7 @@ public class NFATest
         { true, false, false, false };
         NFATest.testAll(dfaA, testStrings, answers);
     }
-    
+
     public static void test03()
     {
         // (a|b)*
@@ -31,38 +44,41 @@ public class NFATest
         NFA nfaB = NFA.makeCharNFA('b');
         NFA aUb = NFA.union(nfaA, nfaB);
         NFA aorbstar = NFA.star(aUb);
- 
+
         DFA dfaAll = DFA.convertNFA(aorbstar);
         String[] testStrings =
-        { "a", "b", "abba", "c" ,""};
+        { "a", "b", "abba", "c", "" };
         boolean[] answers =
         { true, true, true, false, true };
         NFATest.testAll(dfaAll, testStrings, answers);
     }
-    
+
     public static void test04()
     {
-        //  intLETTER*=DIGIT*
+        // intLETTER*=DIGIT*
         NFA DIGIT = NFA.makeRangedNFA('0', '9');
         NFA digitStar = NFA.star(DIGIT);
-        NFA LETTER = NFA.makeRangedNFA((char)65, (char)(65+25));
+        NFA LETTER = NFA.makeRangedNFA('A', 'Z');
+//         NFA LETTER = NFA.makeRangedNFA((char)32, (char)(126));
         NFA letterStar = NFA.star(LETTER);
         NFA eq = NFA.makeCharNFA('=');
         NFA i = NFA.makeCharNFA('i');
         NFA n = NFA.makeCharNFA('n');
         NFA t = NFA.makeCharNFA('t');
-        NFA myInt = NFA.concatenate(NFA.concatenate(i, n),t);
-        NFA all = NFA.concatenate(NFA.concatenate(myInt, letterStar), NFA.concatenate(eq,digitStar));
- 
+        NFA myInt = NFA.concatenate(NFA.concatenate(i, n), t);
+        NFA all = NFA.concatenate(NFA.concatenate(myInt, letterStar),
+                NFA.concatenate(eq, digitStar));
+
         DFA dfaAll = DFA.convertNFA(all);
-        //dfaAll.prettyPrint();
+        // dfaAll.prettyPrint();
         String[] testStrings =
-        { "intAWWWYEAH=65", "intBITCHESANDHOES=7876320487643987", "abba", "c" ,""};
+        { "intAWWWYEAH=65", "intBITCHESANDHOES=7876320487643987", "abba", "c",
+                "", "intB=1", "intq=1" };
         boolean[] answers =
-        { true, true, false, false, false };
+        { true, true, false, false, false, true, false };
         NFATest.testAll(dfaAll, testStrings, answers);
     }
-    
+
     public static void test01()
     {
         // ((a|b)c)*

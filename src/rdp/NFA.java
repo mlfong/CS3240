@@ -26,6 +26,11 @@ public class NFA
         this.acceptState = newAccept;
     }
 
+    public static NFA makeRangedNFA(int start, int end)
+    {
+        return makeRangedNFA((char)(start), (char)(end));
+    }
+    
     public static NFA makeRangedNFA(char start, char end)
     {
         return makeRangedNFA(new Character(start), new Character(end));
@@ -43,12 +48,15 @@ public class NFA
             nfas.add(NFA.makeCharNFA(c));
         }
         // union them all
-        NFA all = nfas.get(0);
-        for(int i = 1; i < nfas.size(); i++)
+        State startMe = new State("range" + start + "-" + end + "s", false);
+        State endMe = new State("range" + start + "-" + end + "f", true);
+        for(NFA nn : nfas)
         {
-            NFA next = nfas.get(i);
-            all = NFA.union(all, next);
+            startMe.addTransition(new Transition(Transition.EPSILON, nn.getStartState()));
+            nn.getAcceptState().setAccept(false);
+            nn.getAcceptState().addTransition(new Transition(Transition.EPSILON, endMe));
         }
+        NFA all = new NFA(startMe, endMe);
         return all;
     }
 
