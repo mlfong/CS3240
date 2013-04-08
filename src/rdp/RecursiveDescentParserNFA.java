@@ -53,11 +53,11 @@ public class RecursiveDescentParserNFA{
                 System.out.println("FAILED: "+line+" was null...");
             else{
                 System.out.println("PASSED: "+line);
-                result.prettyPrint();
+//                result.prettyPrint();
                 DFA dfaResult = DFA.convertNFA(result);
                 String test[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
                 boolean answers[] = {false, true, true, true, true, true, true, true, true, true, true, false, false, false};
-                //NFATest.testAll(dfaResult, test, answers);
+                    NFATest.testAll(dfaResult, test, answers);
                 
             }
         }
@@ -374,11 +374,15 @@ public class RecursiveDescentParserNFA{
             resultsPrint("NULL");
             return null;
         }
-        if(charSetTail() != null){
+        Character charSetTail = charSetTail();
+        System.out.println("charsettail is "+charSetTail);
+        if(charSetTail != null){
             //return NFA.concatenate(CLS_CHAR, charSetTail);
-            if((int) charSetTail() != (int)Transition.EPSILON){
+            if((int) charSetTail != (int)Transition.EPSILON){
                 resultsPrint("Created RangedNFA");
-                return NFA.makeRangedNFA(CLS_CHAR, charSetTail());
+                System.out.println("Value of CLS_CHAR is: "+CLS_CHAR);
+                System.out.println("Value of charSetTail is: "+charSetTail);
+                return NFA.makeRangedNFA(CLS_CHAR, charSetTail);
             }
             else{
                 resultsPrint("Did not create RangedNFA");
@@ -401,6 +405,7 @@ public class RecursiveDescentParserNFA{
             //NFA dash = createLiteralNFA('-');
             
             Character CLS_CHAR = CLS_CHAR();
+//            System.out.println("CLS_CHar is "+CLS_CHAR);
             if(CLS_CHAR != null){
                 //return NFA.concatenate(dash, CLS_CHAR);
                 resultsPrint("CLS_CHAR: "+CLS_CHAR);
