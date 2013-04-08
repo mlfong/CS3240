@@ -2,6 +2,8 @@ package rdp;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 public class NFA
@@ -20,6 +22,59 @@ public class NFA
         this.acceptState.setAcceptToken(token);
     }
 
+    public static NFA makeRangedNFA(HashSet<Character> hs)
+    {
+        ArrayList<NFA> nfas = new ArrayList<NFA>();
+        // make individual
+        for(Character c : hs)
+        {
+            nfas.add(NFA.makeCharNFA(c));
+        }
+        // union them all
+        Character start = 'S', end = 'E';
+        State startMe = new State("range" + start + "-" + end + "s", false);
+        State endMe = new State("range" + start + "-" + end + "f", true);
+        for(NFA nn : nfas)
+        {
+            startMe.addTransition(new Transition(Transition.EPSILON, nn.getStartState()));
+            nn.getAcceptState().setAccept(false);
+            nn.getAcceptState().addTransition(new Transition(Transition.EPSILON, endMe));
+        }
+        NFA all = new NFA(startMe, endMe);
+        return all;
+    }
+    
+    public static HashSet<Character> disjointSet(HashSet<Character> superset, HashSet<Character> removeset)
+    {
+        HashSet<Character> newSet = new HashSet<Character>();
+        for(Character c : superset)
+            if(!removeset.contains(c))
+                newSet.add(c);
+        return newSet;
+    }
+
+    public static HashSet<Character> oneLayerTransitions(NFA nfa)
+    {
+        HashSet<Character> hs = new HashSet<Character>();
+        Queue<State> openList = new LinkedList<State>();
+        HashSet<State> visited = new HashSet<State>();
+        openList.add(nfa.getStartState());
+        while(!openList.isEmpty())
+        {
+            State curr = openList.poll();
+            if(visited.contains(curr))
+                continue;
+            visited.add(curr);
+            for(Transition t : curr.getTransitions())
+            {
+                if(t.getTransitionChar() != Transition.EPSILON)
+                    hs.add(t.getTransitionChar());
+                openList.add(t.getDestState());
+            }
+        }
+        return hs;
+    }
+    
     public NFA(State one)
     {
         State newState = new State("start" + one.getName(), false);

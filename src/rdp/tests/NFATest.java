@@ -1,9 +1,12 @@
 package rdp.tests;
 
+import java.util.HashSet;
+
 import rdp.DFA;
 import rdp.NFA;
 import rdp.State;
 import rdp.Transition;
+import rdp.Util;
 
 public class NFATest
 {
@@ -12,9 +15,49 @@ public class NFATest
         // test100();
         // test04();
         // test03();
-        test101();
+//        test101();
+//        test104();
+        testTransitionPull();
+    }
+    
+    public static void testTransitionPull()
+    {
+        NFA nfa1 = NFA.makeRangedNFA('A', 'Z');
+        HashSet<Character> hs = NFA.oneLayerTransitions(nfa1);
+        Util.prettyPrint(hs);
+        Util.reallyPrettyPrint(hs);
     }
 
+    // THIS ONE IS GREAT
+    public static void test104()
+    {
+        NFA nfa1 = NFA.makeRangedNFA('0', '9');
+        NFA nfa2 = NFA.makeRangedNFA('0', '9');
+        NFA nfa3 = NFA.star(nfa2);
+        NFA nfa4 = NFA.concatenate(nfa1, nfa3);
+        nfa4.setAcceptToken("$INT");
+        
+        NFA nfa5 = NFA.makeRangedNFA('a', 'z');
+        NFA nfa6 = NFA.makeRangedNFA('0', '9');
+        NFA nfa7 = NFA.union(nfa5, nfa6);
+        NFA nfa8 = NFA.star(nfa7);
+        NFA nfa9 = NFA.makeRangedNFA('a', 'z');
+        NFA nfa10 = NFA.concatenate(nfa9, nfa8);
+        nfa10.setAcceptToken("$IDENTIFIER");
+        
+        NFA nfa11 = NFA.union(nfa4, nfa10);
+        DFA dfa = DFA.convertNFA(nfa11);
+        
+        String[] testStrings =
+            { "0", "1", "01", "a10", "bbbbb", "101asdad", "a8aa8a88s8das8a8"};
+        boolean[] answers =
+        { 
+                true, true, true,true, true, false, true
+                };
+        NFATest.advancedTest(dfa, testStrings, answers);
+        
+    }
+    
     public static void test101()
     {
         // 0-9 OR A-Z
@@ -161,7 +204,6 @@ public class NFATest
     {
         for (int i = 0; i < testStrings.length; i++)
         {
-//            boolean b = dfa.validate(testStrings[i]);
             Object[] o = dfa.specialValidate(testStrings[i]);
             Boolean bb = (Boolean)o[0];
             boolean b = bb.booleanValue();
