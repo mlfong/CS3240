@@ -17,6 +17,12 @@ public class NFA
         this.acceptState = as;
     }
 
+    public NFA(NFA other)
+    {
+        this.startState = new State(other.startState);
+        this.acceptState = new State(other.acceptState);
+    }
+    
     public void setAcceptToken(String token)
     {
         this.acceptState.setAcceptToken(token);

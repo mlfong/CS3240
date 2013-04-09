@@ -19,6 +19,17 @@ public class State
         this.trueAccept = false;
     }
 
+    public State(State other)
+    {
+        this.name = new String(other.name);
+        this.acceptState = other.acceptState;
+        this.transitions = new ArrayList<Transition>();
+        for(Transition t : other.transitions)
+            this.transitions.add(new Transition(t));
+        this.acceptToken = new String(other.acceptToken);
+        this.trueAccept = other.trueAccept;
+    }
+    
     public void setAcceptToken(String token)
     {
         this.acceptToken = token;

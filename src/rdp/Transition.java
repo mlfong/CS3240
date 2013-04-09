@@ -14,6 +14,12 @@ public class Transition
         this.destState = ds;
     }
     
+    public Transition(Transition old)
+    {
+        this.transitionChar = new Character(old.transitionChar.charValue());
+        this.destState = new State(old.destState);
+    }
+    
     public Character getTransitionChar()
     {
         return this.transitionChar;
