@@ -41,7 +41,7 @@ public class RecursiveDescentParserNFA{
         DFA dfaResult = DFA.convertNFA(result);
         String test[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
         boolean answers[] = {false, true, true, true, true, true, true, true, true, true, true, false, false, false};
-        NFATest.testAll(dfaResult, test, answers);
+//        NFATest.testAll(dfaResult, test, answers);
         System.out.println();
         
         //Testing [^0]IN$DIGIT
@@ -55,10 +55,68 @@ public class RecursiveDescentParserNFA{
         dfaResult = DFA.convertNFA(result);
         String test1[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
         boolean answers1[] = {false, false, true, true, true, true, true, true, true, true, true, false, false, false};
-        NFATest.testAll(dfaResult, test1, answers1);
+//        NFATest.testAll(dfaResult, test1, answers1);
         System.out.println();
         
-        //
+        
+        regex = "[a-zA-Z]";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test2[] = {"a", "aA", "B", "Z", "D", "e", "!", "1", "543ds", "Afd324"};
+        boolean answers2[] = {true, false, true, true, true, true, false, false, false, false};
+//        NFATest.testAll(dfaResult, test2, answers2);
+        System.out.println();
+        
+        
+        regex = "[^a-z]IN$CHAR";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();
+        initDefinedEntry(exampleDefinedClass, "[a-zA-Z]", "$CHAR");
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test3[] = {"a", "z", "A", "Z", "1", "asd", "!"};
+        boolean answers3[] = {false, false, true, true, false, false, false};
+//        NFATest.testAll(dfaResult, test3, answers3);
+        System.out.println();
+        
+        
+        regex = "[^A-Z]IN$CHAR";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();
+        initDefinedEntry(exampleDefinedClass, "[a-zA-Z]", "$CHAR");
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test4[] = {"a", "z", "A", "Z", "1", "asd", "!"};
+        boolean answers4[] = {true, true, false, false, false, false, false};
+//        NFATest.testAll(dfaResult, test4, answers4);
+        System.out.println();
+        
+        
+        //$LOWER($LOWER|$DIGIT)*
+        regex = "$LOWER($LOWER|$DIGIT)*";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();
+        initDefinedEntry(exampleDefinedClass, "[0-9]", "$DIGIT");
+        initDefinedEntry(exampleDefinedClass, "[a-zA-Z]", "$CHAR");
+        initDefinedEntry(exampleDefinedClass, "[^A-Z]IN$CHAR", "$LOWER");
+        
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test5[] = {"a", "assdfasdf", "a123134", "a2", "A443543", "Basdafd", "!"};
+        boolean answers5[] = {true, true, true, true, false, false, false};
+//        NFATest.testAll(dfaResult, test5, answers5);
+        System.out.println();
+        
         
     }
     
