@@ -1,5 +1,6 @@
 package rdp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -24,51 +25,82 @@ public class RecursiveDescentParserNFA{
     private static HashSet<Character> CLSSpecials;
     private static Character[] CLS_Special = {'\\', '^', '-', '[', ']'};
     
-    private static String[] charClassTestCases = {"[0-9]"};//, "[^0]IN$DIGIT", "[a-zA-Z]", "[^a-z]IN$CHAR", "[^A-Z]IN$CHAR"};
-    
-    private static ArrayList<String> definedClasses;
+//    private static String[] charClassTestCases = {"[0-9]"};//, "[^0]IN$DIGIT", "[a-zA-Z]", "[^a-z]IN$CHAR", "[^A-Z]IN$CHAR"};
+    private static String[] charClassTestCases = {"[a-zA-Z]"};
+    private static HashMap<String, NFA> definedClasses;
     
     private static int rangeCount;
     public static void main(String[] args){
-        //Initialize the definedclasses
-        ArrayList<String> exampleDefinedClass = new ArrayList<String>();
-        exampleDefinedClass.add("$DIGIT");
-        exampleDefinedClass.add("$NON-ZERO");
-        exampleDefinedClass.add("$CHAR");
-        exampleDefinedClass.add("$UPPER");
-        exampleDefinedClass.add("$LOWER");
-        exampleDefinedClass.add("$IDENTIFIER");
-        exampleDefinedClass.add("$INT");
-        exampleDefinedClass.add("$FLOAT");
-        exampleDefinedClass.add("$ASSIGN");
-        exampleDefinedClass.add("$PLUS");
-        exampleDefinedClass.add("$MINUS");
-        exampleDefinedClass.add("$MULTIPLY");
-        exampleDefinedClass.add("$PRINT");
+        //Testing [0-9]
+        HashMap<String, NFA> exampleDefinedClass = createDefinedClasses();
+        String regex = "[0-9]";
+        System.out.println("*****Testing: "+regex);
+        NFA result = validateRegex(regex, exampleDefinedClass);
+        HashSet<Character> resultChar = NFA.oneLayerTransitions(result);
+//        result.prettyPrint();
+        DFA dfaResult = DFA.convertNFA(result);
+        String test[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
+        boolean answers[] = {false, true, true, true, true, true, true, true, true, true, true, false, false, false};
+        NFATest.testAll(dfaResult, test, answers);
+        System.out.println();
         
-        for(String line: charClassTestCases){
-        //Creates the nfa
-            NFA result = validateRegex(line, exampleDefinedClass);
-            if(result == null)
-                System.out.println("FAILED: "+line+" was null...");
-            else{
-                System.out.println("PASSED: "+line);
-//                result.prettyPrint();
-                DFA dfaResult = DFA.convertNFA(result);
-                String test[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
-                boolean answers[] = {false, true, true, true, true, true, true, true, true, true, true, false, false, false};
-                    NFATest.testAll(dfaResult, test, answers);
-                
-            }
-        }
+        //Testing [^0]IN$DIGIT
+        regex = "[^0]IN$DIGIT";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();
+        initDefinedEntry(exampleDefinedClass, "[0-9]", "$DIGIT");
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test1[] = {"0-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "1425345", "asfdasdf", "!"};
+        boolean answers1[] = {false, false, true, true, true, true, true, true, true, true, true, false, false, false};
+        NFATest.testAll(dfaResult, test1, answers1);
+        System.out.println();
+        
+        //
+        
     }
+    
+    private static HashMap<String, NFA> createDefinedClasses(){
+        HashMap<String, NFA> exampleDefinedClass = new HashMap<String, NFA>();
+        exampleDefinedClass.put("$DIGIT", null);
+        exampleDefinedClass.put("$NON-ZERO", null);
+        exampleDefinedClass.put("$CHAR", null);
+        exampleDefinedClass.put("$UPPER", null);
+        exampleDefinedClass.put("$LOWER", null);
+        exampleDefinedClass.put("$IDENTIFIER", null);
+        exampleDefinedClass.put("$INT", null);
+        exampleDefinedClass.put("$FLOAT", null);
+        exampleDefinedClass.put("$ASSIGN", null);
+        exampleDefinedClass.put("$PLUS", null);
+        exampleDefinedClass.put("$MINUS", null);
+        exampleDefinedClass.put("$MULTIPLY", null);
+        exampleDefinedClass.put("$PRINT", null);
+        
+        return exampleDefinedClass;
+    }
+    
+    private static void initDefinedEntry(HashMap<String, NFA> exampleDefinedClass, String regex, String key){
+        int debugFlag = debug;
+        int resultsFlag = returnValueDebug;
+        debug = 0;
+        returnValueDebug = 0;
+        NFA entry = validateRegex(regex, exampleDefinedClass);
+        exampleDefinedClass.put(key, entry);
+        debug = debugFlag;
+        returnValueDebug = resultsFlag;
+        
+        
+    }
+    
     //This is the function that you need to call!
-    public static NFA validateRegex(String regex, ArrayList<String> definedClass){
+    public static NFA validateRegex(String regex, HashMap<String, NFA> definedClass){
         debugPrint("In validateRegex()");
         init(regex, definedClass);
         return reGex();
     }
-    private static void init(String regex, ArrayList<String> definedClass){
+    private static void init(String regex, HashMap<String, NFA> definedClass){
         debugPrint("In init()");
         list = new ArrayList<Character>();
         counter = new Integer(0);
@@ -83,7 +115,9 @@ public class RecursiveDescentParserNFA{
            CLSSpecials.add(character);
         }
        
-        definedClasses = new ArrayList<String>(definedClass);
+        definedClasses = new HashMap<String, NFA>();
+        definedClasses.putAll(definedClass);
+        
         rangeCount = 0;
         
     }
@@ -321,6 +355,9 @@ public class RecursiveDescentParserNFA{
         
         if(charSetList != null){
             resultsPrint("charSetLIst");
+            HashSet<Character> charSetListChar = NFA.oneLayerTransitions(charSetList);
+            /*System.out.println("****Printing charSetList");
+            Util.reallyPrettyPrint(charSetListChar);*/
             return charSetList;
         }
         
@@ -342,7 +379,7 @@ public class RecursiveDescentParserNFA{
             NFA charSetList = charSetList();
             if(charSetList != null){
                 resultsPrint("Concatenate charSet and charSetList");
-                return NFA.concatenate(charSet, charSetList);
+                return NFA.union(charSet, charSetList);
             }
         }
         
@@ -375,13 +412,16 @@ public class RecursiveDescentParserNFA{
             return null;
         }
         Character charSetTail = charSetTail();
-        System.out.println("charsettail is "+charSetTail);
+//        System.out.println("charsettail is "+charSetTail);
         if(charSetTail != null){
             //return NFA.concatenate(CLS_CHAR, charSetTail);
             if((int) charSetTail != (int)Transition.EPSILON){
                 resultsPrint("Created RangedNFA");
-                System.out.println("Value of CLS_CHAR is: "+CLS_CHAR);
-                System.out.println("Value of charSetTail is: "+charSetTail);
+//                System.out.println("Value of CLS_CHAR is: "+CLS_CHAR);
+//                System.out.println("Value of charSetTail is: "+charSetTail);
+                
+                
+                
                 return NFA.makeRangedNFA(CLS_CHAR, charSetTail);
             }
             else{
@@ -426,7 +466,6 @@ public class RecursiveDescentParserNFA{
         }
         if(top() == '^'){
             consume();
-            NFA carrot = createLiteralNFA('^');
             NFA charSet = charSet();
             if(top() == null){
                 resultsPrint("Epsilon NFA");
@@ -434,22 +473,25 @@ public class RecursiveDescentParserNFA{
             }
             if(charSet != null && top() == ']'){
                 consume();
-                NFA rightBracket = createLiteralNFA(']');
                 if(top() == 'I'){
                     consume();
-                    NFA I = createLiteralNFA('I');
                     if(top() == 'N'){
                         consume();
-                        NFA N = createLiteralNFA('N');
                         NFA excludeSetTail = excludeSetTail();
-                        
-                        if(excludeSetTail != null){
-                            NFA result = NFA.concatenate(carrot, charSet);
-                            result = NFA.concatenate(result, rightBracket);
-                            result = NFA.concatenate(result, I);
-                            result = NFA.concatenate(result, N);
-                            result = NFA.concatenate(result, excludeSetTail);
-                            resultsPrint("NFA Concatenate");
+
+                        if(excludeSetTail != null){     
+                            HashSet<Character> charSetChars = NFA.oneLayerTransitions(charSet);
+//                          System.out.println("****Printing charSetChars");
+//                          Util.reallyPrettyPrint(charSetChars);
+                            HashSet<Character> excludeSetTailChars = NFA.oneLayerTransitions(excludeSetTail);
+//                            System.out.println("\n");
+//                            System.out.println("****Printing excludeSetTailChars");
+//                          Util.reallyPrettyPrint(excludeSetTailChars);
+                            HashSet<Character> disjointSet = NFA.disjointSet(excludeSetTailChars, charSetChars);
+//                            System.out.println("****Printing disjointSet");
+//                          Util.reallyPrettyPrint(disjointSet);
+                            NFA result = NFA.makeRangedNFA(disjointSet);
+                            resultsPrint("Disjoint set stuff");
                             return result;
                         }
                     }
@@ -572,10 +614,12 @@ public class RecursiveDescentParserNFA{
     
     
     private static NFA definedClass(){
-        if(top() == null)
+        if(top() == null){
+            resultsPrint("Epsilon NFA");
             return createEpsilonNFA();
+        }
         debugPrint("In definedClass()");
-        for(String defined: definedClasses){
+        for(String defined: definedClasses.keySet()){
             boolean found = true;
             for(int index = 0; index < defined.length(); index++){
                 if(get(index).equals(defined.charAt(index)) == false){
@@ -584,21 +628,14 @@ public class RecursiveDescentParserNFA{
                 }
             }
             if(found){
-                LinkedList<NFA> list = new LinkedList<NFA>();
-                for(int x = 0; x < defined.length(); x++){
-                    NFA literal = createLiteralNFA(top());
+                resultsPrint("DefinedClass: "+defined);
+                NFA definedNFA = definedClasses.get(defined);
+                resultsPrint("DefinedClass's nfa is not null is: " +(definedNFA != null));
+                for(int index = 0; index < defined.length(); index++){
                     consume();
-                    list.add(literal);
                 }
-                NFA result = list.getFirst();
-                list.remove();
-                while(list.isEmpty()){
-                    NFA next = list.getFirst();
-                    result = NFA.concatenate(result, next);
-                    list.remove();
-                }
-                resultsPrint("Char class");
-                return result;
+//                definedNFA.prettyPrint();
+                return definedNFA;
             }
         }
         resultsPrint("null");
