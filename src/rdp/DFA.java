@@ -183,35 +183,35 @@ public class DFA
         dfa.startState = newStartState;
         openList.add(newStartState);
         int counter = 0;
-//        boolean found = false;
+        boolean found = false;
         while (!openList.isEmpty())
         {
             DFAState curr = openList.poll();
             if (visited.contains(curr))
             {
-//                // for orphaned states
-//                for (DFAState dfas : table.keySet())
-//                {
-//                    if (dfas.equals(curr))
-//                    {
-//                        DFAState want = dfas;
-//                        for (DFAState k : table.keySet())
-//                        {
-//                            HashMap<Character, DFAState> hm2 = table.get(k);
-//                            for (Character c : hm2.keySet())
-//                            {
-//                                hm2.remove(c);
-//                                hm2.put(c, want);
-//                                found = true;
-//                                break;
-//                            }
-//                        }
-//                        if (found)
-//                            break;
-//                    }
-//                    if (found)
-//                        break;
-//                }
+                // for orphaned states
+                for (DFAState dfas : table.keySet())
+                {
+                    if (dfas.equals(curr))
+                    {
+                        DFAState want = dfas;
+                        for (DFAState k : table.keySet())
+                        {
+                            HashMap<Character, DFAState> hm2 = table.get(k);
+                            for (Character c : hm2.keySet())
+                            {
+                                hm2.remove(c);
+                                hm2.put(c, want);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                    if (found)
+                        break;
+                }
 
                 continue;
             }
