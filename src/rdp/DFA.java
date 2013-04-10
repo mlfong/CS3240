@@ -133,6 +133,8 @@ public class DFA
         {
             Character c = string[i];
             HashMap<Character, DFAState> column = this.dfaTable.get(curr);
+//            if(column == null)
+//                return false;
             if (column.keySet().contains(c))
                 curr = column.get(c);
             else
@@ -176,8 +178,7 @@ public class DFA
      */
     public static DFA convertNFA(NFA nfa)
     {
-        Queue<DFAState> openList = new LinkedList<DFAState>(); // new
-                                                               // Stack<DFAState>();
+        Queue<DFAState> openList = new LinkedList<DFAState>();
         HashSet<DFAState> visited = new HashSet<DFAState>();
         DFA dfa = new DFA();
         HashMap<DFAState, HashMap<Character, DFAState>> table = new HashMap<DFAState, HashMap<Character, DFAState>>();
@@ -192,16 +193,16 @@ public class DFA
                 continue;
             visited.add(curr);
             // get the column headers
-            ArrayList<Character> ts = new ArrayList<Character>();
+            HashSet<Character> ts = new HashSet<Character>();
             for(State innerState : curr.getInnerStates())
-                for(Transition innerTransition : innerState.getTransitions())
-                    if(innerTransition.getTransitionChar() != Transition.EPSILON)
-                        ts.add(innerTransition.getTransitionChar());
+                ts.addAll(innerState.getHMTransitions().keySet());
+            
             HashMap<Character, DFAState> aColumn = new HashMap<Character, DFAState>();
             for(Character tc : ts) {
                 DFAState element = new DFAState();
                 table.put(curr, aColumn);
                 for(State innerState : curr.getInnerStates()){
+//                    ArrayList<Transition> destinations = innerState.getHMTransitions().get(tc);
                     for(Transition possible : innerState.getTransitions()){
                         if(tc == possible.getTransitionChar()){
                             State destination = possible.getDestState();

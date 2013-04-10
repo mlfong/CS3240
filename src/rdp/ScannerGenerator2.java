@@ -8,8 +8,6 @@ import java.util.HashMap;
 
 public class ScannerGenerator2
 {
-    private static boolean sg2debug = false;
-    
     private HashMap<String, NFA> classesNFA;
     private HashMap<String, NFA> tokensNFA;
     
@@ -27,13 +25,12 @@ public class ScannerGenerator2
         return this.tokensNFA;
     }
     
-//    public static DFA scanSpec(String filename) throws IOException
     public static ScannerGenerator2 makeScannerGenerator(String filename) throws IOException
     {
         File f = new File(filename);
         BufferedReader br = new BufferedReader(new FileReader(f));
         String s;
-        DFA classesDFA = null, tokensDFA = null;
+//        DFA classesDFA = null, tokensDFA = null;
         boolean inTokens = false;
         ScannerGenerator2 sg = new ScannerGenerator2();
         HashMap<String, NFA> classesNFA = sg.classesNFA;
@@ -48,18 +45,24 @@ public class ScannerGenerator2
             int divider = s.indexOf(" ");
             String classname = s.substring(0, divider);
             String theregex = s.substring(divider+1);
+            String sanitized = InitRegex.initializeRegex(theregex);
             // remove +'s -> ()()*
-//            NFA nfa = RecursiveDescentParser.rdp(theregex);
+            sanitized = sanitized.substring(1, sanitized.length()-1);
+            if(inTokens)
+                sanitized = sanitized.replaceAll(" ", "");
+            System.out.println("sanitized: " + sanitized);
+            NFA nfa = RecursiveDescentParserNFA.validateRegex(sanitized, classesNFA);
             if(inTokens) // token generation
             {
-//                tokensNFA.put(classname, nfa);
+                tokensNFA.put(classname, nfa);
             }
             else // class generation
             {
-//                classesNFA.put(classname, nfa);
+                classesNFA.put(classname, nfa);
             }
         }
         br.close();
         return sg;
     }
+    
 }
