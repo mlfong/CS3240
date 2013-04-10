@@ -1,4 +1,5 @@
 package rdp;
+
 /****
  * NFA
  * represents a nondeterministic finite automata
@@ -31,24 +32,24 @@ public class NFA
         HashSet<State> visited = new HashSet<State>();
         openList.add(this.startState);
         State temp = null;
-        while(!openList.isEmpty())
+        while (!openList.isEmpty())
         {
             State curr = openList.poll();
-            if(curr.isAcceptState())
+            if (curr.isAcceptState())
             {
                 temp = curr;
                 break;
             }
-            if(visited.contains(curr))
+            if (visited.contains(curr))
                 continue;
             visited.add(curr);
-            for(Transition t : curr.getTransitions())
+            for (Transition t : curr.getTransitions())
                 openList.add(t.getDestState());
         }
         this.acceptState = temp;
-//        this.acceptState = new State(other.acceptState);
+        // this.acceptState = new State(other.acceptState);
     }
-    
+
     public NFA(State one)
     {
         State newState = new State("start" + one.getName(), false);
@@ -67,21 +68,25 @@ public class NFA
 
     /*****
      * Subtracts the removeset from the superset and returns a new set
+     * 
      * @param superset
      * @param removeset
      * @return
      */
-    public static HashSet<Character> disjointSet(HashSet<Character> superset, HashSet<Character> removeset)
+    public static HashSet<Character> disjointSet(HashSet<Character> superset,
+            HashSet<Character> removeset)
     {
         HashSet<Character> newSet = new HashSet<Character>();
-        for(Character c : superset)
-            if(!removeset.contains(c))
+        for (Character c : superset)
+            if (!removeset.contains(c))
                 newSet.add(c);
         return newSet;
     }
 
     /*****
-     * given a "1 layer NFA", so a NFA that represents a ranged NFA, returns set of transitions
+     * given a "1 layer NFA", so a NFA that represents a ranged NFA, returns set
+     * of transitions
+     * 
      * @param nfa
      * @return
      */
@@ -91,34 +96,36 @@ public class NFA
         Queue<State> openList = new LinkedList<State>();
         HashSet<State> visited = new HashSet<State>();
         openList.add(nfa.getStartState());
-        while(!openList.isEmpty())
+        while (!openList.isEmpty())
         {
             State curr = openList.poll();
-            if(visited.contains(curr))
+            if (visited.contains(curr))
                 continue;
             visited.add(curr);
-            for(Transition t : curr.getTransitions())
+            for (Transition t : curr.getTransitions())
             {
-                if(t.getTransitionChar() != Transition.EPSILON)
+                if (t.getTransitionChar() != Transition.EPSILON)
                     hs.add(t.getTransitionChar());
                 openList.add(t.getDestState());
             }
         }
         return hs;
     }
-    
+
     /*****
      * makes a NFA for a range of characters
+     * 
      * @param c
      * @return
      */
     public static NFA makeRangedNFA(int start, int end)
     {
-        return makeRangedNFA((char)(start), (char)(end));
+        return makeRangedNFA((char) (start), (char) (end));
     }
-    
+
     /*****
      * makes a NFA for a range of characters
+     * 
      * @param c
      * @return
      */
@@ -129,6 +136,7 @@ public class NFA
 
     /*****
      * makes a NFA for a range of characters
+     * 
      * @param c
      * @return
      */
@@ -136,21 +144,24 @@ public class NFA
     {
         ArrayList<NFA> nfas = new ArrayList<NFA>();
         // make individual
-        for(Character c : hs)
+        for (Character c : hs)
         {
             nfas.add(NFA.makeCharNFA(c));
         }
         // union them all
         Character start = 'S', end = 'E';
-        int rand1 = (int)(Math.random()*10000);
-        int rand2 = (int)(Math.random()*10000);
-        State startMe = new State("range" + start + "-" + end + "s"+rand1, false);
-        State endMe = new State("range" + start + "-" + end + "f"+rand2, true);
-        for(NFA nn : nfas)
+        int rand1 = (int) (Math.random() * 10000);
+        int rand2 = (int) (Math.random() * 10000);
+        State startMe = new State("range" + start + "-" + end + "s" + rand1,
+                false);
+        State endMe = new State("range" + start + "-" + end + "f" + rand2, true);
+        for (NFA nn : nfas)
         {
-            startMe.addTransition(new Transition(Transition.EPSILON, nn.getStartState()));
+            startMe.addTransition(new Transition(Transition.EPSILON, nn
+                    .getStartState()));
             nn.getAcceptState().setAccept(false);
-            nn.getAcceptState().addTransition(new Transition(Transition.EPSILON, endMe));
+            nn.getAcceptState().addTransition(
+                    new Transition(Transition.EPSILON, endMe));
         }
         NFA all = new NFA(startMe, endMe);
         return all;
@@ -158,35 +169,43 @@ public class NFA
 
     /*****
      * makes a NFA for a range of characters
+     * 
      * @param c
      * @return
      */
     public static NFA makeRangedNFA(Character start, Character end)
     {
-        assert(start.charValue() >= 32 && start.charValue() <= 126);
-        assert(end.charValue() >= 32 && end.charValue() <= 126);
-        assert(start.charValue() <= end.charValue());
-        ArrayList<NFA> nfas = new ArrayList<NFA>();
+        assert (start.charValue() >= 32 && start.charValue() <= 126);
+        assert (end.charValue() >= 32 && end.charValue() <= 126);
+        assert (start.charValue() <= end.charValue());
+//        ArrayList<NFA> nfas = new ArrayList<NFA>();
         // make individual
-        for(char c = start.charValue(); c <= end.charValue(); c++)
-        {
-            nfas.add(NFA.makeCharNFA(c));
-        }
         // union them all
         State startMe = new State("range" + start + "-" + end + "s", false);
         State endMe = new State("range" + start + "-" + end + "f", true);
-        for(NFA nn : nfas)
+        for (char c = start.charValue(); c <= end.charValue(); c++)
         {
-            startMe.addTransition(new Transition(Transition.EPSILON, nn.getStartState()));
-            nn.getAcceptState().setAccept(false);
-            nn.getAcceptState().addTransition(new Transition(Transition.EPSILON, endMe));
+//            nfas.add(NFA.makeCharNFA(c));
+            startMe.addTransition(new Transition(c, endMe));
         }
+//        // union them all
+//        State startMe = new State("range" + start + "-" + end + "s", false);
+//        State endMe = new State("range" + start + "-" + end + "f", true);
+//        for (NFA nn : nfas)
+//        {
+//            startMe.addTransition(new Transition(Transition.EPSILON, nn
+//                    .getStartState()));
+//            nn.getAcceptState().setAccept(false);
+//            nn.getAcceptState().addTransition(
+//                    new Transition(Transition.EPSILON, endMe));
+//        }
         NFA all = new NFA(startMe, endMe);
         return all;
     }
 
     /*****
      * makes a NFA for one character
+     * 
      * @param c
      * @return
      */
@@ -197,20 +216,26 @@ public class NFA
 
     /*****
      * makes a NFA for one character
+     * 
      * @param c
      * @return
      */
     public static NFA makeCharNFA(Character c)
     {
-        State s1pre = new State("" + c + (int) (Math.random() * 1000) + "p",
+        // State s1pre = new State("" + c + (int) (Math.random() * 1000) + "p",
+        // false);
+        // State s1mid = new State("" + c + (int) (Math.random() * 1000) + "m",
+        // false);
+        // State s1fin = new State("" + c + (int) (Math.random() * 1000) + "f",
+        // true);
+        State one = new State("" + c + (int) (Math.random() * 1000) + "p",
                 false);
-        State s1mid = new State("" + c + (int) (Math.random() * 1000) + "m",
-                false);
-        State s1fin = new State("" + c + (int) (Math.random() * 1000) + "f",
-                true);
-        s1pre.addTransition(new Transition(c, s1mid));
-        s1mid.addTransition(new Transition(Transition.EPSILON, s1fin));
-        return new NFA(s1pre, s1fin);
+        State two = new State("" + c + (int) (Math.random() * 1000) + "p", true);
+        one.addTransition(new Transition(c, two));
+        // s1pre.addTransition(new Transition(c, s1mid));
+        // s1mid.addTransition(new Transition(Transition.EPSILON, s1fin));
+        return new NFA(one, two);
+        // return new NFA(s1pre, s1fin);
     }
 
     public State getStartState()
@@ -235,6 +260,7 @@ public class NFA
 
     /******
      * does a regex CONCAT on two NFAs
+     * 
      * @param one
      * @param two
      * @return
@@ -259,6 +285,7 @@ public class NFA
 
     /******
      * does a regex UNION on two NFAs
+     * 
      * @param one
      * @param two
      * @return
@@ -285,9 +312,10 @@ public class NFA
         NFA newNFA = new NFA(newStart, newAccept);
         return newNFA;
     }
-    
+
     /*****
      * does a regex STAR on a NFA
+     * 
      * @param one
      * @return
      */
@@ -309,8 +337,7 @@ public class NFA
     }
 
     /*****
-     * prettyPrint
-     * does a state, transition -> state dump
+     * prettyPrint does a state, transition -> state dump
      */
     public void prettyPrint()
     {
@@ -322,6 +349,8 @@ public class NFA
         {
             // State curr = openList.poll();
             State curr = openList.pop();
+            if(visited.contains(curr))
+                continue;
             visited.add(curr);
             System.out.println(curr.getName());
             if (curr.getTransitions().size() == 0)

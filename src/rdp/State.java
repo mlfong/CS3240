@@ -82,17 +82,17 @@ public class State
 
     public boolean equals(Object other)
     {
-        if (other == this)
-            return true;
-        if (!(other instanceof State))
-            return false;
-        State o = (State) other;
-        return this.name.equals(o.name) || this.name == o.name;
+        return this == other;
+//        if (other == this)
+//            return true;
+//        if (!(other instanceof State))
+//            return false;
+//        State o = (State) other;
+//        return this.name.equals(o.name) || this.name == o.name;
     }
 
     public int hashCode()
     {
         return this.name.hashCode();
     }
-
 }
