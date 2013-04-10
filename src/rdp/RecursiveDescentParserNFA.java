@@ -101,6 +101,7 @@ public class RecursiveDescentParserNFA{
         
         
         debug = 0;
+        returnValueDebug = 0;
         //$LOWER($LOWER|$DIGIT)*
         regex = "$LOWER($LOWER|$DIGIT)*";
         System.out.println("*****Testing: "+regex);
@@ -119,6 +120,7 @@ public class RecursiveDescentParserNFA{
         NFATest.testAll(dfaResult, test5, answers5);
         System.out.println();
         debug = 0;
+        returnValueDebug = 0;
         
         //$INT ($DIGIT)+
         regex = "($DIGIT)+";
@@ -136,9 +138,10 @@ public class RecursiveDescentParserNFA{
         NFATest.testAll(dfaResult, test6, answers6);
         System.out.println();
         
-        
+        debug = 1;
         //$FLOAT ($DIGIT)+ \. ($DIGIT)+
-        regex = "($DIGIT)+ \\. ($DIGIT)+";
+//        regex = "($DIGIT)+\\.($DIGIT)+";
+        regex = "($DIGIT)($DIGIT)*\\.($DIGIT)($DIGIT)*";
         System.out.println("*****Testing: "+regex);
         exampleDefinedClass = createDefinedClasses();
         initDefinedEntry(exampleDefinedClass, "[0-9]", "$DIGIT");
@@ -148,11 +151,12 @@ public class RecursiveDescentParserNFA{
         Util.reallyPrettyPrint(resultChar);
 //        result.prettyPrint();
         dfaResult = DFA.convertNFA(result);
-        String test7[] = {"1245.13423", "1.1", "0.234324", "asfd4343.43534", "asdfaew", "!.432534", "3452354"};
+        String test7[] = {"1245.13423", "1.1", "0.234324", "asfd4343.43534", "asdfaew", "!.432534", ".3452354"};
         boolean answers7[] = {true, true, true, false, false, false, false};
         NFATest.testAll(dfaResult, test7, answers7);
         System.out.println();
         
+        debug = 0;
         //$ASSIGN =
         regex = "=";
         System.out.println("*****Testing: "+regex);
@@ -163,10 +167,82 @@ public class RecursiveDescentParserNFA{
         Util.reallyPrettyPrint(resultChar);
 //        result.prettyPrint();
         dfaResult = DFA.convertNFA(result);
-        String test8[] = {"=", "123", "asdfasdf", "!3543", "453345.423543"};
-        boolean answers8[] = {true, false, false, false, false};
+        String test8[] = {"=", "123", "asdfasdf", "!3543", "453345.423543", "+"};
+        boolean answers8[] = {true, false, false, false, false, false};
         NFATest.testAll(dfaResult, test8, answers8);
         System.out.println();
+        debug = 0;
+        
+        
+        debug = 0;
+        //$PLUS \+
+        regex = "\\+";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();;
+        
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+        Util.reallyPrettyPrint(resultChar);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test9[] = {"+", "123", "asdfasdf", "!3543", "453345.423543", "-"};
+        boolean answers9[] = {true, false, false, false, false, false};
+        NFATest.testAll(dfaResult, test9, answers9);
+        System.out.println();
+        debug = 0;
+        
+        
+        debug = 0;
+        //$MINUS -
+        regex = "-";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();;
+        
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+        Util.reallyPrettyPrint(resultChar);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test10[] = {"-", "123", "asdfasdf", "!3543", "453345.423543", "+"};
+        boolean answers10[] = {true, false, false, false, false, false};
+        NFATest.testAll(dfaResult, test10, answers10);
+        System.out.println();
+        debug = 0;
+        
+        
+        debug = 0;
+        //$MULTIPLY \*
+        regex = "\\*";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();;
+        
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+        Util.reallyPrettyPrint(resultChar);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test11[] = {"*", "123", "asdfasdf", "!3543", "453345.423543", "+"};
+        boolean answers11[] = {true, false, false, false, false, false};
+        NFATest.testAll(dfaResult, test11, answers11);
+        System.out.println();
+        debug = 0;
+        
+        debug = 0;
+        //$PRINT PRINT
+        regex = "PRINT";
+        System.out.println("*****Testing: "+regex);
+        exampleDefinedClass = createDefinedClasses();;
+        
+        result = validateRegex(regex, exampleDefinedClass);
+        resultChar = NFA.oneLayerTransitions(result);
+        Util.reallyPrettyPrint(resultChar);
+//        result.prettyPrint();
+        dfaResult = DFA.convertNFA(result);
+        String test12[] = {"PRINT", "123", "asdfasdf", "!3543", "453345.423543", "+"};
+        boolean answers12[] = {true, false, false, false, false, false};
+        NFATest.testAll(dfaResult, test12, answers12);
+        System.out.println();
+        debug = 0;
         
     }
     
@@ -259,8 +335,8 @@ public class RecursiveDescentParserNFA{
             resultsPrint("Null");
             return null;
         }
-        resultsPrint("Union of rexp1 and rexp`");
-        return NFA.concatenate(rexp1, rexpPrime);
+        resultsPrint("Concatenate of rexp1 and rexp`");
+        return NFA.union(rexp1, rexpPrime);
     }
     //<rexp’> -> UNION <rexp1> <rexp’>  | epsilon
     private static NFA rexpPrime(){
@@ -290,7 +366,7 @@ public class RecursiveDescentParserNFA{
             resultsPrint("Epsilon NFA");
             return createEpsilonNFA();
         }
-        resultsPrint("Union rexp1 and rexp`");
+        resultsPrint("Concatenate rexp1 and rexp`");
         //Can always return true;
         return NFA.union(rexp1, rexpPrime);
     }
@@ -350,21 +426,19 @@ public class RecursiveDescentParserNFA{
             return null;
         }
         
+//        System.out.println("PART1");
         //Part 1
         //(<rexp>) <rexp2-tail> 
         if(top() == '('){
             consume();
-//            NFA leftParens = createLiteralNFA('(');
-            
+
             NFA rexp = rexp();
             if(top() == null){
                 resultsPrint("null");
-//                return createEpsilonNFA();
                 return null;
             }
             if(rexp != null && top() == ')'){
                 consume();
-//                NFA rightParens = createLiteralNFA(')');
                 Character rexp2Tail = rexp2Tail();
                 if(rexp2Tail != null){
 //                    NFA result = NFA.concatenate(leftParens, rexp);
@@ -375,6 +449,8 @@ public class RecursiveDescentParserNFA{
                 }
             }
         }
+        
+//        System.out.println("PART2");
         //Part 2
         //RE_CHAR <rexp2-tail>
         NFA RE_CHAR = RE_CHAR();
@@ -382,12 +458,18 @@ public class RecursiveDescentParserNFA{
         if(RE_CHAR != null)
             rexp2Tail = rexp2Tail();
         if(rexp2Tail != null){
-            resultsPrint("RE_CHAR and rexp2Tail: "+rexp2Tail);
+//            resultsPrint("RE_CHAR and rexp2Tail: "+rexp2Tail);
             
 //            return NFA.concatenate(RE_CHAR, rexp2Tail);
-            return NFA.star(RE_CHAR);
+//          System.out.println("rexp2Tail is: "+rexp2Tail);
+            if(rexp2Tail != '*')
+                return NFA.star(RE_CHAR);
+            else if(rexp2Tail == Transition.EPSILON)
+                return RE_CHAR;
         }
 
+//        System.out.println("PART3");
+        
         //Part3
         //<rexp3>
         return rexp3();
@@ -398,9 +480,9 @@ public class RecursiveDescentParserNFA{
         debugPrint("In rexp2Tail()");
         if(top() == null){
             resultsPrint("null");
-            return null;
+            return Transition.EPSILON;
         }
-        Character result = null;
+        Character result = Transition.EPSILON;;
         if(top() == '*'){
             consume();
             result = '*';
