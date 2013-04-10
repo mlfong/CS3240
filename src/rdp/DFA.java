@@ -7,6 +7,7 @@ package rdp;
  * @version 1.0
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -157,9 +158,11 @@ public class DFA
             if (visited.contains(curr))
                 continue;
             visited.add(curr);
-            for (Transition t : curr.getTransitions())
-                if (t.getTransitionChar() == Transition.EPSILON)
-                    openList.add(t.getDestState());
+            if(!curr.getHMTransitions().keySet().contains(Transition.EPSILON))
+                continue;
+            ArrayList<Transition> epsilonTransitions = curr.getHMTransitions().get(Transition.EPSILON);
+            for(Transition t : epsilonTransitions)
+                openList.add(t.getDestState());
         }
         DFAState dfaState = new DFAState(visited);
         return dfaState;
@@ -182,96 +185,59 @@ public class DFA
         DFAState newStartState = DFA.epsilonClose(nfa.getStartState());
         dfa.startState = newStartState;
         openList.add(newStartState);
-        int counter = 0;
-        boolean found = false;
         while (!openList.isEmpty())
         {
             DFAState curr = openList.poll();
-            if (visited.contains(curr))
-            {
-                // for orphaned states
-                for (DFAState dfas : table.keySet())
-                {
-                    if (dfas.equals(curr))
-                    {
-                        DFAState want = dfas;
-                        for (DFAState k : table.keySet())
-                        {
-                            HashMap<Character, DFAState> hm2 = table.get(k);
-                            for (Character c : hm2.keySet())
-                            {
-                                hm2.remove(c);
-                                hm2.put(c, want);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (found)
-                            break;
-                    }
-                    if (found)
-                        break;
-                }
-
+            if(visited.contains(curr))
                 continue;
-            }
             visited.add(curr);
-            HashMap<Character, DFAState> hm = new HashMap<Character, DFAState>();
-
-            // get ALL transition characters possible at this row
-            HashSet<Character> transitionChars = new HashSet<Character>();
-            for (State s : curr.getInnerStates())
-                for (Transition t : s.getTransitions())
-                    if (t.getTransitionChar() != Transition.EPSILON)
-                        transitionChars.add(t.getTransitionChar());
-
-            for (Character c : transitionChars)
-            {
-                HashSet<State> hs = new HashSet<State>();
-                for (State s : curr.getInnerStates())
-                {
-                    for (Transition t : s.getTransitions())
-                    {
-                        if (t.getTransitionChar() == c)
-                        {
-                            DFAState close = DFA.epsilonClose(t.getDestState());
-                            hs.addAll(close.getInnerStates());
+            // get the column headers
+            ArrayList<Character> ts = new ArrayList<Character>();
+            for(State innerState : curr.getInnerStates())
+                for(Transition innerTransition : innerState.getTransitions())
+                    if(innerTransition.getTransitionChar() != Transition.EPSILON)
+                        ts.add(innerTransition.getTransitionChar());
+            HashMap<Character, DFAState> aColumn = new HashMap<Character, DFAState>();
+            for(Character tc : ts) {
+                DFAState element = new DFAState();
+                table.put(curr, aColumn);
+                for(State innerState : curr.getInnerStates()){
+                    for(Transition possible : innerState.getTransitions()){
+                        if(tc == possible.getTransitionChar()){
+                            State destination = possible.getDestState();
+                            element.getInnerStates().addAll(DFA.epsilonClose(destination).getInnerStates());
                         }
                     }
                 }
-                DFAState wantToAdd = new DFAState(hs);
-                for (DFAState rowHeader : table.keySet())
-                {
-                    if (rowHeader.equals(wantToAdd))
-                    {
-                        wantToAdd = rowHeader;
-                        break;
+                for(DFAState dfas : table.keySet())
+                    if(dfas.equals(element))
+                        element = dfas;
+                if(element.getInnerStates().contains(nfa.getAcceptState()))
+                    element.setAccept(true);
+                aColumn.put(tc, element);
+                
+            }
+            if(aColumn.size() > 0)
+                table.put(curr, aColumn);
+            for(Character columnHeader : aColumn.keySet())
+                openList.add(aColumn.get(columnHeader));
+        }
+        for(DFAState key1 : table.keySet()){
+            HashMap<Character, DFAState> column = table.get(key1);
+            for(Character c : column.keySet()){
+                DFAState element = column.get(c);
+                for(DFAState key2 : table.keySet()){
+                    if(element.equals(key2) && element != key2){
+                        boolean ac = element.isAccept();
+                        column.remove(element);
+                        column.put(c,key2);
+                        key2.setAccept(ac);
                     }
                 }
-                if (wantToAdd.getInnerStates().contains(nfa.getAcceptState()))
-                    wantToAdd.setAccept(true);
-
-                if (hs.size() > 0)
-                {
-                    hm.put(c, wantToAdd);
-                }
-
             }
-
-            for (Character c : hm.keySet())
-                openList.add(hm.get(c));
-            // if (hm.size() > 0)
-            table.put(curr, hm);
-        }// end while
-
-        counter = 100;
-        for (DFAState key : dfa.dfaTable.keySet())
-        {
-            key.setID("s" + counter++);
-            if (key.getInnerStates().contains(nfa.getAcceptState()))
-                key.setAccept(true);
         }
-
+        
+        
         return dfa;
     }
 

@@ -16,8 +16,8 @@ public class NFATest
         // test04();
         // test03();
 //        test101();
-//        test104();
-        testTransitionPull();
+        test104();
+//        testTransitionPull();
     }
     
     public static void testTransitionPull()
@@ -31,30 +31,63 @@ public class NFATest
     // THIS ONE IS GREAT
     public static void test104()
     {
-        NFA nfa1 = NFA.makeRangedNFA('0', '9');
-        NFA nfa2 = NFA.makeRangedNFA('0', '9');
+        NFA nfa1 = NFA.makeRangedNFA('0', '1');
+        nfa1.prettyPrint();
+        System.out.println("------------");
+        NFA nfa2 = NFA.makeRangedNFA('0', '1');
         NFA nfa3 = NFA.star(nfa2);
         NFA nfa4 = NFA.concatenate(nfa1, nfa3);
         nfa4.setAcceptToken("$INT");
+//        System.out.println("------------");
+//        nfa4.prettyPrint();
+//        System.out.println("------------");
         
-        NFA nfa5 = NFA.makeRangedNFA('a', 'z');
-        NFA nfa6 = NFA.makeRangedNFA('0', '9');
+        // lower (lower|digit)*
+        NFA nfa5 = NFA.makeRangedNFA('a', 'b');
+        NFA nfa6 = NFA.makeRangedNFA('0', '1');
         NFA nfa7 = NFA.union(nfa5, nfa6);
         NFA nfa8 = NFA.star(nfa7);
-        NFA nfa9 = NFA.makeRangedNFA('a', 'z');
+        NFA nfa9 = NFA.makeRangedNFA('a', 'b');
         NFA nfa10 = NFA.concatenate(nfa9, nfa8);
         nfa10.setAcceptToken("$IDENTIFIER");
+//        DFA dfa2 = DFA.convertNFA(nfa4);
+//        String[] testStrings2 =
+//            { "0", "1", "01", "" , "askdjadsk", "00000"};
+//        boolean[] answers2 =
+//        { 
+//                true, true, true, false, false, true
+//                };
+//        NFATest.advancedTest(dfa2, testStrings2, answers2);
+//        
+        // $FLOAT ($DIGIT)+ \. ($DIGIT)+
+        NFA nfa90 = NFA.makeRangedNFA('0', '1');
+        NFA nfa91 = NFA.makeRangedNFA('0', '1');
+        nfa91 = NFA.star(nfa91);
+        NFA nfa92 = NFA.makeRangedNFA('0', '1');
+        NFA nfa93 = NFA.makeRangedNFA('0', '1');
+        nfa93 = NFA.star(nfa93);
+        NFA dot = NFA.makeCharNFA('.');
+        NFA n94 = NFA.concatenate(nfa90, nfa91);
+        NFA n95 = NFA.concatenate(nfa92, nfa93);
+        NFA n96 = NFA.concatenate(n94, dot);
+        NFA n97 = NFA.concatenate(n96, n95);
+        n97.setAcceptToken("$FLOAT");
         
         NFA nfa11 = NFA.union(nfa4, nfa10);
-        DFA dfa = DFA.convertNFA(nfa11);
-        
+        NFA nfa122 = NFA.union(nfa11, n97);
+//        NFA nfa122 = NFA.union(nfa4, n97);
+//        DFA dfa = DFA.convertNFA(nfa11);
+//        nfa122.prettyPrint();
+        DFA dfa = DFA.convertNFA(nfa122);
         String[] testStrings =
-            { "0", "1", "01", "a10", "bbbbb", "101asdad", "a8aa8a88s8das8a8"};
+            { "0", "1", "01", "a10", "bbbbb", "101asdad", "a8aa8a88s8das8a8", "0.0", ".34234"};
         boolean[] answers =
         { 
-                true, true, true,true, true, false, true
+                true, true, true,true, true, false, false, true, false
                 };
+//        NFATest.testAll(dfa, testStrings, answers);
         NFATest.advancedTest(dfa, testStrings, answers);
+//        dfa.prettyPrint();
         
     }
     
@@ -196,12 +229,18 @@ public class NFATest
         {
             boolean b = dfa.validate(testStrings[i]);
             String s = b == answers[i] ? "Pass" : "Fail";
-            System.out.println("Test " + (i + 1) + ": " + testStrings[i]
+            if(s == "Pass")
+                System.out.println("Test " + (i + 1) + ": " + testStrings[i]
                     + " -> " + s);
+            else
+                System.err.println("Test " + (i + 1) + ": " + testStrings[i]
+                        + " -> " + s);
         }
     }
+    
     public static void advancedTest(DFA dfa, String[] testStrings, boolean[] answers)
     {
+        boolean bbbb = true;
         for (int i = 0; i < testStrings.length; i++)
         {
             Object[] o = dfa.specialValidate(testStrings[i]);
@@ -210,6 +249,8 @@ public class NFATest
             String s = b == answers[i] ? "Pass" : "Fail";
             System.out.println("Test " + (i + 1) + ": " + testStrings[i]
                     + " -> " + s);
+            bbbb &= (b==answers[i]);
+            
             if(b) // so it is supposed to accept
             {
                 String thetoken = (String)o[1];
@@ -220,5 +261,7 @@ public class NFATest
                 System.out.println("\tDoes not accept");
             }
         }
+        if(!bbbb)System.out.println("failed");
+        else System.out.println("All pass");
     }
 }

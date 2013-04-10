@@ -178,27 +178,12 @@ public class NFA
         assert (start.charValue() >= 32 && start.charValue() <= 126);
         assert (end.charValue() >= 32 && end.charValue() <= 126);
         assert (start.charValue() <= end.charValue());
-//        ArrayList<NFA> nfas = new ArrayList<NFA>();
-        // make individual
-        // union them all
         State startMe = new State("range" + start + "-" + end + "s", false);
         State endMe = new State("range" + start + "-" + end + "f", true);
         for (char c = start.charValue(); c <= end.charValue(); c++)
         {
-//            nfas.add(NFA.makeCharNFA(c));
             startMe.addTransition(new Transition(c, endMe));
         }
-//        // union them all
-//        State startMe = new State("range" + start + "-" + end + "s", false);
-//        State endMe = new State("range" + start + "-" + end + "f", true);
-//        for (NFA nn : nfas)
-//        {
-//            startMe.addTransition(new Transition(Transition.EPSILON, nn
-//                    .getStartState()));
-//            nn.getAcceptState().setAccept(false);
-//            nn.getAcceptState().addTransition(
-//                    new Transition(Transition.EPSILON, endMe));
-//        }
         NFA all = new NFA(startMe, endMe);
         return all;
     }
