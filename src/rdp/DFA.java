@@ -1,4 +1,11 @@
 package rdp;
+/****
+ * DFA
+ * Represents a deterministic finite automata
+ * 
+ * @author mlfong
+ * @version 1.0
+ */
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,27 +18,54 @@ public class DFA
     private HashMap<DFAState, HashMap<Character, DFAState>> dfaTable;
     private DFAState startState;
 
+    /****
+     * private constructor
+     */
     private DFA()
     {
         dfaTable = new HashMap<DFAState, HashMap<Character, DFAState>>();
         startState = null;
     }
 
+    /****
+     * getStartState
+     * getter for start state
+     * @return
+     */
     public DFAState getStartState()
     {
         return this.startState;
     }
 
+    /****
+     * getDFATable
+     * getter for DFA table
+     * @return
+     */
     public HashMap<DFAState, HashMap<Character, DFAState>> getDFATable()
     {
         return this.dfaTable;
     }
 
+    /******
+     * specialValidate
+     * validates a string to the regex of the DFA, and prints out the accept token
+     * returns a boolean for accept or not, and the accept token
+     * @param string
+     * @return
+     */
     public Object[] specialValidate(String string)
     {
         return specialValidate(string.toCharArray());
     }
     
+    /******
+     * specialValidate
+     * validates a string to the regex of the DFA, and prints out the accept token
+     * returns a boolean for accept or not, and the accept token
+     * @param string
+     * @return
+     */
     public Object[] specialValidate(char[] string)
     {
         Object[] o = new Object[2];
@@ -74,11 +108,23 @@ public class DFA
         return o;
     }
     
+    /****
+     * validate
+     * Returns true or false by trying to validate the string to the regex the DFA represents
+     * @param string
+     * @return
+     */
     public boolean validate(String string)
     {
         return this.validate(string.toCharArray());
     }
 
+    /****
+     * validate
+     * Returns true or false by trying to validate the string to the regex the DFA represents
+     * @param string
+     * @return
+     */
     public boolean validate(char[] string)
     {
         DFAState curr = this.startState;
@@ -93,7 +139,13 @@ public class DFA
         }
         return curr.isAccept();
     }
-
+    
+    /****
+     * epsilonClose
+     * Performs epsilon closure on a (NFA) state, returns a DFA State
+     * @param s
+     * @return
+     */
     private static DFAState epsilonClose(State s)
     {
         Stack<State> openList = new Stack<State>();
@@ -113,6 +165,12 @@ public class DFA
         return dfaState;
     }
 
+    /****
+     * convertNFA
+     * Factory method to create DFA, converts a NFA into a DFA 
+     * @param nfa
+     * @return
+     */
     public static DFA convertNFA(NFA nfa)
     {
         Queue<DFAState> openList = new LinkedList<DFAState>(); // new
@@ -217,6 +275,10 @@ public class DFA
         return dfa;
     }
 
+    /*****
+     * prettyPrint
+     * prints the DFA table
+     */
     public void prettyPrint()
     {
         System.out.println("Start state: " + this.startState.getID());

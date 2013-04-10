@@ -1,5 +1,13 @@
 package rdp;
 
+/*****
+ * DFAState
+ * 
+ * represents a DFA state, that is, a state that has many NFA states
+ * 
+ * @author mlfong
+ */
+
 import java.util.HashSet;
 
 public class DFAState
@@ -61,6 +69,12 @@ public class DFAState
         this.accept = b;
     }
 
+    /****
+     * Merges two DFAStates into one
+     * @param one
+     * @param two
+     * @return
+     */
     public static DFAState merge(DFAState one, DFAState two)
     {
         HashSet<State> join = one.states;
@@ -69,6 +83,11 @@ public class DFAState
         return new DFAState(join);
     }
 
+    /****
+     * join
+     * Adds all of the other DFAState's inner NFA states to its own states
+     * @param other
+     */
     public void join(DFAState other)
     {
         for (State s : other.states)

@@ -1,4 +1,11 @@
 package rdp;
+/****
+ * Transition
+ * 
+ * Represents a state transition
+ * @author mfong
+ *
+ */
 
 public class Transition
 {

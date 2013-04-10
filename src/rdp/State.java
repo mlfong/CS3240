@@ -1,4 +1,10 @@
 package rdp;
+/****
+ * State
+ * Represents a NFA State
+ * 
+ * @author mlfong
+ */
 
 import java.util.ArrayList;
 
