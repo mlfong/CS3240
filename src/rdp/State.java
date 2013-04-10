@@ -7,12 +7,14 @@ package rdp;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class State
 {
     private String name;
     private boolean acceptState;
     private ArrayList<Transition> transitions;
+    private HashMap<Character, ArrayList<Transition>> hmTransitions;
     private String acceptToken;
     private boolean trueAccept;
 
@@ -20,7 +22,8 @@ public class State
     {
         this.name = name;
         this.acceptState = acceptState;
-        transitions = new ArrayList<Transition>();
+        this.transitions = new ArrayList<Transition>();
+        this.hmTransitions = new HashMap<Character, ArrayList<Transition>>();
         this.acceptToken = "";
         this.trueAccept = false;
     }
@@ -75,24 +78,35 @@ public class State
         return this.transitions;
     }
 
+    public HashMap<Character, ArrayList<Transition>> getHMTransitions()
+    {
+        return this.hmTransitions;
+    }
+    
     public void addTransition(Transition t)
     {
+        if(this.hmTransitions.containsKey(t.getTransitionChar())){
+            this.hmTransitions.get(t.getTransitionChar()).add(t);
+        } else {
+            this.hmTransitions.put(t.getTransitionChar(), new ArrayList<Transition>());
+            this.hmTransitions.get(t.getTransitionChar()).add(t);
+        }
         this.transitions.add(t);
     }
 
-    public boolean equals(Object other)
-    {
-        return this == other;
+//    public boolean equals(Object other)
+//    {
+//        return this == other;
 //        if (other == this)
 //            return true;
 //        if (!(other instanceof State))
 //            return false;
 //        State o = (State) other;
 //        return this.name.equals(o.name) || this.name == o.name;
-    }
+//    }
 
-    public int hashCode()
-    {
-        return this.name.hashCode();
-    }
+//    public int hashCode()
+//    {
+//        return this.name.hashCode();
+//    }
 }
