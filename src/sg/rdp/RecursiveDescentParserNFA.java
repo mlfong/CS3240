@@ -45,7 +45,12 @@ public class RecursiveDescentParserNFA
 
     private static int rangeCount;
 
-    // This is the function that you need to call!
+    /**
+     * Main function to call that creates an NFA from the regex
+     * @param regex Regex string to match
+     * @param definedClass Mapping of defined classes and their NFA
+     * @return NFA representing the inputted regex string
+     */
     public static NFA validateRegex(String regex,
             HashMap<String, NFA> definedClass)
     {
@@ -54,6 +59,15 @@ public class RecursiveDescentParserNFA
         return reGex();
     }
     
+    
+    /**
+     * Another function to create an NFA that includes debug flags
+     * @param regex Regex string ot match
+     * @param definedClass Mapping of deifned classes and their NFA
+     * @param debugFlag Turns on what function was called + other debug statements
+     * @param returnFlag Turns on the value that each function returns
+     * @return NFA representing the inputted regex string
+     */
     public static NFA validateRegex(String regex,
             HashMap<String, NFA> definedClass, int debugFlag, int returnFlag)
     {
@@ -67,6 +81,11 @@ public class RecursiveDescentParserNFA
         return result;
     }
 
+    /**
+     * Inits some of the structures needed for doing the RDP
+     * @param definedClass Mapping of defined classes and their NFA
+     * @return NFA representing the inputted regex string
+     */
     private static void init(String regex, HashMap<String, NFA> definedClass)
     {
         debugPrint("In init()");
@@ -92,11 +111,13 @@ public class RecursiveDescentParserNFA
 
     }
 
-    /*
-     * Recursive descent parser begins here
-     */
-
     // <reg-ex> -> <rexp>
+    
+    /**
+     * Beginning of RDP
+     * Represents: <reg-ex> -> <rexp>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA reGex()
     {
         debugPrint("In reGex");
@@ -106,6 +127,10 @@ public class RecursiveDescentParserNFA
     // <rexp> -> <rexp1> <rexp’>
     // This checks the epsilon flag to see whether or not we need to concatenate
     // or union the nfas
+    /**
+     * Represents <rexp> -> <rexp1> <rexp’>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA rexp()
     {
         String name = "rexp()";
@@ -142,6 +167,11 @@ public class RecursiveDescentParserNFA
     // There is an epsilon flag set to indicate whether this rexp' returns an
     // epsilon nfa vs an nfa
     // that has other transitions.
+    
+    /**
+     * Represents <rexp’> -> UNION <rexp1> <rexp’> | epsilon
+     * @return NFA representing this line of the grammar
+     */
     private static NFA rexpPrime()
     {
         epsilon = true;
@@ -183,6 +213,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <rexp1> -> <rexp2> <rexp1’>
+    /**
+     * Represents  <rexp1> -> <rexp2> <rexp1’>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA rexp1()
     {
         String name = "rexp1()";
@@ -210,6 +244,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <rexp1’> -> <rexp2> <rexp1’> | epsilon
+    /**
+     * Represents <rexp1’> -> <rexp2> <rexp1’> | epsilon
+     * @return NFA representing this line of the grammar
+     */
     private static NFA rexp1Prime()
     {
         String name = "rexp1`()";
@@ -238,6 +276,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <rexp2> -> (<rexp>) <rexp2-tail> | RE_CHAR <rexp2-tail> | <rexp3>
+    /**
+     * Represents <rexp2> -> (<rexp>) <rexp2-tail> | RE_CHAR <rexp2-tail> | <rexp3>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA rexp2()
     {
         String name = "rexp2()";
@@ -320,6 +362,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <rexp2-tail> -> * | + | epsilon
+    /**
+     * Represents <rexp2-tail> -> * | + | epsilon
+     * @return NFA representing this line of the grammar
+     */
     private static Character rexp2Tail()
     {
         String name = "rexp2Tail()";
@@ -348,6 +394,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <rexp3> -> <char-class> | epsilon
+    /**
+     * Represents <rexp3> -> <char-class> | epsilon
+     * @return NFA representing this line of the grammar
+     */
     private static NFA rexp3()
     {
         String name = "rexp3()";
@@ -370,6 +420,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <char-class> -> . | [ <char-class1> | <defined-class>
+    /**
+     * Return <char-class> -> . | [ <char-class1> | <defined-class>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA charClass()
     {
         String name = "charClass()";
@@ -410,6 +464,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <char-class1> -> <char-set-list> | <exclude-set>
+    /**
+     * Represents <char-class1> -> <char-set-list> | <exclude-set>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA charClass1()
     {
         String name = "charClass1()";
@@ -442,6 +500,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <char-set-list> -> <char-set> <char-set-list> | ]
+    /**
+     * Represents <char-set-list> -> <char-set> <char-set-list> | ]
+     * @return NFA representing this line of the grammar
+     */
     private static NFA charSetList()
     {
         String name = "charSetList()";
@@ -481,6 +543,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <char-set> -> CLS_CHAR <char-set-tail>
+    /**
+     * Represents <char-set> -> CLS_CHAR <char-set-tail>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA charSet()
     {
         String name = "charSet()";
@@ -521,6 +587,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <char-set-tail> -> –CLS_CHAR | epsilon
+    /**
+     * Represents <char-set-tail> -> –CLS_CHAR | epsilon
+     * @return NFA representing this line of the grammar
+     */
     private static Character charSetTail()
     {
         String name = "charSetTail()";
@@ -550,6 +620,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <exclude-set> -> ^<char-set>] IN <exclude-set-tail>
+    /**
+     * Representing <exclude-set> -> ^<char-set>] IN <exclude-set-tail>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA excludeSet()
     {
         String name = "excludeSet()";
@@ -607,6 +681,10 @@ public class RecursiveDescentParserNFA
     }
 
     // <exclude-set-tail> -> [<char-set>] | <defined-class>
+    /**
+     * <exclude-set-tail> -> [<char-set>] | <defined-class>
+     * @return NFA representing this line of the grammar
+     */
     private static NFA excludeSetTail()
     {
         String name = "excludeSetTail()";
@@ -641,7 +719,12 @@ public class RecursiveDescentParserNFA
         resultsPrint(name, "DefinedClass");
         return definedClass();
     }
-
+    
+    
+    /**
+     * Determines if a character belongs to CLS_CHAR
+     * @return The character that was in CLS_CHAR
+     */
     private static Character CLS_CHAR()
     {
         String name = "CLS_CHAR";
@@ -694,7 +777,11 @@ public class RecursiveDescentParserNFA
         resultsPrint(name, "CLS_CHAR: " + value);
         return value;
     }
-
+    
+    /**
+     * Determines if the next character is in RE_CHAR
+     * @return NFA of the character
+     */
     private static NFA RE_CHAR()
     {
         String name = "RE_CHAR";
@@ -739,7 +826,11 @@ public class RecursiveDescentParserNFA
         resultsPrint(name, "Returned literal");
         return literal;
     }
-
+    
+    /**
+     * Determines if the next few characters are a part of a defined class
+     * @return the NFA of the definedClass
+     */
     private static NFA definedClass()
     {
         String name = "definedClass()";
@@ -784,6 +875,11 @@ public class RecursiveDescentParserNFA
     // Checks to see if the next character is the escape character '\\'
     // If so, it consumes it and returns true
     // If not, it does nothing
+    
+    /**
+     * Determines if the next character is escaped
+     * @return Whether the next character is escaped
+     */
     private static boolean checkEscaped()
     {
         String name = "checkEscaped()";
@@ -805,6 +901,10 @@ public class RecursiveDescentParserNFA
 
     // Checks to see if the head of the list is a specialcharacter for RE that
     // should be escaped or not
+    /**
+     * Determines if the next characters is a special character that needs to be escaped in RE_CHAR
+     * @return if the character needs to be secaped
+     */
     private static boolean RESpecialChars()
     {
         if (top() == null)
@@ -815,6 +915,10 @@ public class RecursiveDescentParserNFA
 
     // Checks to see if the head of the list is a specialcharacter for CLS that
     // should be escaped or not
+    /**
+     * Determines if the next character is a special character that needs to be escaped in CLS_CHAR
+     * @return If the next character needs to be escaped
+     */ 
     private static boolean CLSSpecialChars()
     {
         if (top() == null)
@@ -828,6 +932,10 @@ public class RecursiveDescentParserNFA
      */
 
     // Returns the value of at the head of the list, same as peek()
+    /**
+     * Returns the next character to parse
+     * @return Character to parse
+     */
     private static Character top()
     {
         // debugPrint("In top()");
@@ -838,6 +946,10 @@ public class RecursiveDescentParserNFA
     }
 
     // Increases the index to "head" of the array list and returns the old value
+    /**
+     * Advances the index to the next character
+     * @return The character that has been parsed
+     */
     private static Character consume()
     {
         if (index < list.size())
@@ -851,6 +963,11 @@ public class RecursiveDescentParserNFA
     }
 
     // Gets the character at a given offset from the begining of the list
+    /**
+     * Returns the charater to be parsed at the given offset
+     * @param offset The index of the character from the front
+     * @return The character
+     */
     private static Character get(int offset)
     {
         // debugPrint("In get()");
@@ -862,6 +979,10 @@ public class RecursiveDescentParserNFA
     }
 
     // Initialize the list into the arraylist
+    /**
+     * Initializes the queue with the given regex
+     * @param regex Regex to be parsed
+     */
     private static void initList(String regex)
     {
         for (int x = 0; x < regex.length(); x++)
@@ -871,12 +992,21 @@ public class RecursiveDescentParserNFA
     }
 
     // Used for debug printing
+    /**
+     * Method used for debug printing
+     * @param statement Statement to print
+     */
     private static void debugPrint(String statement)
     {
         if (debug == 1)
             System.out.println(statement);
     }
-
+    
+    /**
+     * Method used for printing return value
+     * @param function Name of the function
+     * @param value Value that it's returning
+     */
     private static void resultsPrint(String function, String value)
     {
         if (returnValueDebug == 1)
@@ -885,12 +1015,21 @@ public class RecursiveDescentParserNFA
     }
 
     // Creates an NFA with an epsilon
+    /**
+     * Method used to create an NFA with an epsilon transition
+     * @return NFA
+     */
     private static NFA createEpsilonNFA()
     {
         return NFA.makeCharNFA(Transition.EPSILON);
     }
 
     // Creates an NFA for a given literal
+    /**
+     * Creates an NFA with the given string literal
+     * @param literal Literal to be changed into an NFA
+     * @return NFA
+     */
     private static NFA createLiteralNFA(char literal)
     {
         return NFA.makeCharNFA(literal);

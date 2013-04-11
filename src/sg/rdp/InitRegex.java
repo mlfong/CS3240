@@ -41,11 +41,17 @@ public class InitRegex
         // runTest("(ab(cd)+)+", "(ab(cd)(cd)*)(ab(cd)(cd)*)*");
         runAllTests();
         // testSpacesAndMapping();
-        // System.out.println(removeSpaces("the quick	brown fox jumped over the river"));
+        // System.out.println(removeSpaces("the quick   brown fox jumped over the river"));
     }
 
     /*
      * This is the method that other people should use to run this code
+     */
+    
+    /**
+     * Method used to changed + to * and pad the regex with parens on the edges
+     * @param regex To be converted
+     * @return Newly converted regex
      */
     public static String initializeRegex(String regex)
     {
@@ -117,6 +123,11 @@ public class InitRegex
      * Private implementation code
      */
 
+    /**
+     * Adds parenthesis to the beginning and end of regex
+     * @param regex String to change
+     * @return newly converted regex
+     */
     private static String appendParens(String regex)
     {
         // Check to make sure there are not already parens around the entire
@@ -128,6 +139,11 @@ public class InitRegex
         return "(" + regex + ")";
     }
 
+    /**
+     * Converts all regexes with + to using *
+     * @param regex Regex to convert
+     * @return newly converted regex
+     */
     private static String convertPlus(String regex)
     {
         StringBuilder newString = new StringBuilder();
@@ -168,6 +184,12 @@ public class InitRegex
     // Checks to see what the character before the + is
     // To determine if it's a ), \ or a regular char
     // index currently points to the +
+    /**
+     * Checks for any special characters
+     * @param regex Regex to convert
+     * @param index Index of the current regex
+     * @return The type of character the char is at the given index
+     */
     private static int checkPrevious(String regex, int index)
     {
         // Shouldn't happen, but just double check
@@ -201,6 +223,11 @@ public class InitRegex
     // If the char previous to + was a ), get the entire grouping within that
     // parens
     // With the * appended
+    /**
+     * Gets the entire substring of the regex that is padded by parens
+     * @param regex Regex that you're converting
+     * @return The substring with the parenthesis
+     */
     private static String getParensSubstring(String regex)
     {
         // Uses a stack to keep track of parens
@@ -236,6 +263,11 @@ public class InitRegex
         return regex.substring(beginIndex) + STAR;
     }
 
+    /**
+     * Removes all the whitespace from the regex
+     * @param regex Regex to convert
+     * @return regex wihtout any whitespace
+     */
     private static String removeSpaces(String regex)
     {
         StringBuilder newRegex = new StringBuilder();
@@ -262,6 +294,12 @@ public class InitRegex
     }
 
     // Creates the map from characterclass to a char
+    
+    /**
+     * Function to map character to classes to a single character for simplication
+     * @param regex regex to conert
+     * @return hashmap of characterclass to new character
+     */
     private static HashMap<String, Character> createMap(String regex)
     {
         HashMap<String, Character> charClassMapping = new HashMap<String, Character>();
@@ -298,6 +336,12 @@ public class InitRegex
     }
 
     // Creates the mapped string
+    /**
+     * Creates a mapped string with the character classes replaced with a single letter
+     * @param regex to convert
+     * @param map mapping of character classes to character
+     * @return string with characterclassess removed
+     */
     private static String createMappedRegex(String regex,
             HashMap<String, Character> map)
     {
@@ -328,6 +372,12 @@ public class InitRegex
     }
 
     // Creates the final string using the mapping
+    /**
+     * Creates the final string by remapping the character back to character classes
+     * @param regex with the converted character classes
+     * @param map characterclass to character mapping
+     * @return final converted regex string
+     */
     private static String remapClasses(String regex,
             HashMap<String, Character> map)
     {
@@ -349,7 +399,12 @@ public class InitRegex
         return newRegex.toString();
 
     }
-
+    
+    /**
+     * Reverse the key and value for the given map
+     * @param map String to character mapping
+     * @return Character to String mapping
+     */
     private static HashMap<Character, String> reverseMap(
             HashMap<String, Character> map)
     {
@@ -363,6 +418,11 @@ public class InitRegex
 
     // Checks to see if the inputted char is a
     // a-z or A-Z character
+    /**
+     * Determines if the inputted character is a-z or A-Z
+     * @param character to be checked
+     * @return if it is a character or not
+     */
     private static boolean isChar(char character)
     {
         if ((character >= 'a' && character <= 'z')
@@ -372,7 +432,12 @@ public class InitRegex
         }
         return false;
     }
-
+    
+    /**
+     * Debug function used to print the mapping
+     * @param regex work on
+     * @return final converted regex
+     */
     private static String testMapping(String regex)
     {
         String noSpaces = removeSpaces(regex);
