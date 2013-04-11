@@ -28,7 +28,7 @@ public class Driver
         ScannerGenerator sg = null;
         try
         {
-            sg = ScannerGenerator.makeScannerGenerator(specfile);
+            sg = ScannerGenerator.init(specfile);
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -44,5 +44,8 @@ public class Driver
     {
         System.out.println("Usage:");
         System.out.println("java Driver SPEC_FILE INPUT_FILE");
+    }
+}
+FILE");
     }
 }

@@ -1,5 +1,13 @@
 package sg;
 
+/***
+ * ScannerGenerator
+ * 
+ * Represents a scanner generator - calls RDP and makes a DFA
+ * @author mlfong
+ * @version 1.0
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -49,7 +57,15 @@ public class ScannerGenerator
         return this.bigDFA;
     }
 
-    public static ScannerGenerator makeScannerGenerator(String filename)
+    /*****
+     * init
+     * 
+     * initializes the scanner generator
+     * @param filename
+     * @return
+     * @throws IOException
+     */
+    public static ScannerGenerator init(String filename)
             throws IOException
     {
         File f = new File(filename);
@@ -70,19 +86,16 @@ public class ScannerGenerator
             String classname = s.substring(0, divider);
             String theregex = s.substring(divider + 1);
             String sanitized = InitRegex.initializeRegex(theregex);
-            // remove +'s -> ()()*
             sanitized = sanitized.substring(1, sanitized.length() - 1);
-            sanitized = sanitized.replaceAll(" ", "");
-            // System.out.println("We are on: " + classname + " which is: "
-            // + sanitized);
+            sanitized = Util.removeSpaces(sanitized);
 
             NFA nfa = RecursiveDescentParserNFA.validateRegex(sanitized,
                     classesNFA);
             if (nfa == null)
             {
-                System.out.println("uh oh failed on: ");
-                System.out.println("\tname: " + classname);
-                System.out.println("\tregex: " + sanitized);
+                System.err.println("Error: RDP Failed on line " + s);
+                br.close();
+                System.exit(0);
             }
             if (inTokens) // token generation
             {
