@@ -1,3 +1,4 @@
+package sg;
 
 public class BadDefinitionException extends Exception
 {

@@ -1,4 +1,4 @@
-package rdp;
+package sg.fa;
 /****
  * State
  * Represents a NFA State
@@ -105,8 +105,8 @@ public class State
 //        return this.name.equals(o.name) || this.name == o.name;
 //    }
 
-//    public int hashCode()
-//    {
-//        return this.name.hashCode();
-//    }
+    public int hashCode()
+    {
+        return this.name.hashCode();
+    }
 }

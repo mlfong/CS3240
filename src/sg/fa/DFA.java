@@ -1,4 +1,5 @@
-package rdp;
+package sg.fa;
+
 /****
  * DFA
  * Represents a deterministic finite automata
@@ -29,8 +30,8 @@ public class DFA
     }
 
     /****
-     * getStartState
-     * getter for start state
+     * getStartState getter for start state
+     * 
      * @return
      */
     public DFAState getStartState()
@@ -39,8 +40,8 @@ public class DFA
     }
 
     /****
-     * getDFATable
-     * getter for DFA table
+     * getDFATable getter for DFA table
+     * 
      * @return
      */
     public HashMap<DFAState, HashMap<Character, DFAState>> getDFATable()
@@ -49,9 +50,10 @@ public class DFA
     }
 
     /******
-     * specialValidate
-     * validates a string to the regex of the DFA, and prints out the accept token
-     * returns a boolean for accept or not, and the accept token
+     * specialValidate validates a string to the regex of the DFA, and prints
+     * out the accept token returns a boolean for accept or not, and the accept
+     * token
+     * 
      * @param string
      * @return
      */
@@ -59,11 +61,12 @@ public class DFA
     {
         return specialValidate(string.toCharArray());
     }
-    
+
     /******
-     * specialValidate
-     * validates a string to the regex of the DFA, and prints out the accept token
-     * returns a boolean for accept or not, and the accept token
+     * specialValidate validates a string to the regex of the DFA, and prints
+     * out the accept token returns a boolean for accept or not, and the accept
+     * token
+     * 
      * @param string
      * @return
      */
@@ -71,7 +74,7 @@ public class DFA
     {
         Object[] o = new Object[2];
         Boolean accept = true;
-        
+
         DFAState curr = this.startState;
         for (int i = 0; i < string.length; i++)
         {
@@ -85,7 +88,7 @@ public class DFA
                 break;
             }
         }
-        if(!accept)
+        if (!accept)
         {
             o[0] = accept;
             o[1] = null;
@@ -94,24 +97,25 @@ public class DFA
         {
             accept = curr.isAccept();
             String thetoken = "";
-            for(State ss : curr.getInnerStates())
+            for (State ss : curr.getInnerStates())
             {
-                if(ss.isTrueAccept())
+                if (ss.isTrueAccept())
                 {
                     thetoken = ss.getAcceptToken();
                     break;
                 }
             }
-            assert(thetoken.length() > 0);
+            assert (thetoken.length() > 0);
             o[0] = accept;
             o[1] = thetoken;
         }
         return o;
     }
-    
+
     /****
-     * validate
-     * Returns true or false by trying to validate the string to the regex the DFA represents
+     * validate Returns true or false by trying to validate the string to the
+     * regex the DFA represents
+     * 
      * @param string
      * @return
      */
@@ -121,8 +125,9 @@ public class DFA
     }
 
     /****
-     * validate
-     * Returns true or false by trying to validate the string to the regex the DFA represents
+     * validate Returns true or false by trying to validate the string to the
+     * regex the DFA represents
+     * 
      * @param string
      * @return
      */
@@ -133,8 +138,6 @@ public class DFA
         {
             Character c = string[i];
             HashMap<Character, DFAState> column = this.dfaTable.get(curr);
-//            if(column == null)
-//                return false;
             if (column.keySet().contains(c))
                 curr = column.get(c);
             else
@@ -142,10 +145,11 @@ public class DFA
         }
         return curr.isAccept();
     }
-    
+
     /****
-     * epsilonClose
-     * Performs epsilon closure on a (NFA) state, returns a DFA State
+     * epsilonClose Performs epsilon closure on a (NFA) state, returns a DFA
+     * State
+     * 
      * @param s
      * @return
      */
@@ -160,10 +164,11 @@ public class DFA
             if (visited.contains(curr))
                 continue;
             visited.add(curr);
-            if(!curr.getHMTransitions().keySet().contains(Transition.EPSILON))
+            if (!curr.getHMTransitions().keySet().contains(Transition.EPSILON))
                 continue;
-            ArrayList<Transition> epsilonTransitions = curr.getHMTransitions().get(Transition.EPSILON);
-            for(Transition t : epsilonTransitions)
+            ArrayList<Transition> epsilonTransitions = curr.getHMTransitions()
+                    .get(Transition.EPSILON);
+            for (Transition t : epsilonTransitions)
                 openList.add(t.getDestState());
         }
         DFAState dfaState = new DFAState(visited);
@@ -171,8 +176,8 @@ public class DFA
     }
 
     /****
-     * convertNFA
-     * Factory method to create DFA, converts a NFA into a DFA 
+     * convertNFA Factory method to create DFA, converts a NFA into a DFA
+     * 
      * @param nfa
      * @return
      */
@@ -189,62 +194,69 @@ public class DFA
         while (!openList.isEmpty())
         {
             DFAState curr = openList.poll();
-            if(visited.contains(curr))
+            if (visited.contains(curr))
                 continue;
             visited.add(curr);
             // get the column headers
             HashSet<Character> ts = new HashSet<Character>();
-            for(State innerState : curr.getInnerStates())
+            for (State innerState : curr.getInnerStates())
                 ts.addAll(innerState.getHMTransitions().keySet());
-            
+
             HashMap<Character, DFAState> aColumn = new HashMap<Character, DFAState>();
-            for(Character tc : ts) {
+            for (Character tc : ts)
+            {
                 DFAState element = new DFAState();
                 table.put(curr, aColumn);
-                for(State innerState : curr.getInnerStates()){
-//                    ArrayList<Transition> destinations = innerState.getHMTransitions().get(tc);
-                    for(Transition possible : innerState.getTransitions()){
-                        if(tc == possible.getTransitionChar()){
+                for (State innerState : curr.getInnerStates())
+                {
+                    for (Transition possible : innerState.getTransitions())
+                    {
+                        if (tc == possible.getTransitionChar())
+                        {
                             State destination = possible.getDestState();
-                            element.getInnerStates().addAll(DFA.epsilonClose(destination).getInnerStates());
+                            element.getInnerStates().addAll(
+                                    DFA.epsilonClose(destination)
+                                            .getInnerStates());
                         }
                     }
                 }
-                for(DFAState dfas : table.keySet())
-                    if(dfas.equals(element))
+                for (DFAState dfas : table.keySet())
+                    if (dfas.equals(element))
                         element = dfas;
-                if(element.getInnerStates().contains(nfa.getAcceptState()))
+                if (element.getInnerStates().contains(nfa.getAcceptState()))
                     element.setAccept(true);
                 aColumn.put(tc, element);
-                
+
             }
-            if(aColumn.size() > 0)
+            if (aColumn.size() > 0)
                 table.put(curr, aColumn);
-            for(Character columnHeader : aColumn.keySet())
+            for (Character columnHeader : aColumn.keySet())
                 openList.add(aColumn.get(columnHeader));
         }
-        for(DFAState key1 : table.keySet()){
+        for (DFAState key1 : table.keySet())
+        {
             HashMap<Character, DFAState> column = table.get(key1);
-            for(Character c : column.keySet()){
+            for (Character c : column.keySet())
+            {
                 DFAState element = column.get(c);
-                for(DFAState key2 : table.keySet()){
-                    if(element.equals(key2) && element != key2){
+                for (DFAState key2 : table.keySet())
+                {
+                    if (element.equals(key2) && element != key2)
+                    {
                         boolean ac = element.isAccept();
                         column.remove(element);
-                        column.put(c,key2);
+                        column.put(c, key2);
                         key2.setAccept(ac);
                     }
                 }
             }
         }
-        
-        
+
         return dfa;
     }
 
     /*****
-     * prettyPrint
-     * prints the DFA table
+     * prettyPrint prints the DFA table
      */
     public void prettyPrint()
     {

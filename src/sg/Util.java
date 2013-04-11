@@ -1,4 +1,4 @@
-package rdp;
+package sg;
 /******
  * @author mlfong
  * @version 1.0
@@ -106,5 +106,18 @@ public class Util
             if(s.charAt(i)==c)
                 cc++;
         return cc;
+    }
+    
+    /****
+     * strips whitespace from input
+     * @param input
+     * @return
+     */
+    public static String removeSpaces(String input) {
+        StringBuilder sb = new StringBuilder();
+        for(Character c : input.toCharArray())
+            if(c!=' ' && c!='\t')
+                sb.append(c);
+        return sb.toString();
     }
 }

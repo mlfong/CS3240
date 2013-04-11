@@ -1,4 +1,4 @@
-package rdp;
+package sg.fa;
 /****
  * Transition
  * 
@@ -9,7 +9,6 @@ package rdp;
 
 public class Transition
 {
-//    public static final Character EPSILON = '\t';
     public static final Character EPSILON = 'ε';
     
     private Character transitionChar;

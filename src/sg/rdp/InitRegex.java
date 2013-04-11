@@ -1,4 +1,4 @@
-package rdp;
+package sg.rdp;
 import java.util.Stack;
 import java.util.HashMap;
 public class InitRegex{
@@ -12,7 +12,6 @@ public class InitRegex{
 	private static final int SLASH = -1;
 	private static final int REGULARCHAR = 0;
 	private static final String STAR = "*";
-	private static final String EPSILON = "☃";
 	//Testcases for adding parens, and changing + to *
 	private static final String testCases[] = {"a+", "aaa+", "ab+", "abbb+", "(a)+", "(ab)+", 
 											"\\+", "\\t+", "\\)", "(ab(cd))+", "(ab(cd)*)+",
