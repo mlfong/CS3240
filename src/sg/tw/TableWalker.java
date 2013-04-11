@@ -8,22 +8,28 @@ import java.util.ArrayList;
 import sg.Util;
 import sg.fa.DFA;
 
+
+/**
+ * 
+ * @author JGleason
+ * @version 1.0
+ * 
+ * Walks a dfa and stores the results of the desired input
+ */
 public class TableWalker
 {
     private File file;
-    private ArrayList<MyToken> tokens;
     private ArrayList<InputToken> userTokens;
 
-    public TableWalker(String filename, ArrayList<MyToken> tokens)
+    public TableWalker(String filename)
     {
         this.file = new File(filename);
-        this.tokens = tokens;
         this.userTokens = new ArrayList<InputToken>();
     }
 
     public TableWalker()
     {
-        this("", null);
+        this("");
     }
 
     /***
@@ -91,6 +97,7 @@ public class TableWalker
                         }
                         else
                         {
+                        	String failedme = lastInputTokeName;
                             if (failFound == false)
                             {
                                 index++;
@@ -102,8 +109,11 @@ public class TableWalker
                             }
                             if (index == currentLine.length())
                             {
+                            	System.out.println("The line: " +failedme );
+                            	System.out.println("Has matched nothing");
                                 System.exit(0);
                             }
+                            failedme = "";
                         }
                     }
                 }
@@ -115,35 +125,21 @@ public class TableWalker
         }
     }
 
+    /**
+     * Removes all the spaces from a string
+     * @param input String you want to removes spaces from
+     * @return String with no spaces
+     */
     public String sanitize(String input)
     {
         return Util.removeSpaces(input);
     }
-
-    public MyToken firstMatch(String[] checkString)
-    {
-        for (MyToken token : tokens)
-        {
-            if (token.check2(checkString))
-            {
-                return token;
-            }
-        }
-        return null;
-    }
-
-    public boolean hasMatch(String[] checkString)
-    {
-        for (MyToken token : tokens)
-        {
-            if (token.check2(checkString))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
+    /**
+     * Makes a string from an arraylist of strings
+     * @param stringList
+     * @return Single string
+     */
     public String makeString(ArrayList<String> stringList)
     {
         StringBuilder sb = new StringBuilder();
@@ -151,17 +147,7 @@ public class TableWalker
             sb.append(s);
         return sb.toString();
     }
-
-    public String[] makeArray(ArrayList<String> stringList)
-    {
-        String[] toReturn = new String[stringList.size()];
-        for (int i = 0; i < toReturn.length; i++)
-        {
-            toReturn[i] = stringList.get(i);
-        }
-        return toReturn;
-    }
-
+    
     public ArrayList<InputToken> getUserTokens()
     {
         return userTokens;
