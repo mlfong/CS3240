@@ -25,7 +25,8 @@ public class RDPTest {
         test12();
         test13();
         test14();
-        
+        test15();
+        test16();
         
     }
     
@@ -310,6 +311,46 @@ public class RDPTest {
         NFATest.testAll(dfaResult, test13, answers13);
         // dfaResult.prettyPrint();
         System.out.println();
+    }
+    
+    public static void test15(){
+        // $FLOAT ($DIGIT)+ \. ($DIGIT)+
+        // String regex ="($DIGIT)+\\.($DIGIT)+";
+        String regex ="[Z-A]";
+        System.out.println("*****Testing: " + regex);
+        HashMap<String, NFA> exampleDefinedClass =initDefinedClasses();
+
+        NFA result = RecursiveDescentParserNFA.validateRegex(regex, exampleDefinedClass);
+        HashSet<Character> resultChar = NFA.oneLayerTransitions(result);
+        System.out.println(resultChar.size());
+        Util.reallyPrettyPrint(resultChar);
+        if(result == null){
+            System.out.println("Passed: result was null");
+            
+        }
+        else{
+            System.out.println("FAILED: result was not null");
+        }
+    }
+    
+    public static void test16(){
+        // $FLOAT ($DIGIT)+ \. ($DIGIT)+
+        // String regex ="($DIGIT)+\\.($DIGIT)+";
+        String regex ="[A-A]";
+        System.out.println("*****Testing: " + regex);
+        HashMap<String, NFA> exampleDefinedClass =initDefinedClasses();
+
+        NFA result = RecursiveDescentParserNFA.validateRegex(regex, exampleDefinedClass);
+        HashSet<Character> resultChar = NFA.oneLayerTransitions(result);
+        System.out.println(resultChar.size());
+        Util.reallyPrettyPrint(resultChar);
+        if(resultChar.size() == 1){
+            System.out.println("PASSED: Only 1 item in one layer transitions");
+        }
+        else{
+            System.out.println("FAILED");
+        }
+       
     }
     private static HashMap<String, NFA> initDefinedClasses()
     {

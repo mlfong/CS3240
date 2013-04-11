@@ -573,8 +573,16 @@ public class RecursiveDescentParserNFA
                         "Created RangedNFA from CLS_CHAR and charSetTail");
                 // System.out.println("Value of CLS_CHAR is: "+CLS_CHAR);
                 // System.out.println("Value of charSetTail is: "+charSetTail);
-
-                return NFA.makeRangedNFA(CLS_CHAR, charSetTail);
+                
+                if((int)CLS_CHAR > (int) charSetTail){
+                    return null;
+                }
+                else if((int)CLS_CHAR == (int) charSetTail){
+                    return createLiteralNFA(CLS_CHAR);
+                }
+                else{
+                    return NFA.makeRangedNFA(CLS_CHAR, charSetTail);
+                }
             }
             else
             {
