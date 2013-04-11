@@ -46,6 +46,3 @@ public class Driver
         System.out.println("java Driver SPEC_FILE INPUT_FILE");
     }
 }
-FILE");
-    }
-}

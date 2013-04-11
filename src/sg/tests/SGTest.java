@@ -10,8 +10,7 @@ public class SGTest
 {
     public static void main(String[] args) throws IOException
     {
-        ScannerGenerator sg2 = ScannerGenerator
-                .makeScannerGenerator("sample/SampleSpec");
+        ScannerGenerator sg2 = ScannerGenerator.init("sample/SampleSpec");
         DFA dfa = sg2.getDFA();
         TableWalker reader = new TableWalker("sample/SampleInput", null);
         reader.tableWalk(dfa);
