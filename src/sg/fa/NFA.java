@@ -114,6 +114,7 @@ public class NFA
 
     /****
      * makes a NFA for a range of characters
+     * 
      * @param start
      * @param end
      * @return NFA
@@ -122,9 +123,10 @@ public class NFA
     {
         return makeRangedNFA((char) (start), (char) (end));
     }
-    
+
     /****
      * makes a NFA for a range of characters
+     * 
      * @param start
      * @param end
      * @return NFA
@@ -136,6 +138,7 @@ public class NFA
 
     /****
      * makes a NFA for a range of characters
+     * 
      * @param hs
      * @return NFA
      */
@@ -168,15 +171,25 @@ public class NFA
 
     /***
      * makes a NFA for a range of characters
+     * 
      * @param start
      * @param end
      * @return NFA
      */
     public static NFA makeRangedNFA(Character start, Character end)
     {
-        assert (start.charValue() >= 32 && start.charValue() <= 126);
-        assert (end.charValue() >= 32 && end.charValue() <= 126);
-        assert (start.charValue() <= end.charValue());
+        if (!(start.charValue() >= 33 && start.charValue() <= 126))
+        {
+            System.err.println("Range [" + start + "-" + end
+                    + "] beyond printable ASCII.");
+            System.exit(0);
+        }
+        if (!(start.charValue() <= end.charValue()))
+        {
+            System.err.println("Range end (" + end + ") comes before start ("
+                    + start + ")");
+            System.exit(0);
+        }
         State startMe = new State("range" + start + "-" + end + "s", false);
         State endMe = new State("range" + start + "-" + end + "f", true);
         for (char c = start.charValue(); c <= end.charValue(); c++)
@@ -324,7 +337,7 @@ public class NFA
         {
             // State curr = openList.poll();
             State curr = openList.pop();
-            if(visited.contains(curr))
+            if (visited.contains(curr))
                 continue;
             visited.add(curr);
             System.out.println(curr.getName());
