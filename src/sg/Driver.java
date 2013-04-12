@@ -43,6 +43,7 @@ public class Driver
     public static void usage()
     {
         System.out.println("Usage:");
-        System.out.println("java Driver SPEC_FILE INPUT_FILE");
+        System.out.println("java Driver SPEC_FILE INPUT_FILE OR");
+        System.out.println("ant Driver -Dspec=\"path to spec file\" -Dinput=\"path to input file\"");
     }
 }
