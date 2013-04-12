@@ -44,7 +44,7 @@ public class TableWalker
             String currentLine;
             while ((currentLine = br.readLine()) != null)
             {
-                int index = 0;
+                int index = 0, lastIndex = 0, erased = 0;
                 boolean matchFound = false, failFound = false;
                 ArrayList<String> testStrings = new ArrayList<String>();
                 String lastMatch = null;
@@ -64,15 +64,15 @@ public class TableWalker
                     Object[] answers = dfa
                             .specialValidate(makeString(testStrings));
                     boolean match = ((Boolean) answers[0]).booleanValue();
-                    if (match)
-                    {
-                        failFound = true;
-                    }
-
+                    
+                    if(match)
+                    	failFound = true;
+                    
                     if (match)
                     {
                         matchFound = true;
                         lastMatch = (String) answers[1];
+                        lastIndex = index;
                         index++;
                         if (index == currentLine.length())
                         {
@@ -87,33 +87,30 @@ public class TableWalker
                     {
                         if (matchFound)
                         {
-                            lastInputTokeName = lastInputTokeName.substring(0,
-                                    lastInputTokeName.length() - 1);
-                            this.userTokens.add(new InputToken(
-                                    lastInputTokeName, lastMatch));
-                            lastInputTokeName = "";
-                            testStrings.clear();
-                            matchFound = false;
+                        	index++;
+                        	if(index == currentLine.length()) {
+	                            lastInputTokeName = lastInputTokeName.substring(0,
+	                                    lastIndex - erased + 1);
+	                            erased += lastInputTokeName.length();
+	                            this.userTokens.add(new InputToken(
+	                                    lastInputTokeName, lastMatch));
+	                            lastInputTokeName = "";
+	                            testStrings.clear();
+	                            matchFound = false;
+	                            index = lastIndex + 1;
+                        	}
                         }
                         else
                         {
                         	String failedme = lastInputTokeName;
-                            if (failFound == false)
-                            {
-                                index++;
-                            }
-                            else
-                            {
-                                lastInputTokeName = "";
-                                testStrings.clear();
-                            }
-                            if (index == currentLine.length())
-                            {
-                            	System.out.println("The line: " +failedme );
-                            	System.out.println("Has matched nothing");
-                                System.exit(0);
-                            }
-                            failedme = "";
+                        	index++;
+                        	if (index == currentLine.length())
+                        	{
+                        		System.out.println("The line: " +failedme );
+                        		System.out.println("Has matched nothing");
+                        		System.exit(0);
+                        	}
+                        	failedme = "";
                         }
                     }
                 }
