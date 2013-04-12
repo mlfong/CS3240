@@ -71,7 +71,7 @@ public class NFA
      * 
      * @param superset
      * @param removeset
-     * @return
+     * @return HashSet<Character>
      */
     public static HashSet<Character> disjointSet(HashSet<Character> superset,
             HashSet<Character> removeset)
@@ -88,7 +88,7 @@ public class NFA
      * of transitions
      * 
      * @param nfa
-     * @return
+     * @return NFA
      */
     public static HashSet<Character> oneLayerTransitions(NFA nfa)
     {
@@ -112,33 +112,32 @@ public class NFA
         return hs;
     }
 
-    /*****
+    /****
      * makes a NFA for a range of characters
-     * 
-     * @param c
-     * @return
+     * @param start
+     * @param end
+     * @return NFA
      */
     public static NFA makeRangedNFA(int start, int end)
     {
         return makeRangedNFA((char) (start), (char) (end));
     }
-
-    /*****
+    
+    /****
      * makes a NFA for a range of characters
-     * 
-     * @param c
-     * @return
+     * @param start
+     * @param end
+     * @return NFA
      */
     public static NFA makeRangedNFA(char start, char end)
     {
         return makeRangedNFA(new Character(start), new Character(end));
     }
 
-    /*****
+    /****
      * makes a NFA for a range of characters
-     * 
-     * @param c
-     * @return
+     * @param hs
+     * @return NFA
      */
     public static NFA makeRangedNFA(HashSet<Character> hs)
     {
@@ -167,11 +166,11 @@ public class NFA
         return all;
     }
 
-    /*****
+    /***
      * makes a NFA for a range of characters
-     * 
-     * @param c
-     * @return
+     * @param start
+     * @param end
+     * @return NFA
      */
     public static NFA makeRangedNFA(Character start, Character end)
     {
@@ -192,7 +191,7 @@ public class NFA
      * makes a NFA for one character
      * 
      * @param c
-     * @return
+     * @return NFA
      */
     public static NFA makeCharNFA(char c)
     {
@@ -203,24 +202,15 @@ public class NFA
      * makes a NFA for one character
      * 
      * @param c
-     * @return
+     * @return NFA
      */
     public static NFA makeCharNFA(Character c)
     {
-        // State s1pre = new State("" + c + (int) (Math.random() * 1000) + "p",
-        // false);
-        // State s1mid = new State("" + c + (int) (Math.random() * 1000) + "m",
-        // false);
-        // State s1fin = new State("" + c + (int) (Math.random() * 1000) + "f",
-        // true);
         State one = new State("" + c + (int) (Math.random() * 1000) + "p",
                 false);
         State two = new State("" + c + (int) (Math.random() * 1000) + "p", true);
         one.addTransition(new Transition(c, two));
-        // s1pre.addTransition(new Transition(c, s1mid));
-        // s1mid.addTransition(new Transition(Transition.EPSILON, s1fin));
         return new NFA(one, two);
-        // return new NFA(s1pre, s1fin);
     }
 
     public State getStartState()
@@ -248,7 +238,7 @@ public class NFA
      * 
      * @param one
      * @param two
-     * @return
+     * @return NFA
      */
     public static NFA concatenate(NFA one, NFA two)
     {
@@ -273,7 +263,7 @@ public class NFA
      * 
      * @param one
      * @param two
-     * @return
+     * @return NFA
      */
     public static NFA union(NFA one, NFA two)
     {
@@ -302,7 +292,7 @@ public class NFA
      * does a regex STAR on a NFA
      * 
      * @param one
-     * @return
+     * @return NFA
      */
     public static NFA star(NFA one)
     {

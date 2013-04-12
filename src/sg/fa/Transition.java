@@ -10,7 +10,7 @@ package sg.fa;
 
 public class Transition
 {
-    public static final Character EPSILON = 'Î';
+    public static final Character EPSILON = 'Îµ';
     
     private Character transitionChar;
     private State destState;
