@@ -49,24 +49,34 @@ public class ScannerGenerator
             return this.bigDFA;
         ArrayList<String> keys = new ArrayList<String>(this.getTokensNFA()
                 .keySet());
-        NFA bigNFA = NFA.union(this.getTokensNFA().get(keys.get(0)), this
-                .getTokensNFA().get(keys.get(1)));
-        for (int i = 2; i < keys.size(); i++)
-            bigNFA = NFA.union(bigNFA, this.getTokensNFA().get(keys.get(i)));
-        this.bigDFA = DFA.convertNFA(bigNFA);
-        return this.bigDFA;
+        if (keys.size() >= 2)
+        {
+            NFA bigNFA = NFA.union(this.getTokensNFA().get(keys.get(0)), this
+                    .getTokensNFA().get(keys.get(1)));
+            for (int i = 2; i < keys.size(); i++)
+                bigNFA = NFA
+                        .union(bigNFA, this.getTokensNFA().get(keys.get(i)));
+            this.bigDFA = DFA.convertNFA(bigNFA);
+            return this.bigDFA;
+        }
+        else
+        // if(keys.size() == 1)
+        {
+            this.bigDFA = DFA.convertNFA(this.getTokensNFA().get(keys.get(0)));
+            return this.bigDFA;
+        }
     }
 
     /*****
      * init
      * 
      * initializes the scanner generator
+     * 
      * @param filename
      * @return
      * @throws IOException
      */
-    public static ScannerGenerator init(String filename)
-            throws IOException
+    public static ScannerGenerator init(String filename) throws IOException
     {
         File f = new File(filename);
         BufferedReader br = new BufferedReader(new FileReader(f));
