@@ -78,6 +78,8 @@ public class TableWalker
                         {
                             this.userTokens.add(new InputToken(
                                     lastInputTokeName, lastMatch));
+                            System.out.println(this.userTokens.get(userTokens.size() - 1).toString().substring(1));
+                            
                             lastInputTokeName = "";
                             testStrings.clear();
                             matchFound = false;
@@ -94,6 +96,8 @@ public class TableWalker
 	                            erased += lastInputTokeName.length();
 	                            this.userTokens.add(new InputToken(
 	                                    lastInputTokeName, lastMatch));
+	                            System.out.println(this.userTokens.get(userTokens.size() - 1).toString().substring(1));
+	                            
 	                            lastInputTokeName = "";
 	                            testStrings.clear();
 	                            matchFound = false;
