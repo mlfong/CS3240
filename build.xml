@@ -15,11 +15,6 @@
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
-            <fileset dir="images">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-        <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
                 <exclude name="**/*.java"/>
             </fileset>
@@ -34,7 +29,6 @@
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac encoding="UTF-8" debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
-            <src path="images"/>
             <src path="src"/>
             <classpath refid="CS3240.classpath"/>
         </javac>
@@ -53,8 +47,25 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
+    <target depends="build" name="Driver">
+        <java classname="sg.Driver" failonerror="true" fork="yes">
+        	<arg value = "${spec}"/>
+   	    	<arg value = "${input}"/>
+            <classpath refid="CS3240.classpath"/>
+        </java>
+    </target>
+    <target name="InitRegex (1)">
+        <java classname="rdp.InitRegex" failonerror="true" fork="yes">
+            <classpath refid="CS3240.classpath"/>
+        </java>
+    </target>
     <target name="InitRegex">
         <java classname="InitRegex" failonerror="true" fork="yes">
+            <classpath refid="CS3240.classpath"/>
+        </java>
+    </target>
+    <target name="NFATest (1)">
+        <java classname="rdp.tests.NFATest" failonerror="true" fork="yes">
             <classpath refid="CS3240.classpath"/>
         </java>
     </target>
@@ -65,6 +76,11 @@
     </target>
     <target name="RecursiveDescentParser">
         <java classname="RecursiveDescentParser" failonerror="true" fork="yes">
+            <classpath refid="CS3240.classpath"/>
+        </java>
+    </target>
+    <target name="RecursiveDescentParserNFA (1)">
+        <java classname="sg.rdp.RecursiveDescentParserNFA" failonerror="true" fork="yes">
             <classpath refid="CS3240.classpath"/>
         </java>
     </target>
@@ -83,35 +99,18 @@
             <classpath refid="CS3240.classpath"/>
         </java>
     </target>
-    <target name="SGTest">
-        <java classname="rdp.tests.SGTest" failonerror="true" fork="yes">
-            <classpath refid="CS3240.classpath"/>
-        </java>
-    </target>
-    <target name="NFATest (1)">
-        <java classname="rdp.tests.NFATest" failonerror="true" fork="yes">
-            <classpath refid="CS3240.classpath"/>
-        </java>
-    </target>
-    <target name="InitRegex (1)">
-        <java classname="rdp.InitRegex" failonerror="true" fork="yes">
-            <classpath refid="CS3240.classpath"/>
-        </java>
-    </target>
     <target name="SGTest (1)">
         <java classname="sg.tests.SGTest" failonerror="true" fork="yes">
             <classpath refid="CS3240.classpath"/>
         </java>
     </target>
-    <target name="RecursiveDescentParserNFA (1)">
-        <java classname="sg.rdp.RecursiveDescentParserNFA" failonerror="true" fork="yes">
+    <target name="SGTest">
+        <java classname="rdp.tests.SGTest" failonerror="true" fork="yes">
             <classpath refid="CS3240.classpath"/>
         </java>
     </target>
-    <target depends="build" name="Driver">
-        <java classname="sg.Driver" failonerror="true" fork="yes">
-        	<arg value = "${spec}"/>
-        	<arg value = "${input}"/>
+    <target name="NFATest (2)">
+        <java classname="sg.tests.NFATest" failonerror="true" fork="yes">
             <classpath refid="CS3240.classpath"/>
         </java>
     </target>
