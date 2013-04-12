@@ -1,5 +1,0 @@
-A = 10
-PRINT a
-b = a*10 + 20
-c = 4.5
-PRINT b
