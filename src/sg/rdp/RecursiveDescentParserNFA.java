@@ -574,10 +574,7 @@ public class RecursiveDescentParserNFA
                 // System.out.println("Value of CLS_CHAR is: "+CLS_CHAR);
                 // System.out.println("Value of charSetTail is: "+charSetTail);
                 
-                if((int)CLS_CHAR > (int) charSetTail){
-                    return null;
-                }
-                else if((int)CLS_CHAR == (int) charSetTail){
+                if((int)CLS_CHAR == (int) charSetTail){
                     return createLiteralNFA(CLS_CHAR);
                 }
                 else{
