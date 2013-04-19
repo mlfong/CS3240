@@ -1,11 +1,59 @@
 package ll1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Rule
 {
     private String lhs ;
     private ArrayList<ArrayList<String>> rhs ;
+    
+    public static HashMap<String, String> tokenToRegex = new HashMap<String,String>(){
+        private static final long serialVersionUID = -3387608531616831640L;
+    {
+    this.put("$BEGIN","begin");
+    this.put("$END", "end");
+    this.put("$EQ", "=");
+    this.put("$REPLACE", "replace");
+    this.put("$WITH", "with");
+    this.put("$IN", "in");
+    this.put("$SEMICOLON", ";");
+    this.put("$RECREP", "recursivereplace");
+    this.put("$GRTNOT", ">!");
+    this.put("$PRINT", "print");
+    this.put("$OPENPARENS", "("); // \(
+    this.put("$CLOSEPARENS", ")"); // \)
+    this.put("$COMMA", ",");
+    this.put("$HASH", "#");
+    this.put("$FIND", "find");
+    this.put("$DIFF", "diff");
+    this.put("$UNION", "union");
+    this.put("$INTERS", "inters");
+    this.put("$MAXFREQ", "maxfreqstring");
+    }};
+    
+    public static HashMap<String, String> regexToToken = new HashMap<String,String>(){
+    {
+    this.put("begin","$BEGIN");
+    this.put("end", "$END");
+    this.put("=", "$EQ");
+    this.put("$REPLACE", "replace");
+    this.put("$WITH", "with");
+    this.put("$IN", "in");
+    this.put("$SEMICOLON", ";");
+    this.put("$RECREP", "recursivereplace");
+    this.put("$GRTNOT", ">!");
+    this.put("$PRINT", "print");
+    this.put("$OPENPARENS", "("); // \(
+    this.put("$CLOSEPARENS", ")"); // \)
+    this.put("$COMMA", ",");
+    this.put("$HASH", "#");
+    this.put("$FIND", "find");
+    this.put("$DIFF", "diff");
+    this.put("$UNION", "union");
+    this.put("$INTERS", "inters");
+    this.put("$MAXFREQ", "maxfreqstring");
+    }};
     
     public Rule(){
         this.lhs = "";
