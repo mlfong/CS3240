@@ -7,6 +7,7 @@ public class Rule
 {
     private String lhs ;
     private ArrayList<ArrayList<String>> rhs ;
+    private ArrayList<String> firstSet;
     
     public static HashMap<String, String> tokenToRegex = new HashMap<String,String>(){
         private static final long serialVersionUID = -3387608531616831640L;
@@ -58,6 +59,7 @@ public class Rule
     public Rule(){
         this.lhs = "";
         this.rhs = new ArrayList<ArrayList<String>>();
+        this.firstSet = new ArrayList<String>();
     }
     
     public String getLHS(){
@@ -124,6 +126,39 @@ public class Rule
         return token.charAt(0) == '<' && token.charAt(token.length()-1) == '>';
     }
     
+    public void addToFirst(String input){
+    	if(!this.firstSet.contains(input)){
+    	 	this.firstSet.add(input);
+    	}
+    }
+    
+    public void addToFirst(ArrayList<String> input){
+    	for(String i : input){
+    		if(!this.firstSet.contains(i)){
+    			this.firstSet.add(i);
+    		}
+    	}
+    }
+    
+    public ArrayList<String> getFirstSet(){
+    	return this.firstSet;
+    }
+    
+    public String first(int index){
+    	return this.rhs.get(index).get(0);
+    }
+    
+    
+    public void printFirstSet(){
+    	System.out.print(this.lhs + " : ");
+    	System.out.print("{");
+    	for(String s : this.firstSet){
+    		System.out.print(" "+s+" ");
+    	}
+    	System.out.println("}");
+    }
+    
+  
    
     
     
