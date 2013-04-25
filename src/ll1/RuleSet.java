@@ -48,7 +48,7 @@ public class RuleSet
     
     public static void main(String[] args) throws Exception {
         RuleSet rs = new RuleSet();
-        rs.init("SampleGrammer2.txt");
+        rs.init("SampleGrammer3.txt");
         System.out.println(rs);
       
         rs.generateFirstSets();
@@ -100,8 +100,10 @@ public class RuleSet
     		return toReturn;
     	}
     	Rule temp = this.rules.get(x);
-    	for(ArrayList<String> s: temp.getRHS()){
-    		toReturn.addAll(first(s.get(0)));
+    	if(temp!= null){
+	    	for(ArrayList<String> s: temp.getRHS()){
+	    		toReturn.addAll(first(s.get(0)));
+	    	}
     	}
     	
     	return toReturn;
