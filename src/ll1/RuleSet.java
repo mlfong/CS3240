@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import sg.fa.Transition;
 
 public class RuleSet
 {
@@ -74,7 +73,7 @@ public class RuleSet
     			int c = 0;
     			while(c < ruleK.size()){
     				ArrayList<String> firsts = first(ruleK.get(c));
-    				if(!firsts.contains(""+Transition.EPSILON)){
+    				if(!firsts.contains("<epsilon>")){
 //    					System.out.println("No epsilons");
 //    					printArray(firsts);
     					current.addToFirst(firsts);
@@ -87,7 +86,7 @@ public class RuleSet
     				}
     			}
     			if(c>=ruleK.size()){
-    				current.addToFirst(""+Transition.EPSILON);
+    				current.addToFirst("<epsilon>");
     			}
     			k++;
     		}
@@ -118,7 +117,8 @@ public class RuleSet
 	    					if(Rule.isRule(next)){
 	    						Rule next1 = this.rules.get(next);
 	    						toUpdate.addToFollow(removeAllEpsilon(next1.getFirstSet()));
-	    						if(next1.getFirstSet().contains(""+Transition.EPSILON)){
+	    						if(next1.getFirstSet().contains("<epsilon>")){
+	    							
 	    							toUpdate.addToFollow(r.getFollowSet());
 	    						}
 	    					}
@@ -142,8 +142,8 @@ public class RuleSet
     
     
     public ArrayList<String> removeAllEpsilon(ArrayList<String> input){
-    	while(input.contains(""+Transition.EPSILON)){
-    		input.remove(""+Transition.EPSILON);
+    	while(input.contains("<epsilon>")){
+    		input.remove("<epsilon>");
     	}
     	return input;
     }
