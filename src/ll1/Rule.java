@@ -36,6 +36,7 @@ public class Rule
     }};
     
     public static HashMap<String, String> regexToToken = new HashMap<String,String>(){
+        private static final long serialVersionUID = 1610564828203122262L;
     {
     this.put("begin","$BEGIN");
     this.put("end", "$END");
