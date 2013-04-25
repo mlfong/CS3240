@@ -8,6 +8,8 @@ public class Rule
     private String lhs ;
     private ArrayList<ArrayList<String>> rhs ;
     private ArrayList<String> firstSet;
+    private ArrayList<String> followSet;
+    private boolean start;
     
     public static HashMap<String, String> tokenToRegex = new HashMap<String,String>(){
         private static final long serialVersionUID = -3387608531616831640L;
@@ -60,9 +62,22 @@ public class Rule
         this.lhs = "";
         this.rhs = new ArrayList<ArrayList<String>>();
         this.firstSet = new ArrayList<String>();
+        this.followSet = new ArrayList<String>();
+        this.start = false;
     }
     
-    public String getLHS(){
+    
+    public boolean isStart() {
+		return start;
+	}
+
+
+	public void setStart(boolean start) {
+		this.start = start;
+	}
+
+
+	public String getLHS(){
         return this.lhs;
     }
     public ArrayList<ArrayList<String>> getRHS(){
@@ -140,19 +155,41 @@ public class Rule
     	}
     }
     
+    public void addToFollow(String input){
+    	if(!this.followSet.contains(input)){
+    	 	this.followSet.add(input);
+    	}
+    }
+    
+    public void addToFollow(ArrayList<String> input){
+    	for(String i : input){
+    		if(!this.followSet.contains(i)){
+    			this.followSet.add(i);
+    		}
+    	}
+    }
+    
     public ArrayList<String> getFirstSet(){
     	return this.firstSet;
     }
     
-    public String first(int index){
-    	return this.rhs.get(index).get(0);
+    public ArrayList<String> getFollowSet(){
+    	return this.followSet;
     }
-    
     
     public void printFirstSet(){
     	System.out.print(this.lhs + " : ");
     	System.out.print("{");
     	for(String s : this.firstSet){
+    		System.out.print(" "+s+" ");
+    	}
+    	System.out.println("}");
+    }
+    
+    public void printFollowSet(){
+    	System.out.print(this.lhs + " : ");
+    	System.out.print("{");
+    	for(String s : this.followSet){
     		System.out.print(" "+s+" ");
     	}
     	System.out.println("}");

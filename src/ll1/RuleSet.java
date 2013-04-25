@@ -30,9 +30,14 @@ public class RuleSet
     public void init(String filename) throws Exception {
         BufferedReader br = new BufferedReader(new FileReader(new File(filename)));
         String s ;
+        boolean first = true;
         while(null != (s=br.readLine())){
             Rule r = new Rule();
             r.init(s);
+            if(first){
+            	r.setStart(true);
+            	first = false;
+            }
             this.addRule(r);
         }
         br.close();
@@ -86,6 +91,35 @@ public class RuleSet
     	    	
     }
     
+    public void generateFollowSets(){
+    	for(String r1: this.rules.keySet()){
+    		Rule r = this.rules.get(r1);
+    		if(r.isStart()){
+    			r.addToFollow("$");
+    		}
+    	}
+
+    	
+    	for(String r1: this.rules.keySet()){
+    		Rule r = this.rules.get(r1);
+    		int k = 0;
+    		while(k < r.getRHS().size()){
+    			ArrayList<String> ruleProd = r.getRHS().get(k);
+    			int c = 0;
+    			while(c < ruleProd.size()){
+    				int next = c+1;
+    				if(next >= ruleProd.size() ){
+    					//TODO: Handle this
+    				}
+    				
+    				
+    			}
+    		}
+    	}
+
+    }
+    
+    
     public ArrayList<String> removeAllEpsilon(ArrayList<String> input){
     	while(input.contains(""+Transition.EPSILON)){
     		input.remove(""+Transition.EPSILON);
@@ -114,6 +148,14 @@ public class RuleSet
     		this.rules.get(rl).printFirstSet();
     	}
     }
+    
+    public void printFollowSets(){
+    	for(String rl : this.rules.keySet()){
+    		this.rules.get(rl).printFollowSet();
+    	}
+    }
+    
+    
     
     public void printArray(ArrayList<String> input){
     	System.out.print("{");
