@@ -106,13 +106,28 @@ public class RuleSet
     		while(k < r.getRHS().size()){
     			ArrayList<String> ruleProd = r.getRHS().get(k);
     			int c = 0;
-    			while(c < ruleProd.size()){
-    				int next = c+1;
-    				if(next >= ruleProd.size() ){
-    					//TODO: Handle this
+    			while(c < ruleProd.size()-1){
+    				String current = ruleProd.get(c);
+    				String next = ruleProd.get(c+1);
+    				if(Rule.isRule(current)){
+    					Rule toUpdate = this.rules.get(current);
+    					if(Rule.isRule(next)){
+    						Rule next1 = this.rules.get(next);
+    						toUpdate.addToFollow(removeAllEpsilon(next1.getFirstSet()));
+    						if(next1.getFirstSet().contains(""+Transition.EPSILON)){
+    							toUpdate.addToFollow(r.getFollowSet());
+    						}
+    					}
+    					else{
+    						toUpdate.addToFollow(next);
+    					}
     				}
-    				
-    				
+    				c++;
+    			}
+    			String current = ruleProd.get(c);
+    			if(Rule.isRule(current)){
+    				Rule toUpdate = this.rules.get(current);
+    				//toUpdate
     			}
     		}
     	}
@@ -128,7 +143,7 @@ public class RuleSet
     }
     
     public ArrayList<String> first(String x){
-    	ArrayList<String> toReturn = new ArrayList<>();
+    	ArrayList<String> toReturn = new ArrayList<String>();
     	if(!Rule.isRule(x)){
     		toReturn.add(x);
     		return toReturn;
