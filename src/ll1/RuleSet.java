@@ -57,7 +57,11 @@ public class RuleSet
         System.out.println(rs);
       
         rs.generateFirstSets();
+        System.out.println("First sets");
         rs.printFirstSets();
+        rs.generateFollowSets();
+        System.out.println("Follow sets");
+        rs.printFollowSets();
     }
     
     public void generateFirstSets(){
@@ -127,8 +131,9 @@ public class RuleSet
     			String current = ruleProd.get(c);
     			if(Rule.isRule(current)){
     				Rule toUpdate = this.rules.get(current);
-    				//toUpdate
+    				toUpdate.addToFollow(r.getFollowSet());
     			}
+    			k++;
     		}
     	}
 
