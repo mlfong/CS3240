@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 @SuppressWarnings("all")
 
@@ -89,6 +90,13 @@ public class Util
     {
         ArrayList al = new ArrayList();
         for(Object o : hs)
+            al.add(o);
+        Collections.sort(al);
+        prettyPrint(al);
+    }
+    public static void reallyPrettyPrint(Set s){
+        ArrayList al = new ArrayList();
+        for(Object o : s)
             al.add(o);
         Collections.sort(al);
         prettyPrint(al);

@@ -138,6 +138,8 @@ public class Rule
     }
     
     public static boolean isRule(String token){
+        if(token.equals("<epsilon>"))
+            return false;
         return token.charAt(0) == '<' && token.charAt(token.length()-1) == '>';
     }
     
