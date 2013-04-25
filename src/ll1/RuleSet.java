@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import sg.Util;
+
 
 public class RuleSet
 {
@@ -52,12 +54,13 @@ public class RuleSet
     
     public static void main(String[] args) throws Exception {
         RuleSet rs = new RuleSet();
-        rs.init("SampleGrammer3.txt");
+        rs.init("SampleGrammar3.txt");
         System.out.println(rs);
       
         rs.generateFirstSets();
         System.out.println("First sets");
         rs.printFirstSets();
+        System.out.println();
         rs.generateFollowSets();
         System.out.println("Follow sets");
         rs.printFollowSets();
@@ -101,8 +104,8 @@ public class RuleSet
     			r.addToFollow("$");
     		}
     	}
-
-    	for(String r2: this.rules.keySet()){
+    	int ok = 0;
+    	while(ok++<100){
     	for(String r1: this.rules.keySet()){
     		Rule r = this.rules.get(r1);
     		int k = 0;
@@ -113,13 +116,20 @@ public class RuleSet
 	    				String current = ruleProd.get(c);
 	    				String next = ruleProd.get(c+1);
 	    				if(Rule.isRule(current)){
+//	    				    System.out.println("Current is a rule");
 	    					Rule toUpdate = this.rules.get(current);
 	    					if(Rule.isRule(next)){
 	    						Rule next1 = this.rules.get(next);
+//	    						next1.printFirstSet();
+//	    						System.out.print("Before we remove all epsilons:\n\t");
+//	    						Util.prettyPrint(next1.getFirstSet());
 	    						toUpdate.addToFollow(removeAllEpsilon(next1.getFirstSet()));
 	    						if(next1.getFirstSet().contains("<epsilon>")){
-	    							
+//	    						    System.out.println("contains ep");
 	    							toUpdate.addToFollow(r.getFollowSet());
+	    						} else {
+//	    						    System.out.println("Code says no ep");
+//	    						    Util.prettyPrint(next1.getFirstSet());
 	    						}
 	    					}
 	    					else{
@@ -142,10 +152,13 @@ public class RuleSet
     
     
     public ArrayList<String> removeAllEpsilon(ArrayList<String> input){
-    	while(input.contains("<epsilon>")){
-    		input.remove("<epsilon>");
-    	}
-    	return input;
+    	ArrayList<String> toReturn = new ArrayList<String>();
+        for(String s:input){
+            if(!s.contains("<epsilon>")){
+                toReturn.add(s);
+            }
+        }
+    	return toReturn;
     }
     
     public ArrayList<String> first(String x){
