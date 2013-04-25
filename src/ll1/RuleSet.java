@@ -103,7 +103,7 @@ public class RuleSet
     		}
     	}
 
-    	
+    	for(String r2: this.rules.keySet()){
     	for(String r1: this.rules.keySet()){
     		Rule r = this.rules.get(r1);
     		int k = 0;
@@ -111,30 +111,31 @@ public class RuleSet
     			ArrayList<String> ruleProd = r.getRHS().get(k);
     			int c = 0;
     			while(c < ruleProd.size()-1){
-    				String current = ruleProd.get(c);
-    				String next = ruleProd.get(c+1);
-    				if(Rule.isRule(current)){
-    					Rule toUpdate = this.rules.get(current);
-    					if(Rule.isRule(next)){
-    						Rule next1 = this.rules.get(next);
-    						toUpdate.addToFollow(removeAllEpsilon(next1.getFirstSet()));
-    						if(next1.getFirstSet().contains(""+Transition.EPSILON)){
-    							toUpdate.addToFollow(r.getFollowSet());
-    						}
-    					}
-    					else{
-    						toUpdate.addToFollow(next);
-    					}
-    				}
-    				c++;
-    			}
-    			String current = ruleProd.get(c);
-    			if(Rule.isRule(current)){
-    				Rule toUpdate = this.rules.get(current);
-    				toUpdate.addToFollow(r.getFollowSet());
-    			}
-    			k++;
-    		}
+	    				String current = ruleProd.get(c);
+	    				String next = ruleProd.get(c+1);
+	    				if(Rule.isRule(current)){
+	    					Rule toUpdate = this.rules.get(current);
+	    					if(Rule.isRule(next)){
+	    						Rule next1 = this.rules.get(next);
+	    						toUpdate.addToFollow(removeAllEpsilon(next1.getFirstSet()));
+	    						if(next1.getFirstSet().contains(""+Transition.EPSILON)){
+	    							toUpdate.addToFollow(r.getFollowSet());
+	    						}
+	    					}
+	    					else{
+	    						toUpdate.addToFollow(next);
+	    					}
+	    				}
+	    				c++;
+	    			}
+	    			String current = ruleProd.get(c);
+	    			if(Rule.isRule(current)){
+	    				Rule toUpdate = this.rules.get(current);
+	    				toUpdate.addToFollow(r.getFollowSet());
+	    			}
+	    			k++;
+	    		}
+	    	}
     	}
 
     }
