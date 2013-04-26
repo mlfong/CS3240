@@ -41,22 +41,22 @@ public class Rule
     this.put("begin","$BEGIN");
     this.put("end", "$END");
     this.put("=", "$EQ");
-    this.put("$REPLACE", "replace");
-    this.put("$WITH", "with");
-    this.put("$IN", "in");
-    this.put("$SEMICOLON", ";");
-    this.put("$RECREP", "recursivereplace");
-    this.put("$GRTNOT", ">!");
-    this.put("$PRINT", "print");
-    this.put("$OPENPARENS", "("); // \(
-    this.put("$CLOSEPARENS", ")"); // \)
-    this.put("$COMMA", ",");
-    this.put("$HASH", "#");
-    this.put("$FIND", "find");
-    this.put("$DIFF", "diff");
-    this.put("$UNION", "union");
-    this.put("$INTERS", "inters");
-    this.put("$MAXFREQ", "maxfreqstring");
+    this.put("replace","$REPLACE");
+    this.put("with","$WITH");
+    this.put("in","$IN");
+    this.put(";","$SEMICOLON");
+    this.put("recursivereplace","$RECREP");
+    this.put(">!","$GRTNOT");
+    this.put("print","$PRINT");
+    this.put("(","$OPENPARENS"); // \(
+    this.put(")","$CLOSEPARENS"); // \)
+    this.put(",","$COMMA");
+    this.put("#","$HASH");
+    this.put("find","$FIND");
+    this.put("diff","$DIFF");
+    this.put("union","$UNION");
+    this.put("inters","$INTERS");
+    this.put("maxfreqstring","$MAXFREQ");
     }};
     
     public Rule(){
