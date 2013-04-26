@@ -13,7 +13,7 @@ public class SGTest
         ScannerGenerator sg2 = ScannerGenerator.init("sample/SampleSpec");
         DFA dfa = sg2.getDFA();
         TableWalker reader = new TableWalker("sample/SampleInput");
-        reader.tableWalk(dfa);
+        reader.tableWalk(dfa, false);
         reader.printUserTokens();
     }
 

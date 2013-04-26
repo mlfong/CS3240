@@ -54,6 +54,9 @@ public class RecursiveDescentParserNFA
     public static NFA validateRegex(String regex,
             HashMap<String, NFA> definedClass)
     {
+    	debugPrint("");
+    	debugPrint("***");
+    	debugPrint("looking at regex: "+regex);
         debugPrint("In validateRegex()");
         init(regex, definedClass);
         return reGex();
