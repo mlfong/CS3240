@@ -4,7 +4,7 @@
 <statement> ::= replace REGEX with ASCII-STR in  <file-names> ;
 <statement> ::= recursivereplace REGEX with ASCII-STR in  <file-names> ;
 <statement> ::= ID = <statement-righthand> ;
-<statement-righthand> ::= <exp> | # <exp> | maxfreqstring (ID)
+<statement-righthand> ::= <exp> | # <exp> | maxfreqstring ( ID )
 <file-names> ::=  <source-file>  >!  <destination-file>
 <source-file> ::= ASCII-STR  
 <destination-file> ::= ASCII-STR

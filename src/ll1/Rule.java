@@ -101,7 +101,12 @@ public class Rule
                 if(c == '>')
                     sb.append(c);
                 if(sb.toString().length() > 0){
-                    this.rhs.get(rhsIndex).add(sb.toString());
+                    String tempStr = sb.toString();
+                    if(regexToToken.containsKey(tempStr))
+                        tempStr = regexToToken.get(tempStr);
+                    if(tempStr.charAt(0)=='$')
+                        tempStr = tempStr.substring(1);
+                    this.rhs.get(rhsIndex).add(tempStr);
                     sb.delete(0, sb.length());
                 }
             } else if(c == '|'){
@@ -112,8 +117,14 @@ public class Rule
                 sb.append(c);
             }
         }
-        if(sb.toString().length() > 0)
-            this.rhs.get(rhsIndex).add(sb.toString());
+        if(sb.toString().length() > 0){
+            String tempStr = sb.toString();
+            if(regexToToken.containsKey(tempStr))
+                tempStr = regexToToken.get(tempStr);
+            if(tempStr.charAt(0)=='$')
+                tempStr = tempStr.substring(1);
+            this.rhs.get(rhsIndex).add(tempStr);
+        }
         this.lhs = lhs;
     }
     
