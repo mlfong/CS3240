@@ -36,7 +36,7 @@ public class Driver
         }
         DFA dfa = sg.getDFA();
         TableWalker reader = new TableWalker(inputfile);
-        reader.tableWalk(dfa);
+        reader.tableWalk(dfa, true);
         //reader.printUserTokens();
     }
 

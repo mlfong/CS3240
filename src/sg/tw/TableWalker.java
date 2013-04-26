@@ -31,12 +31,17 @@ public class TableWalker
     {
         this("");
     }
+    
+    public ArrayList<InputToken> getTokens()
+    {
+    	return userTokens;
+    }
 
     /***
      * walks the dfa given a set input file
      * @param dfa
      */
-    public void tableWalk(DFA dfa)
+    public void tableWalk(DFA dfa, boolean printTokens)
     {
         try
         {
@@ -78,7 +83,8 @@ public class TableWalker
                         {
                             this.userTokens.add(new InputToken(
                                     lastInputTokeName, lastMatch));
-                            System.out.println(this.userTokens.get(userTokens.size() - 1).toString().substring(1));
+                            if(printTokens)
+                            	System.out.println(this.userTokens.get(userTokens.size() - 1).toString().substring(1));
                             
                             lastInputTokeName = "";
                             testStrings.clear();
@@ -96,7 +102,8 @@ public class TableWalker
 	                            erased += lastInputTokeName.length();
 	                            this.userTokens.add(new InputToken(
 	                                    lastInputTokeName, lastMatch));
-	                            System.out.println(this.userTokens.get(userTokens.size() - 1).toString().substring(1));
+	                            if(printTokens)
+	                            	System.out.println(this.userTokens.get(userTokens.size() - 1).toString().substring(1));
 	                            
 	                            lastInputTokeName = "";
 	                            testStrings.clear();
@@ -108,7 +115,7 @@ public class TableWalker
                         {
                         	String failedme = lastInputTokeName;
                         	index++;
-                        	if (index == currentLine.length())
+                        	if (index == currentLine.length() && printTokens)
                         	{
                         		System.out.println("The line: " +failedme );
                         		System.out.println("Has matched nothing");
