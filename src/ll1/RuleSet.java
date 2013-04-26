@@ -5,19 +5,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import sg.Util;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class RuleSet
 {
     private HashMap<String, Rule> rules;
-    private HashMap<String, ArrayList<String>> firstSets;
-    
     
     public RuleSet(){
         this.rules = new HashMap<String, Rule>();
-        this.firstSets = new HashMap<String, ArrayList<String>>();
     }
     
     public void addRule(Rule r){
@@ -26,6 +23,27 @@ public class RuleSet
         } else {
             this.rules.put(r.getLHS(), r);
         }
+    }
+    
+    public HashMap<String, Rule> getRules(){
+        return this.rules;
+    }
+    public Set<String> getAllNonterminals(){
+        return this.rules.keySet();
+    }
+    public Set<String> getAllTerminals(){
+        Set<String> set = new HashSet<String>();
+        for(String ruleName : this.rules.keySet()){
+            Rule therule = this.rules.get(ruleName);
+            for(int i = 0; i < therule.getRHS().size(); i++){
+                ArrayList<String> oneRHS = therule.getRHS().get(i);
+                for(String oneToken : oneRHS){
+                    if(!Rule.isRule(oneToken))
+                        set.add(oneToken);
+                }
+            }
+        }
+        return set;
     }
     
     public void init(String filename) throws Exception {
@@ -54,8 +72,7 @@ public class RuleSet
     
     public static void main(String[] args) throws Exception {
         RuleSet rs = new RuleSet();
-//        rs.init("part2txt/SampleGrammar3.txt");
-        rs.init("part2txt/SampleGrammar4.txt");
+        rs.init("part2txt/Lecture9Grammar.txt");
         System.out.println(rs);
       
         rs.generateFirstSets();
@@ -78,12 +95,9 @@ public class RuleSet
     			while(c < ruleK.size()){
     				ArrayList<String> firsts = first(ruleK.get(c));
     				if(!firsts.contains("<epsilon>")){
-//    					System.out.println("No epsilons");
-//    					printArray(firsts);
     					current.addToFirst(firsts);
     					break;
     				}else{
-//    					System.out.println("Contains epsilons");
     					firsts = removeAllEpsilon(firsts);
     					current.addToFirst(firsts);
     					c++;
@@ -117,32 +131,24 @@ public class RuleSet
 	    				String current = ruleProd.get(c);
 	    				String next = ruleProd.get(c+1);
 	    				if(Rule.isRule(current)){
-//	    				    System.out.println("Current is a rule: " + current);
-//	    				    Util.reallyPrettyPrint(this.rules.keySet());
 	    					Rule toUpdate = this.rules.get(current);
 	    					if(toUpdate == null) {
 	    					    System.out.println("ToUpdate rule is null");
 	    					}
 	    					if(Rule.isRule(next)){
 	    						Rule next1 = this.rules.get(next);
-//	    						System.out.println("next is a rule: " + next);
-//	    						Util.reallyPrettyPrint(this.rules.keySet());
-	    						
 	    						if(next1 == null){
 	    						    System.out.println("next1 is null: " + next1);
 	    						}
-
 	    						try{
 	    						toUpdate.addToFollow(removeAllEpsilon(next1.getFirstSet()));
 	    						}catch(Exception e){
 	    						    System.out.println(e);
 	    						}
 	    						if(next1.getFirstSet().contains("<epsilon>")){
-//	    						    System.out.println("contains ep");
 	    							toUpdate.addToFollow(r.getFollowSet());
 	    						} else {
 //	    						    System.out.println("Code says no ep");
-//	    						    Util.prettyPrint(next1.getFirstSet());
 	    						}
 	    					}
 	    					else{
