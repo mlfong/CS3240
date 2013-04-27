@@ -203,21 +203,19 @@ public class DFA
                 ts.addAll(innerState.getHMTransitions().keySet());
 
             HashMap<Character, DFAState> aColumn = new HashMap<Character, DFAState>();
+            table.put(curr, aColumn);
             for (Character tc : ts)
             {
                 DFAState element = new DFAState();
-                table.put(curr, aColumn);
                 for (State innerState : curr.getInnerStates())
                 {
-                    for (Transition possible : innerState.getTransitions())
-                    {
-                        if (tc == possible.getTransitionChar())
-                        {
-                            State destination = possible.getDestState();
-                            element.getInnerStates().addAll(
-                                    DFA.epsilonClose(destination)
-                                            .getInnerStates());
-                        }
+                    if(innerState.getHMTransitions().containsKey(tc) == false)
+                        continue;
+                    for ( Transition possible : innerState.getHMTransitions().get(tc)){
+                        State destination = possible.getDestState();
+                        element.getInnerStates().addAll(
+                                DFA.epsilonClose(destination)
+                                        .getInnerStates());
                     }
                 }
                 for (DFAState dfas : table.keySet())

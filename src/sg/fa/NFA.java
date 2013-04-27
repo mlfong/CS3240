@@ -271,6 +271,18 @@ public class NFA
         return newNFA;
     }
 
+    public static NFA smartUnion(ArrayList<NFA> nfaList){
+        State newStart = new State("", false);
+        State newEnd = new State("", true);
+        for(NFA nfa : nfaList){
+            newStart.addTransition(new Transition(Transition.EPSILON, nfa.getStartState()));
+            nfa.acceptState.setAccept(false);
+            nfa.acceptState.addTransition(new Transition(Transition.EPSILON, newEnd));
+        }
+        
+        return new NFA(newStart, newEnd);
+    }
+    
     /******
      * does a regex UNION on two NFAs
      * 

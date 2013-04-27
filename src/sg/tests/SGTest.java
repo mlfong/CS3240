@@ -10,10 +10,12 @@ public class SGTest
 {
     public static void main(String[] args) throws IOException
     {
-        ScannerGenerator sg2 = ScannerGenerator.init("sample/SampleSpec");
+//        ScannerGenerator sg2 = ScannerGenerator.init("sample/SampleSpec");
+        int num = 6;
+        ScannerGenerator sg2 = ScannerGenerator.init("proj1_testcases/"+num+"/spec");
         DFA dfa = sg2.getDFA();
-        TableWalker reader = new TableWalker("sample/SampleInput");
-        reader.tableWalk(dfa);
+        TableWalker reader = new TableWalker("proj1_testcases/"+num+"/input");
+        reader.tableWalk(dfa, false);
         reader.printUserTokens();
     }
 

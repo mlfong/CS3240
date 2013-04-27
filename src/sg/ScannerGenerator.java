@@ -51,19 +51,21 @@ public class ScannerGenerator
                 .keySet());
         if (keys.size() >= 2)
         {
-            NFA bigNFA = NFA.union(this.getTokensNFA().get(keys.get(0)), this
-                    .getTokensNFA().get(keys.get(1)));
-            for (int i = 2; i < keys.size(); i++)
-                bigNFA = NFA
-                        .union(bigNFA, this.getTokensNFA().get(keys.get(i)));
+            ArrayList<NFA> allNFAs = new ArrayList<NFA>();
+            for(String s : this.getTokensNFA().keySet())
+                allNFAs.add(this.getTokensNFA().get(s));
+            NFA bigNFA = NFA.smartUnion(allNFAs);
             this.bigDFA = DFA.convertNFA(bigNFA);
             return this.bigDFA;
         }
-        else
-        // if(keys.size() == 1)
+        else if(keys.size() == 1)
         {
             this.bigDFA = DFA.convertNFA(this.getTokensNFA().get(keys.get(0)));
             return this.bigDFA;
+        } else {
+            System.err.println("No tokens to get.");
+            System.exit(0);
+            return null;
         }
     }
 
