@@ -737,6 +737,7 @@ public class RecursiveDescentParserNFA
     {
         String name = "CLS_CHAR";
         debugPrint("In CLS_CHAR()");
+        debugPrint("Value of top is: "+top());
         if (top() == null)
         {
             resultsPrint(name, "Epsilon");

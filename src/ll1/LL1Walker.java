@@ -19,6 +19,8 @@ public class LL1Walker {
 	//With the inputted tokens
 	private int index;
 	
+	
+	private static final int debug = 1;
 	//Stack used for parsing
 	LinkedList<String> parsingStack;
 	public LL1Walker(String specfile, String inputfile, String grammar){
@@ -59,21 +61,33 @@ public class LL1Walker {
 	public boolean doLL1(){
 		//<Rule, <Terminal, LL1Entry>>
 		HashMap<String, HashMap<String, LL1Entry>> table = llTable.getLL1Table();
-		while(parsingStack.isEmpty()){
+		debugPrint("***********Starting ll1 parsing");
+		while(!parsingStack.isEmpty()){
 			//Check to see if userTokens is at the end
 			//If so, end
 			if(userTokens.size() == index){
+				debugPrint("UserToken's size = index");
 				return false;
 			}
 			
 			//Pop off element
 			String value = parsingStack.pop();
 			
+			debugPrint("Value is: "+value);
 			//Check to see if it's a rule
 			//If so, go to LL1 table
 			String token = userTokens.get(index).getTokenName();
+			if(token.charAt(0) == '$'){
+				token = token.substring(1);
+			}
+			debugPrint("Token is: "+token);
 			if(Rule.isRule(value)){
+				debugPrint("value was a rule");
 				LL1Entry entry = table.get(value).get(token);
+				if(entry == null){
+					debugPrint("Entry was null");
+					break;
+				}
 				ArrayList<String> newEntries = entry.getCorrectRHS();
 				for(int x = newEntries.size() - 1; x >= 0; x--){
 					parsingStack.push(newEntries.get(x));
@@ -81,20 +95,29 @@ public class LL1Walker {
 			}
 			//It's a terminal so check usertokens to compare
 			else{
+				debugPrint("value was not a rule");
 				//Top of stack does not equal input stack
 				if(!token.equals(value)){
+					debugPrint("Tokens did not equal value on stack");
 					return false;
 				}
-				
+				debugPrint("Value and token are the same!");
 				index++;
 			}
-			
+			debugPrint("");
 		}
 		
 		//If either stack is full at the end, then it did not work
-		if(!parsingStack.isEmpty() || index >= userTokens.size())
+		if(!parsingStack.isEmpty() || index >= userTokens.size()){
+			debugPrint("Parsing stack or usertokens are not empty");	
 			return false;
+		}
 
 		return true;
+	}
+	
+	private void debugPrint(String message){
+		if(debug == 1)
+			System.out.println(message);
 	}
 }
