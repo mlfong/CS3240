@@ -18,4 +18,12 @@ public class InputToken {
 	public String toString(){
 		return this.tokenName + " " + this.value;
 	}
+	
+	public String getValue(){
+		return value;
+	}
+	
+	public String getTokenName(){
+		return tokenName;
+	}
 }

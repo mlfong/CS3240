@@ -12,9 +12,18 @@ import java.util.Set;
 public class RuleSet
 {
     private HashMap<String, Rule> rules;
+    private Rule startRule;
     
     public RuleSet(){
         this.rules = new HashMap<String, Rule>();
+        this.startRule = null;
+    }
+    
+    public Rule getStartRule(){
+    	return this.startRule;
+    }
+    public void setStartRule(Rule r){
+    	this.startRule = r;
     }
     
     public void addRule(Rule r){
@@ -50,8 +59,14 @@ public class RuleSet
         BufferedReader br = new BufferedReader(new FileReader(new File(filename)));
         String s ;
         boolean first = true;
+        int i = 0;
         while(null != (s=br.readLine())){
             Rule r = new Rule();
+            if(i == 0){
+            	r.setStart(true);
+            	this.startRule = r;
+            }
+            i++;
             r.init(s);
             if(first){
             	r.setStart(true);

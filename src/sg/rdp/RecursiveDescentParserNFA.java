@@ -54,6 +54,9 @@ public class RecursiveDescentParserNFA
     public static NFA validateRegex(String regex,
             HashMap<String, NFA> definedClass)
     {
+    	debugPrint("");
+    	debugPrint("***");
+    	debugPrint("looking at regex: "+regex);
         debugPrint("In validateRegex()");
         init(regex, definedClass);
         return reGex();
@@ -734,6 +737,7 @@ public class RecursiveDescentParserNFA
     {
         String name = "CLS_CHAR";
         debugPrint("In CLS_CHAR()");
+        debugPrint("Value of top is: "+top());
         if (top() == null)
         {
             resultsPrint(name, "Epsilon");

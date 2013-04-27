@@ -15,6 +15,14 @@ public class LL1Table
         table = new HashMap<String, HashMap<String, LL1Entry>>();
     }
     
+    public Rule getStartRule(){
+    	return this.ruleset.getStartRule();
+    }
+    
+    public String getStartRuleName(){
+    	return this.ruleset.getStartRule().getLHS();
+    }
+    
     public RuleSet getRuleSet(){
         return this.ruleset;
     }
