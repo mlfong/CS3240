@@ -26,4 +26,9 @@ public class InputToken {
 	public String getTokenName(){
 		return tokenName;
 	}
+	
+//	public String toString(){
+//		String str = "Value and tokenName pair is: ["+value+", "+tokenName+"]";
+//		return str;
+//	}
 }

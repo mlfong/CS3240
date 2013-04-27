@@ -16,19 +16,19 @@ import sg.tw.TableWalker;
 
 public class Driver
 {
-    /*public static void main(String[] args)
-    {
-        if (args.length != 3)
-        {
-            usage();
-            System.exit(0);
-        }
-        String specfile = args[0];
-        String inputfile = args[1];
-        String grammarfile = args[2];
-        LL1Walker walker = new LL1Walker(specfile, inputfile, grammarfile);
-        System.out.println("Result of LL1Parsing is: "+walker.doLL1());
-    }*/
+//    public static void main(String[] args)
+//    {
+//        if (args.length != 3)
+//        {
+//            usage();
+//            System.exit(0);
+//        }
+//        String specfile = args[0];
+//        String inputfile = args[1];
+//        String grammarfile = args[2];
+//        LL1Walker walker = new LL1Walker(specfile, inputfile, grammarfile);
+//        System.out.println("Result of LL1Parsing is: "+walker.doLL1());
+//    }
 
     
     

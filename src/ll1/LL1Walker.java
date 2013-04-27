@@ -35,6 +35,14 @@ public class LL1Walker {
             
             //Init some instance variables
             userTokens = reader.getUserTokens();
+            
+            //Print out tokens
+            System.out.println("Tokens are the following:");
+            for(InputToken input: userTokens){
+            	System.out.println(input);
+            }
+            
+            
             llTable = LL1Table.makeLL1Table(grammar);
             index = 0;
             

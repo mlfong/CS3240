@@ -125,15 +125,19 @@ public class Util
      */
     public static String removeSpaces(String input) {
         StringBuilder sb = new StringBuilder();
-        boolean append = false;
+//        boolean append = false;
+//        for(Character c : input.toCharArray()){
+//        	if(c.equals('['))
+//        		append = true;
+//        	else if(c.equals(']'))
+//        		append = false;
+//        	if(append)
+//        		sb.append(c);
+//        	else if(c!=' ' && c!='\t')
+//                sb.append(c);
+//        }
         for(Character c : input.toCharArray()){
-        	if(c.equals('['))
-        		append = true;
-        	else if(c.equals(']'))
-        		append = false;
-        	if(append)
-        		sb.append(c);
-        	else if(c!=' ' && c!='\t')
+        	if(c!=' ' && c!='\t')
                 sb.append(c);
         }
         return sb.toString();
