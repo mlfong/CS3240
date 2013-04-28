@@ -178,6 +178,8 @@ public class NFA
      */
     public static NFA makeRangedNFA(Character start, Character end)
     {
+        if(start.charValue() == ' ')
+            start = new Character('!');
         if (!(start.charValue() >= 33 && start.charValue() <= 126))
         {
             System.err.println("Range [" + start + "-" + end
