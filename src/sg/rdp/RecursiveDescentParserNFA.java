@@ -15,9 +15,9 @@ public class RecursiveDescentParserNFA
     // Flag used in rexp() and rexpPrime()
     private static boolean epsilon = false;
     // Flag to turn on debug printing
-    private static int debug = 0;
+    private static int debug = 1;
     // Flag to print out the results of everything
-    private static int returnValueDebug = 0;
+    private static int returnValueDebug = 1;
     // Counter used for naming NFA states
     private static Integer counter;
     // List used as a queue to store the inputted regex to be validated/creating
@@ -56,7 +56,7 @@ public class RecursiveDescentParserNFA
     {
     	debugPrint("");
     	debugPrint("***");
-    	debugPrint("looking at regex: "+regex);
+    	debugPrint("\tlooking at regex: "+regex);
         debugPrint("In validateRegex()");
         init(regex, definedClass);
         return reGex();
@@ -157,12 +157,16 @@ public class RecursiveDescentParserNFA
             resultsPrint(name, "Null");
             return null;
         }
-        resultsPrint(name, "Union of rexp1 and rexp`");
+   
         if (epsilon == true)
         {
             epsilon = false;
+            resultsPrint(name, "Concate of rexp1 and rexp`");
+//            debugPrint("value rexp1 is: "+rexp1);
+//            debugPrint("value rexpPrime is: "+rexpPrime);
             return NFA.concatenate(rexp1, rexpPrime);
         }
+        resultsPrint(name, "Union of rexp1 and rexp`");
         return NFA.union(rexp1, rexpPrime);
     }
 
@@ -188,30 +192,46 @@ public class RecursiveDescentParserNFA
         if (top() == '|')
         {
             consume();
-
+            boolean rprimenull = false;
             if (top() == null)
             {
                 resultsPrint(name, "Epsilon NFA");
                 return createEpsilonNFA();
             }
             NFA rexp1 = rexp1();
+            debugPrint("rexp1 is: "+rexp1);
             if (rexp1 == null)
             {
                 resultsPrint(name, "Epsilon NFA");
-                return createEpsilonNFA();
+                rexp1 = createEpsilonNFA();
             }
             NFA rexpPrime = rexpPrime();
+            debugPrint("rexp` is: "+rexpPrime);
             if (rexpPrime == null)
             {
+            	rprimenull = true;
                 resultsPrint(name, "Epsilon NFA");
-                return createEpsilonNFA();
+                rexpPrime = createEpsilonNFA();
             }
             resultsPrint(name, "Concatenate rexp1 and rexp`");
+            HashSet<Character> rexp1Char = NFA
+                    .oneLayerTransitions(rexp1);
+            // System.out.println("****Printing charSetChars");
+             Util.reallyPrettyPrint(rexp1Char);
+             
+             HashSet<Character> rexpPrimeChar = NFA
+                     .oneLayerTransitions(rexpPrime);
+             // System.out.println("****Printing charSetChars");
+              Util.reallyPrettyPrint(rexpPrimeChar);
+              
             // Can always return true;
             epsilon = false;
+            if(rprimenull == false)
+            	return NFA.union(rexp1, rexpPrime);
             return NFA.concatenate(rexp1, rexpPrime);
         }
         epsilon = true;
+        resultsPrint(name, "Epsilon NFA");
         return createEpsilonNFA();
     }
 
@@ -1042,5 +1062,12 @@ public class RecursiveDescentParserNFA
     private static NFA createLiteralNFA(char literal)
     {
         return NFA.makeCharNFA(literal);
+    }
+    
+    private static void printOneLayer(NFA nfa){
+    	HashSet<Character> nfaChar = NFA
+                .oneLayerTransitions(nfa);
+        // System.out.println("****Printing charSetChars");
+         Util.reallyPrettyPrint(nfaChar);
     }
 }
