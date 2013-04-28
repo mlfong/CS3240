@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Stack;
 
 import sg.ScannerGenerator;
 import sg.fa.DFA;
@@ -28,9 +29,13 @@ public class LL1Walker {
         {
 			//Phase 1 stuff
 			ScannerGenerator sg = null;
+			System.out.println("calling sg");
             sg = ScannerGenerator.init(specfile);
+            System.out.println("making dfa");
             DFA dfa = sg.getDFA();
+            System.out.println("reading input for table walker");
             TableWalker reader = new TableWalker(inputfile);
+            System.out.println("walking table");
             reader.tableWalk(dfa, false);
             
             //Init some instance variables
@@ -66,9 +71,81 @@ public class LL1Walker {
 		}
 	}
 	
+	public boolean mandoLL1(){
+		boolean b = true;
+		HashMap<String, HashMap<String, LL1Entry>> table = llTable.getLL1Table();
+		System.out.println("dumping table");
+		llTable.dump();
+		System.out.println();
+		debugPrint("*******Starting ll1 parsing");
+		Stack<String> inputStack = new Stack<String>();
+		Stack<String> parseStack = new Stack<String>();
+		for(int i = userTokens.size()-1; i >= 0; i--){
+//			inputStack.push(userTokens.get(i).getTokenName());
+			String s = userTokens.get(i).getTokenName();
+			if(s.charAt(0)=='$')
+				s = s.substring(1);
+			inputStack.push(s);
+		}
+			
+		parseStack.push(llTable.getStartRuleName());
+		while(true){
+			if(parseStack.isEmpty() && inputStack.isEmpty())
+				break;
+			else if(parseStack.isEmpty() && !inputStack.isEmpty()){
+				System.out.println("parse stack is empty but input stack is not");
+				return false;
+			}
+				
+			else if(!parseStack.isEmpty() && inputStack.isEmpty())
+			{
+				System.out.println("input stack is empty but parse stack is not");
+				return false;
+			}
+				
+			String t1 = parseStack.peek();
+			String t2 = inputStack.peek();
+			if(Rule.isRule(t1)){
+				// its a rule slash nonterminal
+				if(!table.get(t1).containsKey(t2))
+				{
+					System.out.println("t1: " + t1);
+					System.out.println("t2: " + t2);
+					System.out.println("there is no entry for this combination");
+					return false;
+				}
+				LL1Entry entry = table.get(t1).get(t2);
+				parseStack.pop();
+				ArrayList<String> rhs = entry.getCorrectRHS();
+				for(int i = rhs.size()-1; i >= 0; i--)
+					parseStack.push(rhs.get(i));
+			} else {
+				// its a terminal
+				if(!t1.equals(t2))
+				{
+					System.out.println("t1: " + t1);
+					System.out.println("t2: " + t2);
+					System.out.println("t1 does not equal t2");
+					return false;
+				}
+					
+				parseStack.pop();
+				inputStack.pop();
+			}
+			
+			break;
+		}
+		
+		return b;
+	}
+	
 	public boolean doLL1(){
 		//<Rule, <Terminal, LL1Entry>>
 		HashMap<String, HashMap<String, LL1Entry>> table = llTable.getLL1Table();
+		//DUMPING LL1 TABle
+		System.out.println("Dumping table");
+		llTable.dump();
+		System.out.println();
 		debugPrint("***********Starting ll1 parsing");
 		while(!parsingStack.isEmpty()){
 			//Check to see if userTokens is at the end

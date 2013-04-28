@@ -15,9 +15,9 @@ public class RecursiveDescentParserNFA
     // Flag used in rexp() and rexpPrime()
     private static boolean epsilon = false;
     // Flag to turn on debug printing
-    private static int debug = 1;
+    private static int debug = 0;
     // Flag to print out the results of everything
-    private static int returnValueDebug = 1;
+    private static int returnValueDebug = 0;
     // Counter used for naming NFA states
     private static Integer counter;
     // List used as a queue to store the inputted regex to be validated/creating
@@ -214,7 +214,7 @@ public class RecursiveDescentParserNFA
                 rexpPrime = createEpsilonNFA();
             }
             resultsPrint(name, "Concatenate rexp1 and rexp`");
-            HashSet<Character> rexp1Char = NFA
+            /*HashSet<Character> rexp1Char = NFA
                     .oneLayerTransitions(rexp1);
             // System.out.println("****Printing charSetChars");
              Util.reallyPrettyPrint(rexp1Char);
@@ -222,7 +222,7 @@ public class RecursiveDescentParserNFA
              HashSet<Character> rexpPrimeChar = NFA
                      .oneLayerTransitions(rexpPrime);
              // System.out.println("****Printing charSetChars");
-              Util.reallyPrettyPrint(rexpPrimeChar);
+              Util.reallyPrettyPrint(rexpPrimeChar);*/
               
             // Can always return true;
             epsilon = false;
