@@ -16,4 +16,4 @@ Scanner, parser, lexer.
 	Apache Ant is needed to run the ant files to build the project:
 	In the folder with the ant file "build.xml", run:
 		ant build   (Compiles and builds the class files)
-		ant Driver -Dspec="path to spec file" -Dinput="path to input file"        (the main class to run)
+		ant Driver -DS="path to spec file" -DG="path to grammar file" -DI="path to input file"        (the main class to run)

@@ -17,6 +17,7 @@ public class Driver
     {
         if (args.length != 3)
         {
+        	System.out.println(args.length);
             usage();
             System.exit(0);
         }
@@ -64,7 +65,7 @@ public class Driver
     public static void usage()
     {
         System.out.println("Usage:");
-        System.out.println("java Driver SPEC_FILE INPUT_FILE GRAMMAR_FILE OR");
-        System.out.println("ant Driver -Dspec=\"path to spec file\" -Dinput=\"path to input file\"");
+        System.out.println("java Driver SPEC_FILE GRAMMAR_FILE INPUT_FILE OR");
+        System.out.println("ant Driver -DS=\"path to spec file\" -DG=\"path to grammar file\" -DI=\"path to script file\"");
     }
 }
