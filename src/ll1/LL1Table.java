@@ -10,6 +10,7 @@ public class LL1Table
 {
     private HashMap<String, HashMap<String, LL1Entry>> table;
     private RuleSet ruleset;
+    private static final boolean dprint = false;
     
     private LL1Table(){
         table = new HashMap<String, HashMap<String, LL1Entry>>();
@@ -37,7 +38,9 @@ public class LL1Table
         // make first and follow sets
         RuleSet rs = new RuleSet();
         rs.init(filename);
-//        System.out.println(rs);
+        if(dprint){
+            System.out.println(rs);
+        }
         rs.generateFirstSets();
         rs.generateFollowSets();
         ll1table.ruleset = rs;
@@ -45,12 +48,13 @@ public class LL1Table
         Set<String> namesOfNonterminals = rs.getAllNonterminals();
         Set<String> namesOfTerminals = rs.getAllTerminals();
 
-//        /*
-        System.out.println("terminals");
-        Util.reallyPrettyPrint(namesOfNonterminals);
-        System.out.println("nonterminals");
-        Util.reallyPrettyPrint(namesOfTerminals);
-//*/
+        if(dprint){
+            System.out.println("terminals");
+            Util.reallyPrettyPrint(namesOfNonterminals);
+            System.out.println("nonterminals");
+            Util.reallyPrettyPrint(namesOfTerminals);
+        }
+        
         // create rows
         for(String nonTerminal : namesOfNonterminals){
             ll1table.table.put(nonTerminal, new HashMap<String, LL1Entry>());

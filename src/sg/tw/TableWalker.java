@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import ll1.Rule;
+
 import sg.Util;
 import sg.fa.DFA;
 
@@ -50,7 +52,7 @@ public class TableWalker
             while ((currentLine = br.readLine()) != null)
             {
                 int index = 0, lastIndex = 0, erased = 0;
-                boolean matchFound = false, failFound = false;
+                boolean matchFound = false;
                 ArrayList<String> testStrings = new ArrayList<String>();
                 String lastMatch = null;
                 String lastInputTokeName = "";
@@ -64,14 +66,25 @@ public class TableWalker
                     ArrayList<String> temp = new ArrayList<String>();
                     temp.add(Character.toString(current));
 
-                    failFound = false;
-
                     Object[] answers = dfa
                             .specialValidate(makeString(testStrings));
+//                    String ttt = makeString(testStrings);
+//                    if(Rule.regexToToken.keySet().contains(ttt))
+//                    {
+//                        String wantTokenName = Rule.regexToToken.get(ttt);
+//                        this.userTokens.add(new InputToken(ttt, wantTokenName));
+//                        lastInputTokeName = "";
+//                        testStrings.clear();
+//                        matchFound = false;
+//                        lastMatch = null;
+//                        lastInputTokeName = "";
+//                        currentLine = currentLine.substring(index+1);
+//                        index = 0;
+//                        lastIndex =0;
+//                        erased = 0;
+//                        continue;
+//                    }
                     boolean match = ((Boolean) answers[0]).booleanValue();
-                    
-                    if(match)
-                    	failFound = true;
                     
                     if (match)
                     {

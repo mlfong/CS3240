@@ -12,11 +12,12 @@ public class NFATest
 {
     public static void main(String[] args)
     {
+//        NFA n = NFA.makeRangedNFA('9', '0');
         // test100();
         // test04();
         // test03();
         // test101();
-        test104();
+//        test104();
         // testTransitionPull();
     }
 

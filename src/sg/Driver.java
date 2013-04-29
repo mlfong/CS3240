@@ -21,19 +21,21 @@ public class Driver
             System.exit(0);
         }
         String specfile = args[0];
-        String inputfile = args[1];
-        String grammarfile = args[2];
-//    	String specfile = "manspec.txt";
-//    	String inputfile = "man1.txt";
-//    	String grammarfile = "Hw5Grammar.txt";
+        String grammarfile = args[1];
+        String inputfile = args[2];
+        
+//        String specfile = "part2txt/token_spec.txt";
+//        String inputfile = "part2txt/script.txt";
+//        String grammarfile = "part2txt/grammar.txt";
+//        specfile = "testcase1/spec.txt";
+//        inputfile = "testcase1/script.txt";
+//        grammarfile = "testcase1/grammar.txt";
         LL1Walker walker = new LL1Walker(specfile, inputfile, grammarfile);
-        System.out.println("Result of LL1Parsing is: "+walker.mandoLL1());
+        System.out.println("Does the script pass the LL1Parsing: "+walker.mandoLL1());
     }
 
     
     
-    // /home/victor/CS3240/CS3240/part2txt/token_spec.txt /home/victor/CS3240/CS3240/part2txt/script.txt /home/victor/CS3240/CS3240/part2txt/grammar.txt
-//    /home/victor/CS3240/CS3240/part2txt/official/spec.txt  /home/victor/CS3240/CS3240/part2txt/official/script.txt /home/victor/CS3240/CS3240/part2txt/official/grammar.txt
     /*public static void main(String[] args)
     {
         if (args.length != 2)

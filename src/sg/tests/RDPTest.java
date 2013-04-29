@@ -324,11 +324,12 @@ public class RDPTest {
         HashSet<Character> resultChar = NFA.oneLayerTransitions(result);
         System.out.println(resultChar.size());
         Util.reallyPrettyPrint(resultChar);
-        if(resultChar.size() == 0){
-        	System.out.println("PASSED");
+        if(result == null){
+            System.out.println("Passed: result was null");
+            
         }
         else{
-        	System.out.println("FAILED");
+            System.out.println("FAILED: result was not null");
         }
     }
     

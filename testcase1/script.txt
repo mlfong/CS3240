@@ -1,0 +1,10 @@
+begin
+MATCHES = (((((find '([A-Z a-z])*ment([A-Z a-z])*' in "input1.txt" diff find '(A|a) ([A-Z a-z])*' in "input2.txt")))));
+N_MATCHES = #MATCHES;
+print (N_MATCHES, MATCHES);
+X = maxfreqstring(MATCHES);
+Y = X;
+print (Y);
+print (find 'a' in "input1.txt");
+replace '([A-Za-z])*ment' with "" in "input1.txt" >! "output1.txt";   
+end

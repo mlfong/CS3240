@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 import sg.ScannerGenerator;
+import sg.Util;
 import sg.fa.DFA;
 import sg.tw.InputToken;
 import sg.tw.TableWalker;
@@ -21,7 +22,7 @@ public class LL1Walker {
 	private int index;
 	
 	
-	private static final int debug = 1;
+	private static final boolean dprint = false;
 	//Stack used for parsing
 	LinkedList<String> parsingStack;
 	public LL1Walker(String specfile, String inputfile, String grammar){
@@ -42,9 +43,11 @@ public class LL1Walker {
             userTokens = reader.getUserTokens();
             
             //Print out tokens
-            System.out.println("Tokens are the following:");
-            for(InputToken input: userTokens){
-            	System.out.println(input);
+            if(dprint){
+                System.out.println("Tokens are the following:");
+                for(InputToken input: userTokens){
+                    System.out.println(input);
+                }
             }
             
             
@@ -53,12 +56,9 @@ public class LL1Walker {
             
             //Push start rule on the
             parsingStack = new LinkedList<String>();
-            RuleSet ruleSet = llTable.getRuleSet();
             //Need to put in the start variable
-            HashMap<String, Rule> rules = ruleSet.getRules();
             String start = llTable.getStartRuleName();
             parsingStack.push(start);
-//            parsingStack.push(ruleSet.getRules().get("begin"));
         } 
 		catch (IOException e)
         {
@@ -74,14 +74,19 @@ public class LL1Walker {
 	public boolean mandoLL1(){
 		boolean b = true;
 		HashMap<String, HashMap<String, LL1Entry>> table = llTable.getLL1Table();
-		System.out.println("dumping table");
-		llTable.dump();
-		System.out.println();
-		debugPrint("*******Starting ll1 parsing");
+		if(dprint){
+		    System.out.println("dumping table");
+	        llTable.dump();
+	        System.out.println();
+	        debugPrint("*******Starting ll1 parsing");
+		}
 		Stack<String> inputStack = new Stack<String>();
 		Stack<String> parseStack = new Stack<String>();
+		if(dprint){
+		    System.out.println("input tokens");
+	        Util.prettyPrint(userTokens);
+		}
 		for(int i = userTokens.size()-1; i >= 0; i--){
-//			inputStack.push(userTokens.get(i).getTokenName());
 			String s = userTokens.get(i).getTokenName();
 			if(s.charAt(0)=='$')
 				s = s.substring(1);
@@ -109,31 +114,52 @@ public class LL1Walker {
 				// its a rule slash nonterminal
 				if(!table.get(t1).containsKey(t2))
 				{
-					System.out.println("t1: " + t1);
-					System.out.println("t2: " + t2);
-					System.out.println("there is no entry for this combination");
+					System.out.println("Parsing stack peek t1: " + t1);
+					System.out.println("Input stack peek t2: " + t2);
+					System.out.println("There is no entry for this combination.");
 					return false;
+				}
+				else {
+				    if(dprint){
+				        System.out.println("t1: " + t1);
+	                    System.out.println("t2: " + t2);
+	                    System.out.println("there is an entry for this combination");
+				    }
 				}
 				LL1Entry entry = table.get(t1).get(t2);
 				parseStack.pop();
 				ArrayList<String> rhs = entry.getCorrectRHS();
+				if(dprint){
+				    Util.prettyPrint(rhs);
+				}
 				for(int i = rhs.size()-1; i >= 0; i--)
-					parseStack.push(rhs.get(i));
+				{
+				    if(!rhs.get(i).equals("<epsilon>"))
+				        parseStack.push(rhs.get(i));
+				}
+					
 			} else {
 				// its a terminal
 				if(!t1.equals(t2))
 				{
-					System.out.println("t1: " + t1);
-					System.out.println("t2: " + t2);
-					System.out.println("t1 does not equal t2");
+				    System.out.println("Parsing stack peek t1: " + t1);
+                    System.out.println("Input stack peek t2: " + t2);
+					System.out.println("T1 does not equal T2");
 					return false;
 				}
+				else
+				{
+				    if(dprint){
+				        System.out.println("t1: " + t1);
+	                    System.out.println("t2: " + t2);
+	                    System.out.println("t1 does equal t2");
+				    }
+				    parseStack.pop();
+	                inputStack.pop();
+				}
 					
-				parseStack.pop();
-				inputStack.pop();
+				
 			}
-			
-			break;
 		}
 		
 		return b;
@@ -202,7 +228,7 @@ public class LL1Walker {
 	}
 	
 	private void debugPrint(String message){
-		if(debug == 1)
+		if(dprint)
 			System.out.println(message);
 	}
 }
